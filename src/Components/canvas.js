@@ -12,38 +12,73 @@ const Canvas = props => {
     }
 
     const grid = (ctx) => {
-        let gridSize = 25
-        var x_dis = 5
-        let y_dis = 5
+        ctx.fillStyle = 'black'
 
-        let x_start = {number: 1, suffix: '\u03a0'}
-        let y_start
-    }
+        //ctx.drawRect(0,0)
+        let gridSize = 40
+        var startX = 10
+        let startY = 10
 
-    const axis = (ctx) => {
-        let intGridWidth = 46
+        let ticksX = {number: 2, suffix: '\u03a0'}
+        let ticksY = {number: 1, suffix: ''}
+
+        
         let width = ctx.canvas.width
         let height = ctx.canvas.height
 
-        ctx.fillStyle='black'
-        ctx.fillRect(0,0,width,height)
-        ctx.strokeStyle = 'white'
-        ctx.lineWidth = 0.1
+        let linesX = Math.floor(height/gridSize)
+        let linesY = Math.floor(width/gridSize)
 
-        var half = Math.round(width / intGridWidth/2)
+        let X = {lines:linesX, startOther: startY, ticks: ticksX, axis:'X'}
+        let Y = {lines:linesY, startOther: startX, ticks: ticksY, axis:'Y'}
 
-        ctx.strokeStyle='white'
-        ctx.lineWidth=1
-        ctx.moveTo(0,half*intGridWidth)
-        ctx.lineTo(width,half*intGridWidth)
-        ctx.stroke()
+        for (const i in [X,Y]) {
+            let ax = [X,Y][i]
+            for (let i =0; i<=ax.lines; i++){
+                console.log(i)
+                ctx.beginPath()
+                ctx.lineWidth=1;
 
-        ctx.moveTo(half*intGridWidth, 0)
-        ctx.lineTo(half*intGridWidth,height)
-        ctx.stroke()
+                if (i== ax.startOther) ctx.strokeStyle = 'blue'
+                else ctx.strokeStyle = 'red'
+                
+                if (ax.axis === 'X') {
+                    if (i==ax.lines) {
+                        ctx.moveTo(0,gridSize*i)
+                        ctx.lineTo(width, gridSize*i)
+                    } else {
+                        ctx.moveTo(0,gridSize*i+0.5)
+                        ctx.lineTo(width, gridSize*i+0.5)
+                    }
+                } else {
+                    if (i==ax.lines) {
+                        ctx.moveTo(gridSize*i,0)
+                        ctx.lineTo(gridSize*i,width)
+                    } else {
+                        ctx.moveTo(gridSize*i+0.5,0)
+                        ctx.lineTo(gridSize*i+0.5,width)
+                    }
+                }
+                ctx.stroke()
+            }
+        }
 
-        
-        ctx.strokeStyle = 'black'
+        ctx.translate(startY*gridSize, startX*gridSize)
+
+        for (let i=1; i<linesY; i++) {
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'black'
+
+            ctx.moveTo(gridSize*i+0.5, -3)
+            ctx.lineTo(gridSize*i+0.5, 3)
+            ctx.stroke();
+
+            ctx.font = 'bold 13px Arial'
+            ctx.textAlign = 'start'
+            ctx.fillText(i,gridSize*i-2,15)
+        }
+
     }
 
     useEffect( () => {
@@ -58,16 +93,15 @@ const Canvas = props => {
         canvas.width  = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
 
-        let frameCount =0
+        let frameCount = 0
         let animationFrameId
 
         const render = () => {
-            context.clearRect(0,0,context.canvas.width,context.canvas.height)
             frameCount++
-            //grid(context)
-            //axis(context)
+            context.clearRect(0,0,context.canvas.width,context.canvas.height)
+            grid(context)
+            draw(context,frameCount)
 
-            draw(context, frameCount)
             animationFrameId = window.requestAnimationFrame(render)
         }
         render()
@@ -76,7 +110,7 @@ const Canvas = props => {
             window.cancelAnimationFrame(animationFrameId)
         }
 
-    }, [draw])
+    }, [])
 
     return <canvas ref={canvasRef} {...props}/>
 }
