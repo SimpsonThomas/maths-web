@@ -28,9 +28,6 @@ const Canvas = props => {
         var startX = gridProps.startX
         let startY = gridProps.startY
 
-        let ticksX = {number: 2, suffix: '\u03a0'}
-        let ticksY = {number: 1, suffix: ''}
-
         
         let width = ctx.canvas.width
         let height = ctx.canvas.height
@@ -38,59 +35,35 @@ const Canvas = props => {
         let linesX = Math.floor(height/gridSize)
         let linesY = Math.floor(width/gridSize)
 
-        let X = {lines:linesX, startOther: startY, ticks: ticksX, axis:'X'}
-        let Y = {lines:linesY, startOther: startX, ticks: ticksY, axis:'Y'}
-
-        
+        let X = {lines:linesX, startOther: startY, axis:'X'}
+        let Y = {lines:linesY, startOther: startX, axis:'Y'}
 
         for (const j in [X,Y]) {
             let ax = [X,Y][j]
-            for (let i =0; i<=ax.lines; i++){
+            for (let i =-100; i<=100*ax.lines; i++){
                 ctx.beginPath()
                 ctx.lineWidth=1;
+
+                let start, end
+
+                if (ax.axis == 'X') {
+                    start ={x: 0, y: gridSize*i+0.5}
+                    end = {x:width, y:gridSize*i+0.5}
+                } else {
+                    start = {x:gridSize*i+0.5,y:0}
+                    end = {x:gridSize*i+0.5,y:height}
+                }
 
                 if (i== ax.startOther) {
                     ctx.strokeStyle = gridProps.majorAxColour
                 }
                 else ctx.strokeStyle = gridProps.minorAxColour
                 
-                if (ax.axis === 'X') {
-                    if (i==ax.lines) {
-                        ctx.moveTo(0,gridSize*i)
-                        ctx.lineTo(width, gridSize*i)
-                    } else {
-                        ctx.moveTo(0,gridSize*i+0.5)
-                        ctx.lineTo(width, gridSize*i+0.5)
-                    }
-                } else {
-                    if (i==ax.lines) {
-                        ctx.moveTo(gridSize*i,0)
-                        ctx.lineTo(gridSize*i,height)
-                    } else {
-                        ctx.moveTo(gridSize*i+0.5,0)
-                        ctx.lineTo(gridSize*i+0.5,height)
-                    }
-                }
+                ctx.moveTo(start.x, start.y)
+                ctx.lineTo(end.x, end.y)
                 ctx.stroke()
             }
         }
-
-       // ctx.translate(startY*gridSize, startX*gridSize)
-
-        /*for (let i=1; i<linesY; i++) {
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'black'
-
-            ctx.moveTo(gridSize*i+0.5+startY*gridSize, -3+startX*gridSize)
-            ctx.lineTo(gridSize*i+0.5+startY*gridSize, 3+startX*gridSize)
-            ctx.stroke();
-
-            ctx.font = 'bold 13px Arial'
-            ctx.textAlign = 'start'
-            ctx.fillText(i,gridSize*i-2+startY*gridSize,15+startX*gridSize)
-        }*/
-
     }
 
     const offSetGrid = (ctx) => {
@@ -137,27 +110,6 @@ const Canvas = props => {
                 ctx.moveTo(start.x, start.y)
                 ctx.lineTo(end.x, end.y)
                 ctx.stroke()
-
-                /*if (ax.axis === 'X') {
-                    ctx.strokeStyle  = 'yellow'
-                    if (i==ax.lines) {
-                        ctx.moveTo(0,2*gridSize*i)
-                        ctx.lineTo(width, 2*gridSize*i+width*Math.tan(angle))
-                    } else {
-                        ctx.moveTo(0,2*gridSize*i+0.5)
-                        ctx.lineTo(width, 2*gridSize*i+0.5+width*Math.tan(angle))
-                    }
-                } else {
-                    ctx.strokeStyle = 'red'
-                    if (i==ax.lines) {
-                        ctx.moveTo(2*gridSize*i,0)
-                        ctx.lineTo(2*gridSize*i-height*Math.tan(angle),width)
-                    } else {
-                        ctx.moveTo(2*gridSize*i+0.5,0)
-                        ctx.lineTo(2*gridSize*i+0.5-height*Math.tan(angle),height)
-                    }
-                }
-                ctx.stroke()*/
             }
         }
     } 
