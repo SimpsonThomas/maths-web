@@ -1,0 +1,44 @@
+.matrixBox {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    height: 100px;
+    width:100px;
+    background-color: grey;
+    opacity: 0.5;
+}
+
+.matrixTitle {
+    position: absolute;
+    color: white;
+    margin-top: 0;
+    font-size: medium;
+}
+
+.matrixInput1 {
+    position: absolute;
+    left:10px;
+    top:35px;
+    width:25px;
+}
+
+.matrixInput2 {
+    position: absolute;
+    right:10px;
+    top:35px;
+    width:25px;
+}
+
+.matrixInput3 {
+    position: absolute;
+    left:10px;
+    bottom:10px;
+    width:25px;
+}
+
+.matrixInput4 {
+    position: absolute;
+    right:10px;
+    bottom:10px;
+    width:25px;
+}
