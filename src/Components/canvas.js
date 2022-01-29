@@ -2,6 +2,10 @@ import React, { useEffect, useRef } from "react";
 import './canvas.css'
 
 const Canvas = props => {
+    /*super(props)
+    this.state = {
+        test: 'test'
+    }*/
 
     const gridProps = {
         size : 30,
