@@ -39,7 +39,7 @@ const Canvas = props => {
         let height = ctx.canvas.height    
 
         for (let i=-10; i*gridSize<=2*Math.max(height/2,width/2); i++) {
-            let colour = i==0 ? colourMajor : colourMinor
+            let colour = i===0 ? colourMajor : colourMinor
             //let colour = colour2
             // x gridlines
             drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour)
@@ -57,7 +57,7 @@ const Canvas = props => {
     }
 
     const shiftGrid = (ctx) => {
-        let gridSize = gridProps.size
+        //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
 
@@ -91,7 +91,7 @@ const Canvas = props => {
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
             grid(context)
             detShape(context, 'blue')
-            //draw(context,frameCount)
+            draw(context,frameCount)
             shiftGrid(context)
 
             animationFrameId = window.requestAnimationFrame(render)
