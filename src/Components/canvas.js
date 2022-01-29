@@ -103,7 +103,7 @@ const Canvas = props => {
         return () => {
             window.cancelAnimationFrame(animationFrameId)
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const html = <>
