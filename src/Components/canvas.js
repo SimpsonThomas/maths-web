@@ -119,13 +119,24 @@ const Canvas = props => {
         //eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
+    const [collapse, setCollapse] = useState(false)
+
     const html = <>
-        <div class='matrixBox'>
-            <p class='matrixTitle'>Input Matrix Here</p>
-            <input className='matrixInput1' value={matrix[1]} onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
-            <input className='matrixInput2' value={matrix[2]} onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
-            <input className='matrixInput3' value={matrix[3]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
-            <input className='matrixInput4' value={matrix[4]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+        <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
+            <p className='boxTitle'>
+                Settings 
+                <button onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
+                    {collapse ? '+' : '-' }</button>
+            </p>
+            <div className={collapse ? 'settingsOpen' : 'settingsClosed'}>
+                <p className='boxTitle'>Matrix Title</p>
+                <p>
+                <input className='matrixInput' value={matrix[1]} onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
+                    <input className='matrixInput' value={matrix[2]} onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
+                </p>
+                <input className='matrixInput' value={matrix[3]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
+                <input className='matrixInput' value={matrix[4]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+            </div>
         </div>
         <canvas ref={canvasRef} {...props}/>
     </>
