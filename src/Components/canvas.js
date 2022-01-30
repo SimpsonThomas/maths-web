@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
 
 const Canvas = props => {
@@ -6,6 +6,12 @@ const Canvas = props => {
     this.state = {
         test: 'test'
     }*/
+
+    // creating matrix state items - poor code (should be more compact)
+    const [matrix1, setMatrix1] = useState(2)
+    const [matrix2, setMatrix2] = useState(3)
+    const [matrix3, setMatrix3] = useState(-1)
+    const [matrix4, setMatrix4] = useState(1)
 
     const gridProps = {
         size : 30,
@@ -60,9 +66,9 @@ const Canvas = props => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
-
+        //console.log(matrix1)
         //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
-        ctx.setTransform(-1,-5,-5,-3,width/2,height/2)
+        ctx.setTransform(matrix1,matrix2,matrix3,matrix4,width/2,height/2)
         grid(ctx,'red', 'blue')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
@@ -72,7 +78,6 @@ const Canvas = props => {
         
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
-
         
         canvas.style.width ='100%';
         canvas.style.height='100%';
@@ -103,16 +108,16 @@ const Canvas = props => {
         return () => {
             window.cancelAnimationFrame(animationFrameId)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    })
 
     const html = <>
         <div class='matrixBox'>
             <p class='matrixTitle'>Input Matrix Here</p>
-            <input class='matrixInput1' placeholder='1'/>
-            <input class='matrixInput2' placeholder='2'/>
-            <input class='matrixInput3' placeholder='3'/>
-            <input class='matrixInput4' placeholder='4'/>
+            <input className='matrixInput1' value={matrix1} onChange={e => setMatrix1(e.target.value)}/>
+            <input className='matrixInput2' value={matrix2} onChange={e => setMatrix2(e.target.value)}/>
+            <input className='matrixInput3' value={matrix3} onChange={e => setMatrix3(e.target.value)}/>
+            <input className='matrixInput4' value={matrix4} onChange={e => setMatrix4(e.target.value)}/>
         </div>
         <canvas ref={canvasRef} {...props}/>
     </>
