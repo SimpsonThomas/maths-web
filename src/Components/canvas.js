@@ -7,11 +7,8 @@ const Canvas = props => {
         test: 'test'
     }*/
 
-    // creating matrix state items - poor code (should be more compact)
-    const [matrix1, setMatrix1] = useState(2)
-    const [matrix2, setMatrix2] = useState(3)
-    const [matrix3, setMatrix3] = useState(-1)
-    const [matrix4, setMatrix4] = useState(1)
+    // creating matrix state items 
+    const [matrix, setMatrix] = useState({1:2,2:2,3:-1,4:1})
 
     const gridProps = {
         size : 30,
@@ -67,7 +64,7 @@ const Canvas = props => {
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
         //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
-        ctx.setTransform(matrix1,matrix2,matrix3,matrix4,width/2,height/2)
+        ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
         grid(ctx,'red', 'blue')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
@@ -124,10 +121,10 @@ const Canvas = props => {
     const html = <>
         <div class='matrixBox'>
             <p class='matrixTitle'>Input Matrix Here</p>
-            <input className='matrixInput1' value={matrix1} onChange={e => setMatrix1(e.target.value)}/>
-            <input className='matrixInput2' value={matrix2} onChange={e => setMatrix2(e.target.value)}/>
-            <input className='matrixInput3' value={matrix3} onChange={e => setMatrix3(e.target.value)}/>
-            <input className='matrixInput4' value={matrix4} onChange={e => setMatrix4(e.target.value)}/>
+            <input className='matrixInput1' value={matrix[1]} onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
+            <input className='matrixInput2' value={matrix[2]} onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
+            <input className='matrixInput3' value={matrix[3]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
+            <input className='matrixInput4' value={matrix[4]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
         </div>
         <canvas ref={canvasRef} {...props}/>
     </>
