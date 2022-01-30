@@ -66,7 +66,6 @@ const Canvas = props => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
-        //console.log(matrix1)
         //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
         ctx.setTransform(matrix1,matrix2,matrix3,matrix4,width/2,height/2)
         grid(ctx,'red', 'blue')
@@ -74,8 +73,21 @@ const Canvas = props => {
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
+    const [windowSize, setWindowSize] = useState({
+        width: undefined,
+        height: undefined,
+    })
+
     useEffect( () => {
-        
+        function handleResize() {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight
+            })
+        }
+
+        window.addEventListener('resize', handleResize)
+
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
         
@@ -101,8 +113,6 @@ const Canvas = props => {
 
             animationFrameId = window.requestAnimationFrame(render)
         }
-        
-        window.addEventListener('resize', render, false)
         render()
 
         return () => {
