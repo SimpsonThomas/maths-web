@@ -124,12 +124,10 @@ const Canvas = props => {
     const html = <>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
             <p className='boxTitle'>
-                Settings 
-                <button onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
-                    {collapse ? '+' : '-' }</button>
+                Settings
             </p>
-            <div className={collapse ? 'settingsOpen' : 'settingsClosed'}>
-                <p className='boxTitle'>Matrix Title</p>
+            <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
+                <p className='boxTitle'>Set Matrix</p>
                 <p>
                 <input className='matrixInput' value={matrix[1]} onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
                     <input className='matrixInput' value={matrix[2]} onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
@@ -137,6 +135,10 @@ const Canvas = props => {
                 <input className='matrixInput' value={matrix[3]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
                 <input className='matrixInput' value={matrix[4]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
             </div>
+
+            <button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
+                {collapse ? '+' : '-' }
+            </button>
         </div>
         <canvas ref={canvasRef} {...props}/>
     </>

@@ -27,8 +27,25 @@
     width: 25px
 }
 
-.settingsOpen {
+.collapseButton {
+    background-color: #23b8a9;
+    color: white;
+    border-radius: 100%;
+    border: #23b8a9;
+    font-weight: bolder;
+    position: absolute;
+    bottom: -15px;
+    left: 85px;
+    font-size: larger;
+    width: 30px;
+    height: 30px
+}
 
+.settings {
+}
+
+.settingsOpen {
+    transition: visibility 0.5s;
 }
 
 .settingsClosed {
