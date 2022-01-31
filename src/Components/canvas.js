@@ -9,6 +9,7 @@ const Canvas = props => {
 
     // creating matrix state items 
     const [matrix, setMatrix] = useState({1:2,2:2,3:-1,4:1})
+    const [vector, setVector] = useState({'x':0, 'y':0})
 
     const gridProps = {
         size : 30,
@@ -16,7 +17,8 @@ const Canvas = props => {
         startY: 15,
         majorAxColour: 'white',
         minorAxColour: '#9a9ca1',
-        backgroundColour: '#161617'
+        backgroundColour: '#161617',
+        vectorColour: 'purple'
     }
 
     const canvasRef = useRef(null)
@@ -36,7 +38,7 @@ const Canvas = props => {
         ctx.stroke()
     }
 
-    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour) => {
+    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour, colourVector=gridProps.vectorColour) => {
         let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height    
@@ -52,6 +54,8 @@ const Canvas = props => {
             drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour)
             drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
         }
+
+        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector)
     }
 
     const detShape = (ctx, colour='red') => {
@@ -65,7 +69,7 @@ const Canvas = props => {
         let height = ctx.canvas.height 
         //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
         ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
-        grid(ctx,'red', 'blue')
+        grid(ctx,'red', 'blue', 'green')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
@@ -129,15 +133,25 @@ const Canvas = props => {
             <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
                 <p className='boxTitle'>Set Matrix</p>
                 <p>
-                <input className='matrixInput' value={matrix[1]} onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
-                    <input className='matrixInput' value={matrix[2]} onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
+                    <input className='matrixInput' value={matrix[1]} 
+                        onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
+                    <input className='matrixInput' value={matrix[2]}
+                        onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
                 </p>
-                <input className='matrixInput' value={matrix[3]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
-                <input className='matrixInput' value={matrix[4]} onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+                <input className='matrixInput' value={matrix[3]} 
+                    onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
+                <input className='matrixInput' value={matrix[4]} 
+                    onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+
+                <p className='boxTitle'>Vector Input</p>
+                <p><input className='matrixInput' value={vector.x} 
+                        onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
+                <p><input className='matrixInput' value={vector.y} 
+                        onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
             </div>
 
             <button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
-                {collapse ? '+' : '-' }
+                {!collapse ? '+' : '-' }
             </button>
         </div>
         <canvas ref={canvasRef} {...props}/>
