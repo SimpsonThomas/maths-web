@@ -1,9 +1,8 @@
 .boxOpen {
-    height: 80vh;
+    max-height: 80vh;
 }
 
 .boxClosed {
-    height: 5vh;
 }
 
 .matrixBox {
@@ -14,7 +13,7 @@
     width:200px;
     background-color: #233cb8;
     opacity: 0.75;
-    transition: height 0.5s;
+    transition-duration: 0.5s;
 }
 
 .boxTitle {
@@ -64,9 +63,9 @@
 }
 
 .settingsOpen {
-    transition: visibility 0.5s;
+    transition: display 0.5s;
 }
 
 .settingsClosed {
-    visibility: hidden;
+    display: none
 }
