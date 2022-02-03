@@ -1,44 +1,71 @@
-.matrixBox {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    height: 100px;
-    width:100px;
-    background-color: grey;
-    opacity: 0.5;
+.boxOpen {
+    max-height: 80vh;
 }
 
-.matrixTitle {
+.boxClosed {
+}
+
+.matrixBox {
+    border-radius: 25px;
     position: absolute;
+    left: 5vw;
+    top: 10vh;
+    width:200px;
+    background-color: #233cb8;
+    opacity: 0.75;
+    transition-duration: 0.5s;
+}
+
+.boxTitle {
     color: white;
-    margin-top: 0;
     font-size: medium;
 }
 
-.matrixInput1 {
-    position: absolute;
-    left:10px;
-    top:35px;
-    width:25px;
+.matrixInput {
+    width: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: white;
+    background-color: #233cb8;
+    border-radius: 10px;
+    border-color: #23b8a9;
+    border-style: solid;
+    border-width: 2px;
 }
 
-.matrixInput2 {
-    position: absolute;
-    right:10px;
-    top:35px;
-    width:25px;
+.matrixInput:focus {
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    border-color: #23b8a9;
+    border-style: solid;
+    border-width: 2px;
+
 }
 
-.matrixInput3 {
+.collapseButton {
+    background-color: #23b8a9;
+    color: white;
+    border-radius: 100%;
+    border: #23b8a9;
+    font-weight: bolder;
     position: absolute;
-    left:10px;
-    bottom:10px;
-    width:25px;
+    bottom: -15px;
+    left: 85px;
+    font-size: larger;
+    width: 30px;
+    height: 30px
 }
 
-.matrixInput4 {
-    position: absolute;
-    right:10px;
-    bottom:10px;
-    width:25px;
+.settings {
+}
+
+.settingsOpen {
+    transition: display 0.5s;
+}
+
+.settingsClosed {
+    display: none
 }
