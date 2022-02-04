@@ -2,12 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
 
 const Canvas = props => {
-    /*super(props)
-    this.state = {
-        test: 'test'
-    }*/
-
-    // creating matrix state items 
+    // creating state items 
     const [matrix, setMatrix] = useState({1:2,2:2,3:-1,4:1})
     const [vector, setVector] = useState({'x':0, 'y':0})
 
@@ -39,25 +34,28 @@ const Canvas = props => {
         ctx.stroke()
     }
 
-    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour, colourVector=gridProps.vectorColour) => {
-        let gridSize = gridProps.size
-        let width = ctx.canvas.width
-        let height = ctx.canvas.height    
+    const grid = (ctx, 
+        colourMinor=gridProps.minorAxColour, 
+        colourMajor=gridProps.majorAxColour, 
+        colourVector=gridProps.vectorColour) => {
+            let gridSize = gridProps.size
+            let width = ctx.canvas.width
+            let height = ctx.canvas.height    
 
-        for (let i=-10; i*gridSize<=2*Math.max(height/2,width/2); i++) {
-            let colour = i===0 ? colourMajor : colourMinor
-            //let colour = colour2
-            // x gridlines
-            drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour)
-            drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour)
+            for (let i=-10; i*gridSize<=2*Math.max(height/2,width/2); i++) {
+                let colour = i===0 ? colourMajor : colourMinor
+                //let colour = colour2
+                // x gridlines
+                drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour)
+                drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour)
 
-            // y gridlines
-            drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour)
-            drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
+                // y gridlines
+                drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour)
+                drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
+            }
+
+            drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector, 3)
         }
-
-        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector, 3)
-    }
 
     const detShape = (ctx, colour='red') => {
         ctx.fillStyle = colour
