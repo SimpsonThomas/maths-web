@@ -37,7 +37,8 @@ const Canvas = props => {
     const grid = (ctx, 
         colourMinor=gridProps.minorAxColour, 
         colourMajor=gridProps.majorAxColour, 
-        colourVector=gridProps.vectorColour) => {
+        colourVector=gridProps.vectorColour,
+        widthScale=1) => {
             let gridSize = gridProps.size
             let width = ctx.canvas.width
             let height = ctx.canvas.height    
@@ -46,15 +47,15 @@ const Canvas = props => {
                 let colour = i===0 ? colourMajor : colourMinor
                 //let colour = colour2
                 // x gridlines
-                drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour)
-                drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour)
+                drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour,1*widthScale)
+                drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour,1*widthScale)
 
                 // y gridlines
-                drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour)
-                drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
+                drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour,1*widthScale)
+                drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour,1*widthScale)
             }
 
-            drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector, 3)
+            drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector, 3*widthScale)
         }
 
     const detShape = (ctx, colour='red') => {
@@ -66,8 +67,9 @@ const Canvas = props => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
-        //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
+
         ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
+        
         grid(ctx,'red', 'blue', '#42c8f5')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
@@ -147,8 +149,8 @@ const Canvas = props => {
                         onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
                 <p><input className='matrixInput' value={vector.y} 
                         onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
+                <p>&nbsp;</p>
             </div>
-
             <button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
                 {!collapse ? '+' : '-' }
             </button>
