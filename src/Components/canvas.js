@@ -18,7 +18,7 @@ const Canvas = props => {
         majorAxColour: 'white',
         minorAxColour: '#9a9ca1',
         backgroundColour: '#161617',
-        vectorColour: 'purple'
+        vectorColour: 'green'
     }
 
     const canvasRef = useRef(null)
@@ -30,9 +30,10 @@ const Canvas = props => {
         ctx.fill()
     }
 
-    const drawLine = (ctx, start, end, colour) => {
+    const drawLine = (ctx, start, end, colour, width = 1) => {
         ctx.beginPath()
         ctx.strokeStyle = colour
+        ctx.lineWidth = width
         ctx.moveTo(start.x, start.y)
         ctx.lineTo(end.x, end.y)
         ctx.stroke()
@@ -55,7 +56,7 @@ const Canvas = props => {
             drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
         }
 
-        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector)
+        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector, 3)
     }
 
     const detShape = (ctx, colour='red') => {
@@ -69,7 +70,7 @@ const Canvas = props => {
         let height = ctx.canvas.height 
         //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
         ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
-        grid(ctx,'red', 'blue', 'green')
+        grid(ctx,'red', 'blue', '#42c8f5')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
