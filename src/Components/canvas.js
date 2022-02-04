@@ -55,7 +55,7 @@ const Canvas = props => {
             drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
         }
 
-        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector)
+        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:-vector.y*gridSize}, colourVector)
     }
 
     const detShape = (ctx, colour='red') => {
