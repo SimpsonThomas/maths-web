@@ -2,35 +2,31 @@ import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
 
 const Canvas = props => {
-    /*super(props)
-    this.state = {
-        test: 'test'
-    }*/
-
-    // creating matrix state items 
+    // creating state items 
     const [matrix, setMatrix] = useState({1:2,2:2,3:-1,4:1})
     const [vector, setVector] = useState({'x':0, 'y':0})
 
+    const canvasRef = useRef(null)
+
+    // basic props for the grid
     const gridProps = {
-        size : 30,
+        size : 30, // size of grid squares
         startX: 15,
         startY: 15,
-        majorAxColour: 'white',
-        minorAxColour: '#9a9ca1',
+        majorAxColour: 'white', // default colours
+        minorAxColour: '#9a9ca1', 
         backgroundColour: '#161617',
         vectorColour: 'purple'
     }
 
-    const canvasRef = useRef(null)
-
-    const draw = (ctx, frameCount) => {
+    const draw = (ctx, frameCount) => { // animated bubble thing
         ctx.fillStyle = 'white'
         ctx.beginPath()
         ctx.arc(50,100,20*Math.sin(frameCount*0.05)**2,0,2*Math.PI)
         ctx.fill()
     }
 
-    const drawLine = (ctx, start, end, colour) => {
+    const drawLine = (ctx, start, end, colour) => { // drawing a line
         ctx.beginPath()
         ctx.strokeStyle = colour
         ctx.moveTo(start.x, start.y)
@@ -38,7 +34,7 @@ const Canvas = props => {
         ctx.stroke()
     }
 
-    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour, colourVector=gridProps.vectorColour) => {
+    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour, colourVector=gridProps.vectorColour) => { // creating the grid
         let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height    
@@ -57,21 +53,20 @@ const Canvas = props => {
 
         drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector)
     }
-
-    const detShape = (ctx, colour='red') => {
-        ctx.fillStyle = colour
-        ctx.fillRect(0,0,gridProps.size+1, -gridProps.size-1)
-    }
-
+    
     const shiftGrid = (ctx) => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
-        //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
         ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
         grid(ctx,'red', 'blue', 'green')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
+    }
+
+    const detShape = (ctx, colour='red') => {
+        ctx.fillStyle = colour
+        ctx.fillRect(0,0,gridProps.size+1, -gridProps.size-1)
     }
 
     const [windowSize, setWindowSize] = useState({
