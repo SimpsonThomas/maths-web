@@ -26,47 +26,56 @@ const Canvas = props => {
         ctx.fill()
     }
 
-    const drawLine = (ctx, start, end, colour) => { // drawing a line
+    const drawLine = (ctx, start, end, colour, transform=[1,0,0,1]) => { // drawing a line
+        //let width = ctx.canvas.width
+        //let height = ctx.canvas.height 
         ctx.beginPath()
         ctx.strokeStyle = colour
+        ctx.save()
+        ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
         ctx.moveTo(start.x, start.y)
         ctx.lineTo(end.x, end.y)
+        ctx.restore()
         ctx.stroke()
     }
 
-    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour, colourVector=gridProps.vectorColour) => { // creating the grid
+    const grid = (ctx,
+        colourMinor=gridProps.minorAxColour,
+        colourMajor=gridProps.majorAxColour,
+        colourVector=gridProps.vectorColour,
+        transform=[1,0,0,1]) => { // creating the grid
         let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height    
 
         for (let i=-10; i*gridSize<=2*Math.max(height/2,width/2); i++) {
             let colour = i===0 ? colourMajor : colourMinor
-            //let colour = colour2
+
             // x gridlines
-            drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour)
-            drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour)
+            drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour, transform)
+            drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour,transform)
 
             // y gridlines
-            drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour)
-            drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
+            drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour,transform)
+            drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour,transform)
         }
 
-        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector)
+        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
     }
     
     const shiftGrid = (ctx) => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
+        grid(ctx,'red', 'blue', 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
         ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
-        grid(ctx,'red', 'blue', 'green')
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
     const detShape = (ctx, colour='red') => {
         ctx.fillStyle = colour
-        ctx.fillRect(0,0,gridProps.size+1, -gridProps.size-1)
+        ctx.fillRect(0,0,gridProps.size+1, gridProps.size+1)
     }
 
     const [windowSize, setWindowSize] = useState({
@@ -98,15 +107,15 @@ const Canvas = props => {
         let animationFrameId
 
         const render = () => {
-            context.setTransform(1,0,0,1,canvas.width/2, canvas.height/2)
+            context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
             frameCount++
             context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
             grid(context)
             detShape(context, 'blue')
-            draw(context,frameCount)
             shiftGrid(context)
+            draw(context,frameCount)
 
             animationFrameId = window.requestAnimationFrame(render)
         }
