@@ -16,7 +16,7 @@ const Canvas = props => {
         majorAxColour: 'white', // default colours
         minorAxColour: '#9a9ca1', 
         backgroundColour: '#161617',
-        vectorColour: 'purple'
+        vectorColour: 'green'
     }
 
     const draw = (ctx, frameCount) => { // animated bubble thing
@@ -62,7 +62,7 @@ const Canvas = props => {
 
         drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
     }
-    
+
     const shiftGrid = (ctx) => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
@@ -152,8 +152,8 @@ const Canvas = props => {
                         onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
                 <p><input className='matrixInput' value={vector.y} 
                         onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
+                <p>&nbsp;</p>
             </div>
-
             <button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
                 {!collapse ? '+' : '-' }
             </button>
