@@ -202,7 +202,7 @@ const Canvas = props => {
                         <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
                     </p>
                 </div>
-                
+
                 <p className='boxTitle'>Vector Input</p>
                 <p><input className='matrixInput' value={vector.x} 
                         onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
@@ -220,7 +220,11 @@ const Canvas = props => {
       {showHelp ?
             <div className='help'>
                 <h3>Welcome to the Linear Algebra Web app</h3>
-
+                <p>
+                    This is a tool to help you visualise some of the matrix and vector maths you've been learning - 
+                    there will be a brief introduction to how everything works here
+                    but otherwise feel free to explore
+                </p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
                 </button>
