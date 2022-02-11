@@ -5,6 +5,8 @@ const Canvas = props => {
     // creating state items 
     const [matrix, setMatrix] = useState({1:2,2:2,3:-1,4:1})
     const [vector, setVector] = useState({'x':0, 'y':0})
+    const [angle, setAngle] = useState({'x':0, 'y':0})
+    const [scale, setScale] = useState({'x':1,'y':1})
 
     const canvasRef = useRef(null)
 
@@ -67,8 +69,17 @@ const Canvas = props => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height 
+        let angleRadX = 2*Math.PI*angle.x/360
+        let angleRadY = 2*Math.PI*angle.y/360
+        let transform1 = Math.cos(angleRadX)*scale.x
+        let transform2 = -Math.sin(angleRadX)*scale.x
+        let transform3 = Math.sin(angleRadY)*scale.y
+        let transform4 = Math.cos(angleRadY)*scale.y
+
         grid(ctx,'red', 'blue', 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
-        ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
+        //ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
+
+        grid(ctx,'white', 'yellow', 'green',[transform1,transform2,transform3,transform4])
         detShape(ctx, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
@@ -89,7 +100,7 @@ const Canvas = props => {
                 width: window.innerWidth,
                 height: window.innerHeight
             })
-            console.log(windowSize)
+            //sconsole.log(windowSize)
         }
 
         window.addEventListener('resize', handleResize)
@@ -112,7 +123,7 @@ const Canvas = props => {
             context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
-            grid(context)
+            //grid(context)
             detShape(context, 'blue')
             shiftGrid(context)
             draw(context,frameCount)
@@ -127,7 +138,19 @@ const Canvas = props => {
         //eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    const [collapse, setCollapse] = useState(false)
+    const [collapse, setCollapse] = useState(true) // set to true for testing purposes
+    const [showSlide, setShowSlide] = useState(false)
+
+    const [switchMat, setSwitchMat] = useState(false)
+
+    const [showHelp, setShowHelp] = useState(true)
+
+    let angleRadX = 2*Math.PI*angle.x/360
+    let angleRadY = 2*Math.PI*angle.y/360
+    let transform1 = Math.cos(angleRadX)*scale.x
+    let transform2 = -Math.sin(angleRadX)*scale.x
+    let transform3 = Math.sin(angleRadY)*scale.y
+    let transform4 = Math.cos(angleRadY)*scale.y
 
     const html = <>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
@@ -135,17 +158,50 @@ const Canvas = props => {
                 Settings
             </p>
             <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
-                <p className='boxTitle'>Set Matrix</p>
-                <p>
-                    <input className='matrixInput' value={matrix[1]} 
-                        onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
-                    <input className='matrixInput' value={matrix[2]}
-                        onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
-                </p>
-                <input className='matrixInput' value={matrix[3]} 
-                    onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
-                <input className='matrixInput' value={matrix[4]} 
-                    onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+                <label className="switch">
+                    <input type="checkbox" checked={switchMat}
+                        onChange={e=> setSwitchMat(e.target.checked)}/>
+                    <span className="sliderToggle round"></span>
+                </label>
+                <div style={{display : !switchMat ? '' : 'none'}}s>
+                    <p className='boxTitle'>Set Matrix</p>
+                    <p>
+                        <input className='matrixInput' value={matrix[1]} 
+                            onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
+                        <input className='matrixInput' value={matrix[2]}
+                            onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
+                    </p>
+                    <input className='matrixInput' value={matrix[3]} 
+                        onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
+                    <input className='matrixInput' value={matrix[4]} 
+                        onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+                </div>
+                <div style={{display : switchMat ? '' : 'none'}} >
+                    <p className='boxTitle'>Matrix</p>
+                    <p stlye={{color:'white'}}>
+                        {Math.round(transform1*100)/100} --- {Math.round(transform2*100)/100}
+                    </p>
+                    <p stlye={{color:'white'}}>
+                        {Math.round(transform3*100)/100}--- {Math.round(transform4*100)/100}
+                    </p>
+                    <p>
+                        <p className='boxTitle'>Angle X - {angle.x}</p>
+                        <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
+                    </p>
+                    
+                    <p className='boxTitle'>
+                        <p>Angle Y - {angle.y}</p>
+                        <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
+                    </p>
+                    <p className='boxTitle'>
+                        <p>Scale X- {scale.x}</p>
+                        <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
+                    </p>
+                    <p className='boxTitle'>
+                        <p>Scale Y- {scale.y}</p>
+                        <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
+                    </p>
+                </div>
 
                 <p className='boxTitle'>Vector Input</p>
                 <p><input className='matrixInput' value={vector.x} 
@@ -159,6 +215,22 @@ const Canvas = props => {
             </button>
         </div>
         <canvas ref={canvasRef} {...props}/>
+
+        
+      {showHelp ?
+            <div className='help'>
+                <h3>Welcome to the Linear Algebra Web app</h3>
+                <p>
+                    This is a tool to help you visualise some of the matrix and vector maths you've been learning - 
+                    there will be a brief introduction to how everything works here
+                    but otherwise feel free to explore
+                </p>
+                <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
+                    Hide
+                </button>
+            </div> 
+        : <></>
+      }
     </>
 
     return html
