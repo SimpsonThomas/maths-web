@@ -100,7 +100,7 @@ const Canvas = props => {
                 width: window.innerWidth,
                 height: window.innerHeight
             })
-            //sconsole.log(windowSize)
+            let size = windowSize
         }
 
         window.addEventListener('resize', handleResize)
@@ -139,7 +139,7 @@ const Canvas = props => {
     })
 
     const [collapse, setCollapse] = useState(true) // set to true for testing purposes
-    const [showSlide, setShowSlide] = useState(false)
+    //const [showSlide, setShowSlide] = useState(false)
 
     const [switchMat, setSwitchMat] = useState(false)
 
