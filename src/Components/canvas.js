@@ -92,15 +92,16 @@ const Canvas = props => {
     const [windowSize, setWindowSize] = useState({
         width: undefined,
         height: undefined,
+        oldSize: undefined,
     })
 
     useEffect( () => {
         function handleResize() {
             setWindowSize({
                 width: window.innerWidth,
-                height: window.innerHeight
+                height: window.innerHeight,
+                oldSize: windowSize
             })
-            let size = windowSize
         }
 
         window.addEventListener('resize', handleResize)
