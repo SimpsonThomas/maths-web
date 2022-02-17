@@ -60,9 +60,7 @@ const Basic = props => {
     const grid = (ctx,
         colour=gridProps.majorAxColour,
         transform=[1,0,0,1]) => { // creating the grid
-        let gridSize = gridProps.size
-        let width = ctx.canvas.width
-        let height = ctx.canvas.height    
+        let gridSize = gridProps.size 
 
         drawLine(ctx, {x:0,y:0}, {x:gridSize, y:0},colour, transform, 'x')
         drawLine(ctx, {x:0,y:0}, {y:gridSize, x:0},colour, transform, 'y')
@@ -111,13 +109,10 @@ const Basic = props => {
         // ...then set the internal size to match
         canvas.width  = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
-
-        let frameCount = 0
         let animationFrameId
 
         const render = () => {
             context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
-            frameCount++
             context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
@@ -134,9 +129,9 @@ const Basic = props => {
         //eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    const [collapse, setCollapse] = useState(true) // set to true for testing purposes
+    //const [collapse, setCollapse] = useState(true) // set to true for testing purposes
     //const [showSlide, setShowSlide] = useState(false)
-
+    let collapse = true
     const [switchMat, setSwitchMat] = useState(false)
 
     const [showHelp, setShowHelp] = useState(true)

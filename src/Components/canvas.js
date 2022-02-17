@@ -21,12 +21,12 @@ const Canvas = props => {
         vectorColour: 'green'
     }
 
-    const draw = (ctx, frameCount) => { // animated bubble thing
+    /*const draw = (ctx, frameCount) => { // animated bubble thing
         ctx.fillStyle = 'white'
         ctx.beginPath()
         ctx.arc(50,100,20*Math.sin(frameCount*0.05)**2,0,2*Math.PI)
         ctx.fill()
-    }
+    }*/
 
     const drawLine = (ctx, start, end, colour, transform=[1,0,0,1]) => { // drawing a line
         //let width = ctx.canvas.width
@@ -76,18 +76,17 @@ const Canvas = props => {
         let transform3 = Math.sin(angleRadY)*scale.y
         let transform4 = Math.cos(angleRadY)*scale.y
 
-        grid(ctx,'red', 'blue', 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
+        if (!switchMat) grid(ctx,'red', 'blue', 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
         //ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
 
-        grid(ctx,'white', 'yellow', 'green',[transform1,transform2,transform3,transform4])
-        detShape(ctx, 'yellow')
+        if (switchMat) grid(ctx,'white', 'yellow', 'green',[transform1,transform2,transform3,transform4])
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
-    const detShape = (ctx, colour='red') => {
+    /*const detShape = (ctx, colour='red') => {
         ctx.fillStyle = colour
         ctx.fillRect(0,0,gridProps.size+1, gridProps.size+1)
-    }
+    }*/
 
     const [windowSize, setWindowSize] = useState({
         width: undefined,
@@ -115,19 +114,18 @@ const Canvas = props => {
         canvas.width  = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
 
-        let frameCount = 0
+        //let frameCount = 0
         let animationFrameId
 
         const render = () => {
             context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
-            frameCount++
+            //frameCount++
             context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
             //grid(context)
-            detShape(context, 'blue')
             shiftGrid(context)
-            draw(context,frameCount)
+            //draw(context,frameCount)
 
             animationFrameId = window.requestAnimationFrame(render)
         }
@@ -139,7 +137,7 @@ const Canvas = props => {
         //eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    const [collapse, setCollapse] = useState(true) // set to true for testing purposes
+    const [collapse, ] = useState(true) // set to true for testing purposes
     //const [showSlide, setShowSlide] = useState(false)
 
     const [switchMat, setSwitchMat] = useState(false)
@@ -179,27 +177,28 @@ const Canvas = props => {
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
                     <p className='boxTitle'>Matrix</p>
-                    <p stlye={{color:'white'}}>
-                        {Math.round(transform1*100)/100} --- {Math.round(transform2*100)/100}
+                    <p className='matrixDisplay'>
+                        {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
                     </p>
-                    <p stlye={{color:'white'}}>
-                        {Math.round(transform3*100)/100}--- {Math.round(transform4*100)/100}
+                    <p className='matrixDisplay'>
+                        {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
                     </p>
+        
                     <p>
-                        <p className='boxTitle'>Angle X - {angle.x}</p>
+                        <p className='boxTitle'>Angle X: &nbsp; &nbsp; {angle.x}</p>
                         <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
                     </p>
                     
                     <p className='boxTitle'>
-                        <p>Angle Y - {angle.y}</p>
+                        <p>Angle Y: &nbsp; &nbsp; {angle.y}</p>
                         <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
                     </p>
                     <p className='boxTitle'>
-                        <p>Scale X- {scale.x}</p>
+                        <p>Scale X: &nbsp; &nbsp; {scale.x}</p>
                         <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
                     </p>
                     <p className='boxTitle'>
-                        <p>Scale Y- {scale.y}</p>
+                        <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.y}</span></p>
                         <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
                     </p>
                 </div>
@@ -211,20 +210,19 @@ const Canvas = props => {
                         onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
                 <p>&nbsp;</p>
             </div>
-            <button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
+            {/*<button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
                 {!collapse ? '+' : '-' }
-            </button>
+            </button>*/}
         </div>
         <canvas ref={canvasRef} {...props}/>
 
         
       {showHelp ?
             <div className='help'>
-                <h3>Welcome to the Linear Algebra Web app</h3>
+                <h3>Grid view</h3>
                 <p>
-                    This is a tool to help you visualise some of the matrix and vector maths you've been learning - 
-                    there will be a brief introduction to how everything works here
-                    but otherwise feel free to explore
+                    Now you've played around with the basis vector view we can now look 
+                    at the grid view
                 </p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
