@@ -39,5 +39,51 @@
 }
 
 .canvas {
-  height: 100vh
+  height: 50vh;
+  overflow: auto;
+}
+
+.navBar {
+  height: 30px;
+  position: absolute;
+  top: 0;
+  right:0;
+  width:100vw;
+  background-color: #233cb8;
+  color: white;
+  font-size: larger;
+  font-weight: bold;
+  margin: auto;
+}
+
+.rightNavButton {
+  float:right;
+}
+
+.leftNavButton {
+  float:left;
+}
+
+.navButton {
+  margin-top: 5px;
+  font-weight: bold;
+  text-align: center;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: white;
+  background-color: #233cb8;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+  transition: background-color 0.25s;
+}
+
+.navButton:hover {
+  background-color: white;
+  color: black;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
 }

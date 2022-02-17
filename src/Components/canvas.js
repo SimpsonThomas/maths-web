@@ -50,16 +50,16 @@ const Canvas = props => {
         let width = ctx.canvas.width
         let height = ctx.canvas.height    
 
-        for (let i=-10; i*gridSize<=2*Math.max(height/2,width/2); i++) {
+        for (let i=-1000; i*gridSize<=100*Math.max(height/2,width/2); i++) {
             let colour = i===0 ? colourMajor : colourMinor
 
             // x gridlines
-            drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour, transform)
-            drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour,transform)
+            drawLine(ctx, {x:-50*width,y:i*gridSize}, {x:50*width,y:i*gridSize}, colour, transform)
+            drawLine(ctx, {x:-50*width,y:-i*gridSize}, {x:50*width,y:-i*gridSize}, colour,transform)
 
             // y gridlines
-            drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour,transform)
-            drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour,transform)
+            drawLine(ctx, {y:-50*height,x:i*gridSize}, {y:50*height,x:i*gridSize}, colour,transform)
+            drawLine(ctx, {y:-50*height,x:-i*gridSize}, {y:50*height,x:-i*gridSize}, colour,transform)
         }
 
         drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
