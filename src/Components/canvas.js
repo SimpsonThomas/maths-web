@@ -3,7 +3,7 @@ import './canvas.css'
 
 const Canvas = props => {
     // creating state items 
-    const [matrix, setMatrix] = useState({1:2,2:2,3:-1,4:1})
+    const [matrix, setMatrix] = useState({1:1,2:0,3:0,4:1})
     const [vector, setVector] = useState({'x':0, 'y':0})
     const [angle, setAngle] = useState({'x':0, 'y':0})
     const [scale, setScale] = useState({'x':1,'y':1})
@@ -15,8 +15,8 @@ const Canvas = props => {
         size : 30, // size of grid squares
         startX: 15,
         startY: 15,
-        majorAxColour: 'white', // default colours
-        minorAxColour: '#9a9ca1', 
+        majorAxColour: 'blue', // default colours
+        minorAxColour: 'white', 
         backgroundColour: '#161617',
         vectorColour: 'green'
     }
@@ -49,6 +49,7 @@ const Canvas = props => {
         let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height    
+        ctx.save()
 
         for (let i=-1000; i*gridSize<=100*Math.max(height/2,width/2); i++) {
             let colour = i===0 ? colourMajor : colourMinor
@@ -62,7 +63,9 @@ const Canvas = props => {
             drawLine(ctx, {y:-50*height,x:-i*gridSize}, {y:50*height,x:-i*gridSize}, colour,transform)
         }
 
+        ctx.lineWidth = 2
         drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
+        ctx.restore()
     }
 
     const shiftGrid = (ctx) => {
@@ -76,10 +79,10 @@ const Canvas = props => {
         let transform3 = Math.sin(angleRadY)*scale.y
         let transform4 = Math.cos(angleRadY)*scale.y
 
-        if (!switchMat) grid(ctx,'red', 'blue', 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
+        if (!switchMat) grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
         //ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
 
-        if (switchMat) grid(ctx,'white', 'yellow', 'green',[transform1,transform2,transform3,transform4])
+        if (switchMat) grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',[transform1,transform2,transform3,transform4])
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -220,10 +223,9 @@ const Canvas = props => {
       {showHelp ?
             <div className='help'>
                 <h3>Grid view</h3>
-                <p>
-                    Now you've played around with the basis vector view we can now look 
-                    at the grid view
-                </p>
+                <p> Now you've played around with the basis vector view we can now look 
+                    at the grid view</p>
+                <p>Here you can see the whole set of grid lines</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
                 </button>
