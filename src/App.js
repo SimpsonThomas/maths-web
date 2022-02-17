@@ -1,7 +1,7 @@
 import './App.css';
 import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
 const App = props => {
   const [display, setDisplay] = useState('start')
