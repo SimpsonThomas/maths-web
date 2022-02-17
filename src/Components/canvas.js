@@ -226,6 +226,8 @@ const Canvas = props => {
                 <p> Now you've played around with the basis vector view we can now look 
                     at the grid view</p>
                 <p>Here you can see the whole set of grid lines</p>
+                <p>And again adjust the whole grid via the matrix set or the sliders</p>
+                <p>But you can also set a vector and see how it gets translated</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
                 </button>
