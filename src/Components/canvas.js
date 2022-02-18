@@ -68,11 +68,11 @@ const Canvas = props => {
         ctx.restore()
     }
 
-    const shiftGrid = (ctx, matrix=[1,0,0,1]) => {
+    const shiftGrid = (ctx, shift=[1,0,0,1]) => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height
-        grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',matrix)
+        grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',shift)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -87,8 +87,8 @@ const Canvas = props => {
         oldSize: undefined,
     })
 
-    const eigenVector = (ctx) => {
-        let [a,b,c,d] = matrix
+    const calculateVectors = (transform) => {
+        let [a,b,c,d] = transform
         const trace = a+d
         const det = a*d - b*c
         const eigenVal1 = trace/2 + (trace^2/4-det)^1/2
@@ -102,10 +102,25 @@ const Canvas = props => {
             eigenVec1 = [b,eigenVal1-a]
             eigenVec2 = [b,eigenVal2-a]
         }
+        return [eigenVal1, eigenVal2, eigenVec1, eigenVec2]
+    }
+
+    const eigenVector = (ctx, transform) => {
+        const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
 
         
+        let width = ctx.canvas.width
+        let height = ctx.canvas.height
 
-        return eigenVal1, eigenVal2, eigenVec1, eigenVec2
+        let gridSize = gridProps.size
+        ctx.save()
+        ctx.lineWidth = 3
+        drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'red',transform)
+        //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
+        drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'red',transform)
+        //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
+        ctx.restore()
+        ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
     useEffect( () => {
@@ -147,8 +162,12 @@ const Canvas = props => {
             let transform3 = Math.sin(angleRadY)*scale.y
             let transform4 = Math.cos(angleRadY)*scale.y
 
-            if (!switchMat) shiftGrid(context, [matrix[1],matrix[2],matrix[3],matrix[4]])
-            else shiftGrid(context, [transform1, transform2, transform3, transform4])
+            let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+                : [transform1, transform2, transform3, transform4] 
+
+            if (!switchMat) shiftGrid(context, mat)
+            else shiftGrid(context, mat)
+            if (showEigen) eigenVector(context,mat)
             //draw(context,frameCount)
 
             animationFrameId = window.requestAnimationFrame(render)
@@ -176,6 +195,9 @@ const Canvas = props => {
     let transform3 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
+    let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+        : [transform1, transform2, transform3, transform4] 
+
     const quickSetAngle = (change, keep) => {
         const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
         const current = angle[change]
@@ -192,6 +214,8 @@ const Canvas = props => {
         if (change==='x') setAngle({'x':newAngle, 'y':angle[keep]})
         else setAngle({'y':newAngle, 'x':angle[keep]})
     }
+
+    let [eigenVal1, eigenVal2, eigenVec1, eigenVec2] = calculateVectors(mat)
 
     const html = <>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
@@ -263,6 +287,14 @@ const Canvas = props => {
                         onClick={e => {e.preventDefault(); setShowEigenp(!showEigen)}}>
                         {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
                 </p>
+                {
+                    showEigen ?
+                        <>
+                        <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
+                        <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
+                        </>
+                    : <></>
+                }
                 <p>&nbsp;</p>
             </div>
             {/*<button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
