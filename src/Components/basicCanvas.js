@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
+import { drawLineArrow } from "./canvasComponents";
 
 const Basic = props => {
+    const inherit = props.props
     // creating state items 
     const [matrix, setMatrix] = useState({1:1,2:0,3:0,4:1})
     const [angle, setAngle] = useState({'x':0, 'y':0})
@@ -14,47 +16,9 @@ const Basic = props => {
         size : 100, // size of grid squares
         startX: 15,
         startY: 15,
-        majorAxColour: 'white', // default colours
-        minorAxColour: '#9a9ca1', 
-        backgroundColour: '#161617',
-    }
-
-    const drawLine = (ctx, start, end, colour, transform=[1,0,0,1], text='') => { // drawing a line
-        //let width = ctx.canvas.width
-        //let height = ctx.canvas.height 
-        ctx.beginPath()
-        ctx.strokeStyle = colour
-        ctx.fillStyle = colour
-        ctx.font = "30px Arial"
-        ctx.save()
-        ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
-        ctx.moveTo(start.x, start.y)
-        ctx.lineTo(end.x, end.y)
-        //ctx.transform(1,0,0,-1,0,0)
-        ctx.translate(end.x,end.y)
-        ctx.rotate(Math.PI*3)
-        ctx.scale(-1,1)
-        ctx.fillText(text,0,0)
-        ctx.restore()
-        ctx.stroke()
-
-        // creating arrowheads
-
-        var endRadians=Math.atan((end.y-start.y)/(end.x-start.x));
-        endRadians+=((end.x>=start.x)?90:-90)*Math.PI/180;
-
-        ctx.beginPath()
-        ctx.save()
-        ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
-        ctx.translate(end.x, end.y)
-        ctx.rotate(endRadians)
-        ctx.moveTo(0,0)
-        ctx.lineTo(5,10)
-        ctx.lineTo(-5,10)
-        ctx.closePath()
-        ctx.restore()
-        ctx.fill()
-
+        majorAxColour: inherit.major, // default colours
+        minorAxColour: inherit.minor, 
+        backgroundColour: inherit.background,
     }
 
     const grid = (ctx,
@@ -62,26 +26,8 @@ const Basic = props => {
         transform=[1,0,0,1]) => { // creating the grid
         let gridSize = gridProps.size 
 
-        drawLine(ctx, {x:0,y:0}, {x:gridSize, y:0},colour, transform, 'x')
-        drawLine(ctx, {x:0,y:0}, {y:gridSize, x:0},colour, transform, 'y')
-    }
-
-    const shiftGrid = (ctx) => {
-        //let gridSize = gridProps.size
-        let width = ctx.canvas.width
-        let height = ctx.canvas.height 
-        let angleRadX = 2*Math.PI*angle.x/360
-        let angleRadY = 2*Math.PI*angle.y/360
-        let transform1 = Math.cos(angleRadX)*scale.x
-        let transform2 = -Math.sin(angleRadX)*scale.x
-        let transform3 = Math.sin(angleRadY)*scale.y
-        let transform4 = Math.cos(angleRadY)*scale.y
-
-        if (!switchMat) grid(ctx,'white',[matrix[1],matrix[2],matrix[3],matrix[4]])
-        //ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
-
-        if (switchMat) grid(ctx,'white',[transform1,transform2,transform3,transform4])
-        ctx.setTransform(1,0,0,1,width/2,height/2)
+        drawLineArrow(ctx, {x:0,y:0}, {x:gridSize, y:0},colour, transform, 'x')
+        drawLineArrow(ctx, {x:0,y:0}, {y:gridSize, x:0},colour, transform, 'y')
     }
 
     const [windowSize, setWindowSize] = useState({
@@ -116,8 +62,18 @@ const Basic = props => {
             context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
-            //grid(context)
-            shiftGrid(context)
+
+            let angleRadX = 2*Math.PI*angle.x/360
+            let angleRadY = 2*Math.PI*angle.y/360
+            let transform1 = Math.cos(angleRadX)*scale.x
+            let transform2 = -Math.sin(angleRadX)*scale.x
+            let transform3 = Math.sin(angleRadY)*scale.y
+            let transform4 = Math.cos(angleRadY)*scale.y
+
+            let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+                : [transform1, transform2, transform3, transform4] 
+
+            grid(context, gridProps.majorAxColour,mat)
 
             animationFrameId = window.requestAnimationFrame(render)
         }

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 
 const App = props => {
   const [display, setDisplay] = useState('start')
+  let canvasProps = {background:'white',major:'red',minor:'black'}
   return (
     <div className="App">
       <div className='navBar'>
@@ -16,8 +17,8 @@ const App = props => {
           onClick={e => {e.preventDefault(); setDisplay('start')}}>
             Back</button> :<></>}
       </div>
-      {display === 'start' ? <Basic className ='canvas'/> :<></>}
-      {display === 'start2' ? <Canvas className ='canvas'/> :<></>}
+      {display === 'start' ? <Basic className ='canvas' props={canvasProps}/> :<></>}
+      {display === 'start2' ? <Canvas className ='canvas' props={canvasProps}/> :<></>}
     </div>
   );
 }
