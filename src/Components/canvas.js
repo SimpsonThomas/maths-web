@@ -155,7 +155,7 @@ const Canvas = props => {
     let transform4 = Math.cos(angleRadY)*scale.y
 
     const quickSetAngle = (change, keep) => {
-        const setAngles = [-180,-135,-90,-45,0,45,90,135,180]
+        const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
         const current = angle[change]
         let newAngle = current
         if (setAngles.includes(current)) {
