@@ -68,21 +68,11 @@ const Canvas = props => {
         ctx.restore()
     }
 
-    const shiftGrid = (ctx) => {
+    const shiftGrid = (ctx, matrix=[1,0,0,1]) => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
-        let height = ctx.canvas.height 
-        let angleRadX = 2*Math.PI*angle.x/360
-        let angleRadY = 2*Math.PI*angle.y/360
-        let transform1 = Math.cos(angleRadX)*scale.x
-        let transform2 = -Math.sin(angleRadX)*scale.x
-        let transform3 = Math.sin(angleRadY)*scale.y
-        let transform4 = Math.cos(angleRadY)*scale.y
-
-        if (!switchMat) grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
-        //ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
-
-        if (switchMat) grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',[transform1,transform2,transform3,transform4])
+        let height = ctx.canvas.height
+        grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',matrix)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -112,6 +102,10 @@ const Canvas = props => {
             eigenVec1 = [b,eigenVal1-a]
             eigenVec2 = [b,eigenVal2-a]
         }
+
+        
+
+        return eigenVal1, eigenVal2, eigenVec1, eigenVec2
     }
 
     useEffect( () => {
@@ -144,7 +138,17 @@ const Canvas = props => {
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
             //grid(context)
-            shiftGrid(context)
+
+            
+            let angleRadX = 2*Math.PI*angle.x/360
+            let angleRadY = 2*Math.PI*angle.y/360
+            let transform1 = Math.cos(angleRadX)*scale.x
+            let transform2 = -Math.sin(angleRadX)*scale.x
+            let transform3 = Math.sin(angleRadY)*scale.y
+            let transform4 = Math.cos(angleRadY)*scale.y
+
+            if (!switchMat) shiftGrid(context, [matrix[1],matrix[2],matrix[3],matrix[4]])
+            else shiftGrid(context, [transform1, transform2, transform3, transform4])
             //draw(context,frameCount)
 
             animationFrameId = window.requestAnimationFrame(render)
