@@ -191,3 +191,24 @@ input:checked + .slider {
   width: 60px;
   height: 40px
 }
+
+.quickChange {
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  background-color: #233cb8;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 1px;
+  transition: background-color 0.25s;
+}
+
+.quickChange:hover {
+  background-color: white;
+  color: black;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+}

@@ -154,6 +154,23 @@ const Canvas = props => {
     let transform3 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
+    const quickSetAngle = (change, keep) => {
+        const setAngles = [-180,-135,-90,-45,0,45,90,135,180]
+        const current = angle[change]
+        let newAngle = current
+        if (setAngles.includes(current)) {
+            let nextIndex = setAngles.indexOf(current)+1
+            newAngle = setAngles[(nextIndex < setAngles.length) ? nextIndex : 0]
+        }
+        else {
+            newAngle = setAngles.reduce((a, b) => {
+                return Math.abs(b - current) < Math.abs(a - current) ? b : a;
+            });
+        }
+        if (change==='x') setAngle({'x':newAngle, 'y':angle[keep]})
+        else setAngle({'y':newAngle, 'x':angle[keep]})
+    }
+
     const html = <>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
             <p className='boxTitle'>
@@ -188,16 +205,24 @@ const Canvas = props => {
                     </p>
         
                     <p>
-                        <p className='boxTitle'>Angle X: &nbsp; &nbsp; {angle.x}</p>
+                        <p className='boxTitle'>
+                            <button className='quickChange' 
+                                onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
+                                    Angle X:</button>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.x}</span></p>
                         <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
                     </p>
                     
                     <p className='boxTitle'>
-                        <p>Angle Y: &nbsp; &nbsp; {angle.y}</p>
+                        <p>
+                            <button className='quickChange' 
+                                onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
+                                    Angle Y:</button>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.y}</span></p>
                         <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
                     </p>
                     <p className='boxTitle'>
-                        <p>Scale X: &nbsp; &nbsp; {scale.x}</p>
+                        <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.x}</span></p>
                         <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
                     </p>
                     <p className='boxTitle'>
@@ -226,7 +251,7 @@ const Canvas = props => {
                 <p> Now you've played around with the basis vector view we can now look 
                     at the grid view</p>
                 <p>Here you can see the whole set of grid lines</p>
-                <p>And again adjust the whole grid via the matrix set or the sliders</p>
+                <p>And again adjust the whole grid via the matrix set or the sliders (by clicking the angle buttons you can quickly change to set angles)</p>
                 <p>But you can also set a vector and see how it gets translated</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
