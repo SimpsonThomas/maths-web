@@ -97,6 +97,23 @@ const Canvas = props => {
         oldSize: undefined,
     })
 
+    const eigenVector = (ctx) => {
+        let [a,b,c,d] = matrix
+        const trace = a+d
+        const det = a*d - b*c
+        const eigenVal1 = trace/2 + (trace^2/4-det)^1/2
+        const eigenVal2 = trace/2 - (trace^2/4-det)^1/2
+        let eigenVec1 = [1,0]
+        let eigenVec2 = [0,1]
+        if (c !== 0) {
+            eigenVec1 = [eigenVal1-d,c]
+            eigenVec2 = [eigenVal2-d,c]
+        } else if (b !== 0) {
+            eigenVec1 = [b,eigenVal1-a]
+            eigenVec2 = [b,eigenVal2-a]
+        }
+    }
+
     useEffect( () => {
         function handleResize() {
             setWindowSize({
