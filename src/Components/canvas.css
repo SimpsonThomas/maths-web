@@ -12,7 +12,6 @@
     top: 10vh;
     width:200px;
     background-color: #233cb8;
-    opacity: 0.75;
     transition-duration: 0.5s;
 }
 
@@ -125,6 +124,10 @@ input:checked + .sliderToggle:before {
   transform: translateX(26px);
 }
 
+input:checked + .slider {
+  background-color: red;
+}
+
 /* Rounded sliders */
 .sliderToggle.round {
   border-radius: 34px;
@@ -162,9 +165,9 @@ input:checked + .sliderToggle:before {
   padding-bottom: 20px;
 }
 
-@media only screen and (max-width:1000px) {
+@media only screen and (max-width:1300px) {
   .help {
-    background-color: yellow;
+    width: 40vw
   }
 }
 
