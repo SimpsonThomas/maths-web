@@ -208,6 +208,8 @@ const Basic = props => {
                 <p>We will start off simply - you can change the matrix in the corner to move the basis vectors</p>
 
                 <p>Or switch to changing the angle and scale to move them instead</p>
+
+                <p>Once you're done click the next button in the top right to move onto the next activity</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
                 </button>

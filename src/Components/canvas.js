@@ -68,21 +68,11 @@ const Canvas = props => {
         ctx.restore()
     }
 
-    const shiftGrid = (ctx) => {
+    const shiftGrid = (ctx, shift=[1,0,0,1]) => {
         //let gridSize = gridProps.size
         let width = ctx.canvas.width
-        let height = ctx.canvas.height 
-        let angleRadX = 2*Math.PI*angle.x/360
-        let angleRadY = 2*Math.PI*angle.y/360
-        let transform1 = Math.cos(angleRadX)*scale.x
-        let transform2 = -Math.sin(angleRadX)*scale.x
-        let transform3 = Math.sin(angleRadY)*scale.y
-        let transform4 = Math.cos(angleRadY)*scale.y
-
-        if (!switchMat) grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',[matrix[1],matrix[2],matrix[3],matrix[4]])
-        //ctx.setTransform(matrix[1],matrix[2],matrix[3],matrix[4],width/2,height/2)
-
-        if (switchMat) grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',[transform1,transform2,transform3,transform4])
+        let height = ctx.canvas.height
+        grid(ctx,gridProps.minorAxColour, gridProps.majorAxColour, 'green',shift)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -96,6 +86,42 @@ const Canvas = props => {
         height: undefined,
         oldSize: undefined,
     })
+
+    const calculateVectors = (transform) => {
+        let [a,b,c,d] = transform
+        const trace = a+d
+        const det = a*d - b*c
+        const eigenVal1 = trace/2 + (trace^2/4-det)^1/2
+        const eigenVal2 = trace/2 - (trace^2/4-det)^1/2
+        let eigenVec1 = [1,0]
+        let eigenVec2 = [0,1]
+        if (c !== 0) {
+            eigenVec1 = [eigenVal1-d,c]
+            eigenVec2 = [eigenVal2-d,c]
+        } else if (b !== 0) {
+            eigenVec1 = [b,eigenVal1-a]
+            eigenVec2 = [b,eigenVal2-a]
+        }
+        return [eigenVal1, eigenVal2, eigenVec1, eigenVec2]
+    }
+
+    const eigenVector = (ctx, transform) => {
+        const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
+
+        
+        let width = ctx.canvas.width
+        let height = ctx.canvas.height
+
+        let gridSize = gridProps.size
+        ctx.save()
+        ctx.lineWidth = 3
+        drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'red',transform)
+        //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
+        drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'red',transform)
+        //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
+        ctx.restore()
+        ctx.setTransform(1,0,0,1,width/2,height/2)
+    }
 
     useEffect( () => {
         function handleResize() {
@@ -127,7 +153,21 @@ const Canvas = props => {
             context.fillStyle = gridProps.backgroundColour
             context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
             //grid(context)
-            shiftGrid(context)
+
+            
+            let angleRadX = 2*Math.PI*angle.x/360
+            let angleRadY = 2*Math.PI*angle.y/360
+            let transform1 = Math.cos(angleRadX)*scale.x
+            let transform2 = -Math.sin(angleRadX)*scale.x
+            let transform3 = Math.sin(angleRadY)*scale.y
+            let transform4 = Math.cos(angleRadY)*scale.y
+
+            let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+                : [transform1, transform2, transform3, transform4] 
+
+            if (!switchMat) shiftGrid(context, mat)
+            else shiftGrid(context, mat)
+            if (showEigen) eigenVector(context,mat)
             //draw(context,frameCount)
 
             animationFrameId = window.requestAnimationFrame(render)
@@ -146,6 +186,7 @@ const Canvas = props => {
     const [switchMat, setSwitchMat] = useState(false)
 
     const [showHelp, setShowHelp] = useState(true)
+    const [showEigen, setShowEigenp] = useState(false)
 
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
@@ -153,6 +194,28 @@ const Canvas = props => {
     let transform2 = -Math.sin(angleRadX)*scale.x
     let transform3 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
+
+    let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+        : [transform1, transform2, transform3, transform4] 
+
+    const quickSetAngle = (change, keep) => {
+        const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
+        const current = angle[change]
+        let newAngle = current
+        if (setAngles.includes(current)) {
+            let nextIndex = setAngles.indexOf(current)+1
+            newAngle = setAngles[(nextIndex < setAngles.length) ? nextIndex : 0]
+        }
+        else {
+            newAngle = setAngles.reduce((a, b) => {
+                return Math.abs(b - current) < Math.abs(a - current) ? b : a;
+            });
+        }
+        if (change==='x') setAngle({'x':newAngle, 'y':angle[keep]})
+        else setAngle({'y':newAngle, 'x':angle[keep]})
+    }
+
+    let [eigenVal1, eigenVal2, eigenVec1, eigenVec2] = calculateVectors(mat)
 
     const html = <>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
@@ -188,16 +251,24 @@ const Canvas = props => {
                     </p>
         
                     <p>
-                        <p className='boxTitle'>Angle X: &nbsp; &nbsp; {angle.x}</p>
+                        <p className='boxTitle'>
+                            <button className='quickChange' 
+                                onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
+                                    Angle X:</button>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.x}</span></p>
                         <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
                     </p>
                     
                     <p className='boxTitle'>
-                        <p>Angle Y: &nbsp; &nbsp; {angle.y}</p>
+                        <p>
+                            <button className='quickChange' 
+                                onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
+                                    Angle Y:</button>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.y}</span></p>
                         <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
                     </p>
                     <p className='boxTitle'>
-                        <p>Scale X: &nbsp; &nbsp; {scale.x}</p>
+                        <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.x}</span></p>
                         <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
                     </p>
                     <p className='boxTitle'>
@@ -211,6 +282,19 @@ const Canvas = props => {
                         onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
                 <p><input className='matrixInput' value={vector.y} 
                         onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
+                <p>
+                    <button className='quickChange' 
+                        onClick={e => {e.preventDefault(); setShowEigenp(!showEigen)}}>
+                        {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
+                </p>
+                {
+                    showEigen ?
+                        <>
+                        <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
+                        <p className='matrixDisplay'>Value: {eigenVal2} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
+                        </>
+                    : <></>
+                }
                 <p>&nbsp;</p>
             </div>
             {/*<button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
@@ -226,7 +310,7 @@ const Canvas = props => {
                 <p> Now you've played around with the basis vector view we can now look 
                     at the grid view</p>
                 <p>Here you can see the whole set of grid lines</p>
-                <p>And again adjust the whole grid via the matrix set or the sliders</p>
+                <p>And again adjust the whole grid via the matrix set or the sliders (by clicking the angle buttons you can quickly change to set angles)</p>
                 <p>But you can also set a vector and see how it gets translated</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
