@@ -146,6 +146,7 @@ const Canvas = props => {
     const [switchMat, setSwitchMat] = useState(false)
 
     const [showHelp, setShowHelp] = useState(true)
+    const [showEigen, setShowEigenp] = useState(false)
 
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
@@ -236,6 +237,11 @@ const Canvas = props => {
                         onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
                 <p><input className='matrixInput' value={vector.y} 
                         onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
+                <p>
+                    <button className='quickChange' 
+                        onClick={e => {e.preventDefault(); setShowEigenp(!showEigen)}}>
+                        {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
+                </p>
                 <p>&nbsp;</p>
             </div>
             {/*<button className='collapseButton' onClick={e => {e.preventDefault(); setCollapse(!collapse)}}>
