@@ -4,6 +4,7 @@ import { drawLineArrow } from "./canvasComponents";
 
 const Basic = props => {
     const inherit = props.props
+
     // creating state items 
     const [matrix, setMatrix] = useState({1:1,2:0,3:0,4:1})
     const [angle, setAngle] = useState({'x':0, 'y':0})
@@ -153,7 +154,6 @@ const Basic = props => {
             </div>
         </div>
         <canvas ref={canvasRef} {...props}/>
-
         
       {showHelp ?
             <div className='help'>
