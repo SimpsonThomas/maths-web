@@ -4,7 +4,7 @@ import Basic from './Components/basicCanvas';
 import React, { useState } from "react";
 
 const App = props => {
-  const [display, setDisplay] = useState('start')
+  const [display, setDisplay] = useState('start2')
   let canvasProps = {background:'white',major:'red',minor:'black'}
   return (
     <div className="App">

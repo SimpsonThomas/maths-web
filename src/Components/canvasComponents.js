@@ -87,20 +87,27 @@ const eigenVector = (ctx, transform) => {
     ctx.setTransform(1,0,0,1,width/2,height/2)
 }
 
-const SettingsBox = props => {
-    const [[matrix, setMatrix], [vector, setVector], [angle, setAngle], [scale, setScale]] 
-        = [props.matrix, props.vector, props.angle, props.scale]
-    const [switchMat, setSwitchMat] = props.switchMat
-    const [showEigen, setShowEigen] = props.eigen
-    let collapse = true
-    //const [switchMat, setSwitchMat] = useState(false)
-
+const calculateAngleMatrix = (angle, scale) => {
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
     let transform1 = Math.cos(angleRadX)*scale.x
     let transform2 = -Math.sin(angleRadX)*scale.x
     let transform3 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
+
+    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
+}
+
+const SettingsBox = props => {
+    const [[matrix, setMatrix], [vector, setVector], [angle, setAngle], [scale, setScale]] 
+        = [props.matrix, props.vector, props.angle, props.scale]
+    const [switchMat, setSwitchMat] = props.switchMat
+    const [showEigen, setShowEigen] = props.eigen
+    const setSaveMatrix = props.setSaveMatrix
+    let collapse = true
+    //const [switchMat, setSwitchMat] = useState(false)
+
+    let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(angle,scale)
 
     //const [switchMat, setSwitchMat] = useState(false)
 
@@ -141,6 +148,14 @@ const SettingsBox = props => {
             'new' : newMatrix,
             'change' : position
         })
+    }
+
+    const updateSave = (e) => {
+        e.preventDefault()
+        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(angle, scale)
+        let mat = (!switchMat) ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]]
+            :[transform1, transform2, transform3, transform4]
+        setSaveMatrix(mat)
     }
 
     return (
@@ -221,12 +236,15 @@ const SettingsBox = props => {
                         </>
                     : <></>
                 }
+                    <button className='quickChange' 
+                        onClick={e => {updateSave(e)}}>
+                        Save</button>
                 <p>&nbsp;</p>
             </div>
         </div>
     )
 }
 
-export {drawLine, drawLineArrow, calculateVectors, eigenVector}
+export {drawLine, drawLineArrow, calculateVectors, eigenVector, calculateAngleMatrix}
 
 export default SettingsBox
