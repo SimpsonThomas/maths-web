@@ -28,6 +28,8 @@ const Canvas = props => {
         vectorColour: 'green'
     }
 
+    const selection = inherit.selection
+
     const eigenVector = (ctx, transform) => {
         const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
     
@@ -193,7 +195,7 @@ const Canvas = props => {
     settingsProps.setSaveMatrix = setSaveMatrix
 
     const html = <>
-        <SettingsBox {...settingsProps}/>
+        {!selection ? <SettingsBox {...settingsProps}/> : <></>}
         <canvas ref={mainCanvasRef} {...props}/>
         <div className={(saveMatrix) ? 'smallCanvas' : 'hideCanvas'}>
             <canvas ref={smallCanvasRef} {...props}/>

@@ -22,6 +22,8 @@ const Basic = props => {
         backgroundColour: inherit.background,
     }
 
+    const selection = inherit.selection
+
     const grid = (ctx,
         colour=gridProps.majorAxColour,
         transform=[1,0,0,1]) => { // creating the grid
@@ -99,63 +101,66 @@ const Basic = props => {
     let transform2 = -Math.sin(angleRadX)*scale.x
     let transform3 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
-
+    
     const html = <>
-        <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
-            <p className='boxTitle'>
-                Settings
-            </p>
-            <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
-                <label className="switch">
-                    <input type="checkbox" checked={switchMat}
-                        onChange={e=> setSwitchMat(e.target.checked)}/>
-                    <span className="sliderToggle round"></span>
-                </label>
-                <div style={{display : !switchMat ? '' : 'none'}}s>
-                    <p className='boxTitle'>Set Matrix</p>
-                    <p>
-                        <input className='matrixInput' value={matrix[1]} 
-                            onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
-                        <input className='matrixInput' value={matrix[2]}
-                            onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
-                    </p>
-                    <input className='matrixInput' value={matrix[3]} 
-                        onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
-                    <input className='matrixInput' value={matrix[4]} 
-                        onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
-                    <p>&nbsp;</p>
-                </div>
-                <div style={{display : switchMat ? '' : 'none'}} >
-                    <p className='boxTitle'>Matrix</p>
-                    <p className='matrixDisplay'>
-                        {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
-                    </p>
-                    <p className='matrixDisplay'>
-                        {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
-                    </p>
-                    <p>
-                        <p className='boxTitle'>Angle X: &nbsp; &nbsp; {angle.x}</p>
-                        <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
-                    </p>
-                    
-                    <p className='boxTitle'>
-                        <p>Angle Y: &nbsp; &nbsp; {angle.y}</p>
-                        <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
-                    </p>
-                    <p className='boxTitle'>
-                        <p>Scale X: &nbsp; &nbsp; {scale.x}</p>
-                        <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
-                    </p>
-                    <p className='boxTitle'>
-                        <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.y}</span></p>
-                        <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
-                    </p>
+        {!selection ? 
+            <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
+                <p className='boxTitle'>
+                    Settings
+                </p>
+                <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
+                    <label className="switch">
+                        <input type="checkbox" checked={switchMat}
+                            onChange={e=> setSwitchMat(e.target.checked)}/>
+                        <span className="sliderToggle round"></span>
+                    </label>
+                    <div style={{display : !switchMat ? '' : 'none'}}s>
+                        <p className='boxTitle'>Set Matrix</p>
+                        <p>
+                            <input className='matrixInput' value={matrix[1]} 
+                                onChange={e => setMatrix({1:e.target.value,2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
+                            <input className='matrixInput' value={matrix[2]}
+                                onChange={e => setMatrix({1:matrix[1],2:e.target.value, 3:matrix[3], 4:matrix[4]})}/>
+                        </p>
+                        <input className='matrixInput' value={matrix[3]} 
+                            onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:e.target.value, 4:matrix[4]})}/>
+                        <input className='matrixInput' value={matrix[4]} 
+                            onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:e.target.value})}/>
+                        <p>&nbsp;</p>
+                    </div>
+                    <div style={{display : switchMat ? '' : 'none'}} >
+                        <p className='boxTitle'>Matrix</p>
+                        <p className='matrixDisplay'>
+                            {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
+                        </p>
+                        <p className='matrixDisplay'>
+                            {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
+                        </p>
+                        <p>
+                            <p className='boxTitle'>Angle X: &nbsp; &nbsp; {angle.x}</p>
+                            <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
+                        </p>
+                        
+                        <p className='boxTitle'>
+                            <p>Angle Y: &nbsp; &nbsp; {angle.y}</p>
+                            <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
+                        </p>
+                        <p className='boxTitle'>
+                            <p>Scale X: &nbsp; &nbsp; {scale.x}</p>
+                            <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
+                        </p>
+                        <p className='boxTitle'>
+                            <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.y}</span></p>
+                            <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+        : <></>
+        }
         <canvas ref={canvasRef} {...props}/>
         
-      {showHelp ?
+      {(showHelp && !selection) ?
             <div className='help'>
                 <h3>Welcome to the Linear Algebra Web app</h3>
                 <p>
