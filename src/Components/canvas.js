@@ -195,7 +195,7 @@ const Canvas = props => {
     const html = <>
         <SettingsBox {...settingsProps}/>
         <canvas ref={mainCanvasRef} {...props}/>
-        <div className='smallCanvas'>
+        <div className={(saveMatrix) ? 'smallCanvas' : 'hideCanvas'}>
             <canvas ref={smallCanvasRef} {...props}/>
         </div>
       {showHelp ?

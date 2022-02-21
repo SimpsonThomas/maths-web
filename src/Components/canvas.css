@@ -12,6 +12,10 @@ canvas {
   opacity: 0.95;
 }
 
+.hideCanvas {
+  display: none;
+}
+
 .mainCanvas {
   width: 100vw;
   height: 100%;
