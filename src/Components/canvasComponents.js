@@ -210,11 +210,11 @@ const SettingsBox = props => {
                     </p>
                     <p className='boxTitle'>
                         <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.x}</span></p>
-                        <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
+                        <input type="range" min="-5" max="5" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
                     </p>
                     <p className='boxTitle'>
                         <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.y}</span></p>
-                        <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
+                        <input type="range" min="-5" max="5" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
                     </p>
                 </div>
 
