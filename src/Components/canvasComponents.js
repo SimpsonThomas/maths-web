@@ -56,7 +56,6 @@ const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='') =>
 
 const calculateVectors = (transform) => {
     let [a,b,c,d] = transform
-    console.log(a+d)
     const trace = a+d
     const det = a*d - b*c
     const eigenVal1 = trace/2 + ((trace^2)/4-det)^(1/2)
@@ -108,7 +107,7 @@ const SettingsBox = props => {
     //const [showHelp, setShowHelp] = useState(true)
     //const [showEigen, setShowEigenp] = useState(false)
 
-    let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+    let mat = !switchMat ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
         : [transform1, transform2, transform3, transform4] 
 
     const quickSetAngle = (change, keep) => {
@@ -130,6 +129,17 @@ const SettingsBox = props => {
 
     let [eigenVal1, eigenVal2, eigenVec1, eigenVec2] = calculateVectors(mat)
 
+    const updateMatrix = (e, position) => {
+        e.preventDefault()
+        let oldMatrix = {1:matrix.new[1],2:matrix.new[2],3:matrix.new[3],4:matrix.new[4]}
+        let newMatrix = matrix.new
+        newMatrix[position] = e.target.value
+        setMatrix({
+            'old' : oldMatrix,
+            'new' : newMatrix,
+            'change' : position
+        })
+    }
 
     return (
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
@@ -145,15 +155,15 @@ const SettingsBox = props => {
                 <div style={{display : !switchMat ? '' : 'none'}}s>
                     <p className='boxTitle'>Set Matrix</p>
                     <p>
-                        <input className='matrixInput'  type="number" value={matrix[1]} 
-                            onChange={e => setMatrix({1:parseInt(e.target.value),2:matrix[2], 3:matrix[3], 4:matrix[4]})}/>
-                        <input className='matrixInput' type="number"  value={matrix[2]}
-                            onChange={e => setMatrix({1:matrix[1],2:parseInt(e.target.value), 3:matrix[3], 4:matrix[4]})}/>
+                        <input className='matrixInput'  type="number" value={matrix.new[1]} 
+                            onChange={e => updateMatrix(e, 1)}/>
+                        <input className='matrixInput' type="number"  value={matrix.new[2]}
+                            onChange={e => updateMatrix(e, 2)}/>
                     </p>
-                    <input className='matrixInput' type="number"  value={matrix[3]} 
-                        onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:parseInt(e.target.value), 4:matrix[4]})}/>
-                    <input className='matrixInput' type="number"  value={matrix[4]} 
-                        onChange={e => setMatrix({1:matrix[1],2:matrix[2], 3:matrix[3], 4:parseInt(e.target.value)})}/>
+                    <input className='matrixInput' type="number"  value={matrix.new[3]} 
+                        onChange={e => updateMatrix(e, 3)}/>
+                    <input className='matrixInput' type="number"  value={matrix.new[4]} 
+                        onChange={e => updateMatrix(e, 4)}/>
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
                     <p className='boxTitle'>Matrix</p>
