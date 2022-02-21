@@ -80,9 +80,9 @@ const eigenVector = (ctx, transform) => {
     let height = ctx.canvas.height
 
     let gridSize = gridProps.size
-    drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow',transform, 2)
+    drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
     //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
-    drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow',transform, 2)
+    drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
     //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
     //ctx.setTransform(1,0,0,1,width/2,height/2)
 }
@@ -131,9 +131,11 @@ const SettingsBox = props => {
 
     const updateMatrix = (e, position) => {
         e.preventDefault()
+        let value = e.target.value
         let oldMatrix = {1:matrix.new[1],2:matrix.new[2],3:matrix.new[3],4:matrix.new[4]}
+        oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
         let newMatrix = matrix.new
-        newMatrix[position] = e.target.value
+        newMatrix[position] = value
         setMatrix({
             'old' : oldMatrix,
             'new' : newMatrix,

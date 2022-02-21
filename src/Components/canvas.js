@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
-import SettingsBox, {calculateVectors, drawLine, eigenVector} from "./canvasComponents";
+import SettingsBox, {calculateVectors, drawLine, drawLineArrow, eigenVector} from "./canvasComponents";
 
 const Canvas = props => {
     const inherit = props.props
     // creating state items 
-    const [matrix, setMatrix] = useState({1:1,2:0,3:0,4:1})
+    const [matrix, setMatrix] = useState({'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'})
     const [vector, setVector] = useState({'x':0, 'y':0})
     const [angle, setAngle] = useState({'x':0, 'y':0})
     const [scale, setScale] = useState({'x':1,'y':1})
@@ -23,12 +23,12 @@ const Canvas = props => {
         vectorColour: 'green'
     }
 
-    /*const draw = (ctx, frameCount) => { // animated bubble thing
-        ctx.fillStyle = 'white'
+    const draw = (ctx, frameCount) => { // animated bubble thing
+        ctx.fillStyle = 'black'
         ctx.beginPath()
         ctx.arc(50,100,20*Math.sin(frameCount*0.05)**2,0,2*Math.PI)
         ctx.fill()
-    }*/ 
+    } 
 
     const eigenVector = (ctx, transform) => {
         const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
@@ -38,9 +38,9 @@ const Canvas = props => {
         let height = ctx.canvas.height
     
         let gridSize = gridProps.size
-        drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'blue',transform, 3)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'blue', transform)
         //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
-        drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'blue',transform, 3)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'blue', transform)
         //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
@@ -86,6 +86,7 @@ const Canvas = props => {
     })
 
     useEffect( () => {
+        //console.log(matrix)
         function handleResize() {
             setWindowSize({
                 width: window.innerWidth,
@@ -105,8 +106,34 @@ const Canvas = props => {
         canvas.width  = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
 
-        //let frameCount = 0
-        //let animationFrameId
+        let frameCount = 0
+        let animationFrameId
+        draw(context,frameCount)
+        const animate = () => {
+            context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
+            //frameCount++
+            context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
+            context.fillStyle = gridProps.backgroundColour
+            context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
+
+            frameCount++
+            let position = matrix.change
+            let [newVal, oldVal] = [parseInt(matrix.new[position]), parseInt(matrix.old[position])]
+            let change = newVal-oldVal
+            let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
+            mat[position-1] = parseInt(mat[position-1])+(change/20)*frameCount
+            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
+
+            animationFrameId = window.requestAnimationFrame(animate)
+            
+            if (frameCount===20) {
+                setMatrix({
+                    old: matrix.old,
+                    new:matrix.new,
+                    change:'done'
+                })
+            }
+        }
 
         const render = () => {
             context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
@@ -123,20 +150,29 @@ const Canvas = props => {
             let transform3 = Math.sin(angleRadY)*scale.y
             let transform4 = Math.cos(angleRadY)*scale.y
 
-            let mat = !switchMat ? [matrix[1],matrix[2],matrix[3],matrix[4]] 
+            let mat = !switchMat ? (
+                (matrix.new[matrix.change] !=='') ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
+                : [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]] 
+                )
                 : [transform1, transform2, transform3, transform4]
+
+            /*console.log((matrix.new[matrix.change] !==''))
+            console.log('used')
+            console.log(mat)
+            console.log([matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]])*/
 
             grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
             if (showEigen) eigenVector(context,mat)
-            //draw(context,frameCount)
-
-            //animationFrameId = window.requestAnimationFrame(render)
         }
-        render()
-
-        /*return () => {
+        if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) animate()
+        else {
+            render()
+        }
+        
+        return () => {
             window.cancelAnimationFrame(animationFrameId)
-        }*/
+        }
+       //render()
         //eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
