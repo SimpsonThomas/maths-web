@@ -121,12 +121,12 @@ const Canvas = props => {
             let [newVal, oldVal] = [parseInt(matrix.new[position]), parseInt(matrix.old[position])]
             let change = newVal-oldVal
             let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
-            mat[position-1] = parseInt(mat[position-1])+(change/20)*frameCount
+            mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
             grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
 
             animationFrameId = window.requestAnimationFrame(animate)
             
-            if (frameCount===20) {
+            if (frameCount===5) {
                 setMatrix({
                     old: matrix.old,
                     new:matrix.new,
@@ -155,11 +155,6 @@ const Canvas = props => {
                 : [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]] 
                 )
                 : [transform1, transform2, transform3, transform4]
-
-            /*console.log((matrix.new[matrix.change] !==''))
-            console.log('used')
-            console.log(mat)
-            console.log([matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]])*/
 
             grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
             if (showEigen) eigenVector(context,mat)
