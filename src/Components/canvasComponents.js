@@ -84,7 +84,7 @@ const eigenVector = (ctx, transform) => {
     //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
     drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
     //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
-    //ctx.setTransform(1,0,0,1,width/2,height/2)
+    ctx.setTransform(1,0,0,1,width/2,height/2)
 }
 
 const SettingsBox = props => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
-import SettingsBox, {calculateVectors, drawLine, drawLineArrow, eigenVector} from "./canvasComponents";
+import SettingsBox, {calculateVectors, drawLine, drawLineArrow} from "./canvasComponents";
 
 const Canvas = props => {
     const inherit = props.props
