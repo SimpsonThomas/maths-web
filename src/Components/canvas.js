@@ -6,11 +6,19 @@ import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineA
 const Canvas = props => {
     const inherit = props.props
     // creating state items 
-    const [matrix, setMatrix] = useState({'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'})
-    const [vector, setVector] = useState({'x':0, 'y':0})
-    const [angle, setAngle] = useState({'x':0, 'y':0})
-    const [scale, setScale] = useState({'x':1,'y':1})
-    const [showEigen, setShowEigen] = useState(false)
+
+    /*const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
+    const [vector, setVector] = useState( {'x':0, 'y':0} ) 
+    const [scaleAngle, setScaleAngle] = useState( { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} } )
+    const [showEigen, setShowEigen] = useState(false)*/
+
+    let state = inherit.state
+
+    const [matrix, setMatrix] = state.matrix
+    const [vector, setVector] = state.vector
+    const [scaleAngle, setScaleAngle] = state.scaleAngle
+    const [showEigen, setShowEigen] = state.eigen
+
 
     const [saveMatrix, setSaveMatrix] = useState()
 
@@ -158,7 +166,7 @@ const Canvas = props => {
                 grid(context, gridColour.minor, gridColour.major, 'green',mat)
         }
 
-        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(angle,scale)
+        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
         let mat = !switchMat ? (
             (matrix.new[matrix.change] !=='') ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
             : [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]] 
@@ -188,11 +196,11 @@ const Canvas = props => {
     let settingsProps = {}
     settingsProps.matrix = [matrix, setMatrix]
     settingsProps.vector = [vector, setVector]
-    settingsProps.angle = [angle, setAngle]
-    settingsProps.scale = [scale, setScale]
+    settingsProps.scaleAngle = [scaleAngle, setScaleAngle]
     settingsProps.switchMat = [switchMat, setSwitchMat]
     settingsProps.eigen = [showEigen, setShowEigen]
     settingsProps.setSaveMatrix = setSaveMatrix
+    settingsProps.type = 'main'
 
     const html = <>
         {!selection ? <SettingsBox {...settingsProps}/> : <></>}

@@ -87,7 +87,9 @@ const eigenVector = (ctx, transform) => {
     ctx.setTransform(1,0,0,1,width/2,height/2)
 }
 
-const calculateAngleMatrix = (angle, scale) => {
+const calculateAngleMatrix = (scaleAngle) => {
+    let scale = scaleAngle.scale
+    let angle = scaleAngle.angle
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
     let transform1 = Math.cos(angleRadX)*scale.x
@@ -99,15 +101,17 @@ const calculateAngleMatrix = (angle, scale) => {
 }
 
 const SettingsBox = props => {
-    const [[matrix, setMatrix], [vector, setVector], [angle, setAngle], [scale, setScale]] 
-        = [props.matrix, props.vector, props.angle, props.scale]
+    const [[matrix, setMatrix], [vector, setVector]] 
+        = [props.matrix, props.vector]
     const [switchMat, setSwitchMat] = props.switchMat
     const [showEigen, setShowEigen] = props.eigen
-    const setSaveMatrix = props.setSaveMatrix
+    const [scaleAngle, setScaleAngle] = props.scaleAngle
+    const type = props.type
+    const setSaveMatrix = type !== 'basic' ? props.setSaveMatrix : null
     let collapse = true
     //const [switchMat, setSwitchMat] = useState(false)
 
-    let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(angle,scale)
+    let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
 
     //const [switchMat, setSwitchMat] = useState(false)
 
@@ -119,7 +123,7 @@ const SettingsBox = props => {
 
     const quickSetAngle = (change, keep) => {
         const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
-        const current = angle[change]
+        const current = scaleAngle.angle[change]
         let newAngle = current
         if (setAngles.includes(current)) {
             let nextIndex = setAngles.indexOf(current)+1
@@ -130,8 +134,8 @@ const SettingsBox = props => {
                 return Math.abs(b - current) < Math.abs(a - current) ? b : a;
             });
         }
-        if (change==='x') setAngle({'x':newAngle, 'y':angle[keep]})
-        else setAngle({'y':newAngle, 'x':angle[keep]})
+        if (change==='x') setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle,'x':newAngle} } ))
+        else setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle, 'y':newAngle } } ) )
     }
 
     let [eigenVal1, eigenVal2, eigenVec1, eigenVec2] = calculateVectors(mat)
@@ -152,7 +156,7 @@ const SettingsBox = props => {
 
     const updateSave = (e) => {
         e.preventDefault()
-        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(angle, scale)
+        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
         let mat = (!switchMat) ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]]
             :[transform1, transform2, transform3, transform4]
         setSaveMatrix(mat)
@@ -191,54 +195,62 @@ const SettingsBox = props => {
                         {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
                     </p>
         
-                    <p>
+                    <div>
                         <p className='boxTitle'>
                             <button className='quickChange' 
                                 onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
                                     Angle X:</button>
-                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.x}</span></p>
-                        <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
-                    </p>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.angle.x}</span></p>
+                        <input type="range" min="-180" max="180" value={scaleAngle.angle.x} className="slider" id="myRange"
+                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle,'x':e.target.value} })) }/>
+                    </div>
                     
-                    <p className='boxTitle'>
+                    <div className='boxTitle'>
                         <p>
                             <button className='quickChange' 
                                 onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
                                     Angle Y:</button>
-                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.y}</span></p>
-                        <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
-                    </p>
-                    <p className='boxTitle'>
-                        <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.x}</span></p>
-                        <input type="range" min="-5" max="5" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
-                    </p>
-                    <p className='boxTitle'>
-                        <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.y}</span></p>
-                        <input type="range" min="-5" max="5" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
-                    </p>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.angle.y}</span></p>
+                        <input type="range" min="-180" max="180" value={scaleAngle.angle.y} className="slider" id="myRange"
+                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle,'y':e.target.value} })) }/>
+                    </div>
+                    <div className='boxTitle'>
+                        <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.scale.x}</span></p>
+                        <input type="range" min="-5" max="5" value={scaleAngle.scale.x} className="slider" id="myRange"
+                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'scale':{...prevState.scale,'x':e.target.value} } )) }/>
+                    </div>
+                    <div className='boxTitle'>
+                        <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.scale.y}</span></p>
+                        <input type="range" min="-5" max="5" value={scaleAngle.scale.y} className="slider" id="myRange"
+                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'scale':{...prevState.scale,'y':e.target.value} } )) }/>
+                    </div>
                 </div>
 
-                <p className='boxTitle'>Vector Input</p>
-                <p><input className='matrixInput' value={vector.x} 
-                        onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
-                <p><input className='matrixInput' value={vector.y} 
-                        onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
-                <p>
-                    <button className='quickChange' 
-                        onClick={e => {e.preventDefault(); setShowEigen(!showEigen)}}>
-                        {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
-                </p>
-                {
-                    showEigen ?
-                        <>
-                        <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
-                        <p className='matrixDisplay'>Value: {eigenVal2} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
-                        </>
-                    : <></>
+                { type!=='basic' ?
+                    <>
+                        <p className='boxTitle'>Vector Input</p>
+                        <p><input className='matrixInput' value={vector.x} 
+                                onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value} ))  }/></p>
+                        <p><input className='matrixInput' value={vector.y} 
+                                onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value} )) }/></p>
+                        <p>
+                            <button className='quickChange' 
+                                onClick={e => {e.preventDefault(); setShowEigen(!showEigen)}}>
+                                {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
+                        </p>
+                        {
+                            showEigen ?
+                                <>
+                                <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
+                                <p className='matrixDisplay'>Value: {eigenVal2} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
+                                </>
+                            : <></>
+                        }
+                            <button className='quickChange' 
+                                onClick={e => {updateSave(e)}}>
+                                Save</button>
+                    </> : <></>
                 }
-                    <button className='quickChange' 
-                        onClick={e => {updateSave(e)}}>
-                        Save</button>
                 <p>&nbsp;</p>
             </div>
         </div>
