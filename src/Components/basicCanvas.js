@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
-import SettingsBox, { calculateAngleMatrix, drawLineArrow } from "./canvasComponents";
+import SettingsBox, { calculateAngleMatrix, drawLineArrow, initaliseCanvas } from "./canvasComponents";
 
 const Basic = props => {
     const inherit = props.props
@@ -69,11 +69,7 @@ const Basic = props => {
             mat=[1,0,0,1],
             backgroundColour=gridProps.backgroundColour, 
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour}, ) => {
-                context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
-                context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
-                context.fillStyle = backgroundColour
-                context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
-                
+                initaliseCanvas(context, canvas, backgroundColour)                
                 grid(context, gridColour.major,mat)
         }
 

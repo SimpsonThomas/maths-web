@@ -51,7 +51,13 @@ const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='') =>
     ctx.closePath()
     ctx.restore()
     ctx.fill()
+}
 
+const initaliseCanvas = (context, canvas, background='white') => {
+    context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
+    context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
+    context.fillStyle = background
+    context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
 }
 
 const calculateVectors = (transform) => {
@@ -156,12 +162,19 @@ const SettingsBox = props => {
         setSaveMatrix(mat)
     }
 
+    const matrixInput = (position) =>{
+        return (
+            <input className='matrixInput'  type="number" value={matrix.new[position] } key={position+'matrixInput'}
+                onChange={e => updateMatrix(e, position)}/>
+        )
+    }
+
     return (
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
             <p className='boxTitle'>
-                Settings2
+                Settings
             </p>
-            <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
+            <div className={'settings ' + 'settingsOpen'}>
                 <label className="switch">
                     <input type="checkbox" checked={switchMat}
                         onChange={e=> setSwitchMat(e.target.checked)}/>
@@ -170,15 +183,13 @@ const SettingsBox = props => {
                 <div style={{display : !switchMat ? '' : 'none'}}s>
                     <p className='boxTitle'>Set Matrix</p>
                     <p>
-                        <input className='matrixInput'  type="number" value={matrix.new[1]} 
-                            onChange={e => updateMatrix(e, 1)}/>
-                        <input className='matrixInput' type="number"  value={matrix.new[2]}
-                            onChange={e => updateMatrix(e, 2)}/>
+                        {
+                            [1,2].map(pos => matrixInput(pos) )
+                        }
                     </p>
-                    <input className='matrixInput' type="number"  value={matrix.new[3]} 
-                        onChange={e => updateMatrix(e, 3)}/>
-                    <input className='matrixInput' type="number"  value={matrix.new[4]} 
-                        onChange={e => updateMatrix(e, 4)}/>
+                        {
+                            [3,4].map(pos => matrixInput(pos) )
+                        }
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
                     <p className='boxTitle'>Matrix</p>
@@ -251,6 +262,6 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow, calculateVectors, eigenVector, calculateAngleMatrix}
+export {drawLine, drawLineArrow, calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas}
 
 export default SettingsBox

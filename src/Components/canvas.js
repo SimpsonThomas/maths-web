@@ -1,24 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
-import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow} from "./canvasComponents";
+import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
 
 const Canvas = props => {
     const inherit = props.props
-    // creating state items 
 
-    /*const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
-    const [vector, setVector] = useState( {'x':0, 'y':0} ) 
-    const [scaleAngle, setScaleAngle] = useState( { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} } )
-    const [showEigen, setShowEigen] = useState(false)*/
 
+    // inheriting state values from App
     let state = inherit.state
-
     const [matrix, setMatrix] = state.matrix
     const [vector, setVector] = state.vector
     const [scaleAngle, setScaleAngle] = state.scaleAngle
     const [showEigen, setShowEigen] = state.eigen
 
-
+    // creating local state values
     const [saveMatrix, setSaveMatrix] = useState()
 
     const smallCanvasRef = useRef(null)
@@ -35,7 +30,7 @@ const Canvas = props => {
         vectorColour: 'green'
     }
 
-    const selection = inherit.selection
+    const selection = inherit.selection // are we in the selection window?
 
     const eigenVector = (ctx, transform) => {
         const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
@@ -46,9 +41,7 @@ const Canvas = props => {
     
         let gridSize = gridProps.size
         drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'blue', transform)
-        //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
         drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'blue', transform)
-        //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -71,12 +64,12 @@ const Canvas = props => {
             // x gridlines
             drawLine(ctx, {x:-50*width,y:i*gridSize}, {x:50*width,y:i*gridSize}, colour, transform, lineWidth)
             drawLine(ctx, {x:-50*width,y:-i*gridSize}, {x:50*width,y:-i*gridSize}, colour,transform, lineWidth)
-
             // y gridlines
             drawLine(ctx, {y:-50*height,x:i*gridSize}, {y:50*height,x:i*gridSize}, colour,transform, lineWidth)
             drawLine(ctx, {y:-50*height,x:-i*gridSize}, {y:50*height,x:-i*gridSize}, colour,transform, lineWidth)
         }
 
+        // draw the vector
         drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform, 2)
         ctx.restore()
     }
@@ -86,7 +79,7 @@ const Canvas = props => {
         ctx.fillRect(0,0,gridProps.size+1, gridProps.size+1)
     }*/
 
-    const [windowSize, setWindowSize] = useState({
+    const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
         width: undefined,
         height: undefined,
         oldSize: undefined,
@@ -105,19 +98,17 @@ const Canvas = props => {
 
         const smallCanvas = smallCanvasRef.current
         const smallContext = smallCanvas.getContext('2d')
+        smallCanvas.style.width ='100%';
+        smallCanvas.style.height='100%';
+        smallCanvas.width  = smallCanvas.offsetWidth;
+        smallCanvas.height = smallCanvas.offsetHeight;
 
         const mainCanvas = mainCanvasRef.current
         const mainContext = mainCanvas.getContext('2d')
-
-        
-        smallCanvas.style.width ='100%';
-        smallCanvas.style.height='100%';
-
+        // max out height
         mainCanvas.style.width ='100%';
         mainCanvas.style.height='100%';
         // ...then set the internal size to match
-        smallCanvas.width  = smallCanvas.offsetWidth;
-        smallCanvas.height = smallCanvas.offsetHeight;
         mainCanvas.width  = mainCanvas.offsetWidth;
         mainCanvas.height = mainCanvas.offsetHeight;
 
@@ -125,21 +116,24 @@ const Canvas = props => {
         let animationFrameId
 
         const animate = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1]) => {
-            context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
-            
-            context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
-            context.fillStyle = gridProps.backgroundColour
-            context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
+            // animating the changes in the matrix
+
+            // initialising the canvas
+            initaliseCanvas(context, canvas, gridProps.backgroundColour)
 
             frameCount++
+
             let position = matrix.change
             let [newVal, oldVal] = [parseInt(matrix.new[position]), parseInt(matrix.old[position])]
             let change = newVal-oldVal
+
             let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
+
             mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
+
             grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
+
             if (showEigen) eigenVector(context,mat)
-            
             if (frameCount===5) {
                 setMatrix({
                     old: matrix.old,
@@ -156,10 +150,7 @@ const Canvas = props => {
             mat=[1,0,0,1],
             backgroundColour=gridProps.backgroundColour, 
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour}, ) => {
-                context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
-                context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
-                context.fillStyle = backgroundColour
-                context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
+                initaliseCanvas(context, canvas, backgroundColour)
                 
                 grid(context, gridColour.minor, gridColour.major, 'green',mat)
                 if (showEigen) eigenVector(context,mat)
