@@ -7,7 +7,7 @@ const App = props => {
   const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
   const [vector, setVector] = useState( {'x':0, 'y':0} ) 
   const [scaleAngle, setScaleAngle] = useState( { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} } )
-  const [showEigen, setShowEigen] = useState(false)
+  const [showEigen, setShowEigen] = useState(true)
 
   let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
 
@@ -15,7 +15,7 @@ const App = props => {
 
   let selectionProps = {background:'white',major:'red',minor:'black', selection:true, state: canvasState}
 
-  const [activity, setActivity] = useState({set:'Main', selection: true})
+  const [activity, setActivity] = useState({set:'Initial', selection: false})
 
   const selectActivty = (e, type, select=false) => {
     e.preventDefault()

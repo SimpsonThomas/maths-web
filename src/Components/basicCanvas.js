@@ -92,9 +92,7 @@ const Basic = props => {
         //eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    //const [collapse, setCollapse] = useState(true) // set to true for testing purposes
     //const [showSlide, setShowSlide] = useState(false)
-    let collapse = true
     const [switchMat, setSwitchMat] = useState(false)
 
     const [showHelp, setShowHelp] = useState(true)

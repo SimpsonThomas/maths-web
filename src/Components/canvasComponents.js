@@ -109,14 +109,8 @@ const SettingsBox = props => {
     const type = props.type
     const setSaveMatrix = type !== 'basic' ? props.setSaveMatrix : null
     let collapse = true
-    //const [switchMat, setSwitchMat] = useState(false)
 
     let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
-
-    //const [switchMat, setSwitchMat] = useState(false)
-
-    //const [showHelp, setShowHelp] = useState(true)
-    //const [showEigen, setShowEigenp] = useState(false)
 
     let mat = !switchMat ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
         : [transform1, transform2, transform3, transform4] 
@@ -235,7 +229,7 @@ const SettingsBox = props => {
                                 onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value} )) }/></p>
                         <p>
                             <button className='quickChange' 
-                                onClick={e => {e.preventDefault(); setShowEigen(!showEigen)}}>
+                                onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>
                                 {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
                         </p>
                         {

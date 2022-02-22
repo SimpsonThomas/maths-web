@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { isCompositeComponentWithType } from "react-dom/cjs/react-dom-test-utils.production.min";
 import './canvas.css'
 import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow} from "./canvasComponents";
 
@@ -94,7 +93,6 @@ const Canvas = props => {
     })
 
     useEffect( () => {
-        //console.log(matrix)
         function handleResize() {
             setWindowSize({
                 width: window.innerWidth,
@@ -140,7 +138,7 @@ const Canvas = props => {
             let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
             mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
             grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
-            //if (showEigen) eigenVector(context,mat)
+            if (showEigen) eigenVector(context,mat)
             
             if (frameCount===5) {
                 setMatrix({
@@ -164,6 +162,7 @@ const Canvas = props => {
                 context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
                 
                 grid(context, gridColour.minor, gridColour.major, 'green',mat)
+                if (showEigen) eigenVector(context,mat)
         }
 
         let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
@@ -176,7 +175,6 @@ const Canvas = props => {
 
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
             animate(mainContext, mainCanvas)
-            
         }
         else {
             render(mainContext, mainCanvas, mat)
