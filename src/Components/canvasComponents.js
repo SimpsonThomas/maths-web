@@ -162,10 +162,17 @@ const SettingsBox = props => {
         setSaveMatrix(mat)
     }
 
-    const matrixInput = (position) =>{
+    const numberInput = (position) =>{
         return (
             <input className='matrixInput'  type="number" value={matrix.new[position] } key={position+'matrixInput'}
                 onChange={e => updateMatrix(e, position)}/>
+        )
+    }
+
+    const angleScaleInput = (type, axis, range) => {
+        return (
+            <input type="range" min={-range} max={range} value={scaleAngle[type][axis]} className="slider" id="myRange"
+                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value} })) }/>
         )
     }
 
@@ -184,11 +191,11 @@ const SettingsBox = props => {
                     <p className='boxTitle'>Set Matrix</p>
                     <p>
                         {
-                            [1,2].map(pos => matrixInput(pos) )
+                            [1,2].map(pos => numberInput(pos) )
                         }
                     </p>
                         {
-                            [3,4].map(pos => matrixInput(pos) )
+                            [3,4].map(pos => numberInput(pos) )
                         }
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
@@ -206,8 +213,7 @@ const SettingsBox = props => {
                                 onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
                                     Angle X:</button>
                              &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.angle.x}</span></p>
-                        <input type="range" min="-180" max="180" value={scaleAngle.angle.x} className="slider" id="myRange"
-                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle,'x':e.target.value} })) }/>
+                        {angleScaleInput('angle', 'x', 180)}
                     </div>
                     
                     <div className='boxTitle'>
@@ -216,18 +222,15 @@ const SettingsBox = props => {
                                 onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
                                     Angle Y:</button>
                              &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.angle.y}</span></p>
-                        <input type="range" min="-180" max="180" value={scaleAngle.angle.y} className="slider" id="myRange"
-                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle,'y':e.target.value} })) }/>
+                        {angleScaleInput('angle', 'y', 180)}
                     </div>
                     <div className='boxTitle'>
                         <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.scale.x}</span></p>
-                        <input type="range" min="-5" max="5" value={scaleAngle.scale.x} className="slider" id="myRange"
-                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'scale':{...prevState.scale,'x':e.target.value} } )) }/>
+                        {angleScaleInput('scale', 'x', 5)}
                     </div>
                     <div className='boxTitle'>
                         <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.scale.y}</span></p>
-                        <input type="range" min="-5" max="5" value={scaleAngle.scale.y} className="slider" id="myRange"
-                            onChange={e => setScaleAngle(prevState => ( { ...prevState, 'scale':{...prevState.scale,'y':e.target.value} } )) }/>
+                        {angleScaleInput('scale', 'y', 5)}
                     </div>
                 </div>
 

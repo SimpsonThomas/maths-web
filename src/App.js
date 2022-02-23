@@ -2,6 +2,7 @@ import './App.css';
 import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
 import React, { useState } from "react";
+import Tasks from './Components/Tasks';
 
 const App = props => {
   const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
@@ -15,7 +16,7 @@ const App = props => {
 
   let selectionProps = {background:'white',major:'red',minor:'black', selection:true, state: canvasState}
 
-  const [activity, setActivity] = useState({set:'Initial', selection: false})
+  const [activity, setActivity] = useState({set:'Tasks', selection: false})
 
   const selectActivty = (e, type, select=false) => {
     e.preventDefault()
@@ -46,6 +47,7 @@ const App = props => {
   const activities = {
     'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator'},
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Main free play calculator'},
+    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Complete taks'},
   }
 
   return (
