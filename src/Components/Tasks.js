@@ -14,6 +14,8 @@ const Tasks = props => {
     const [scaleAngle, setScaleAngle] = state.scaleAngle
     const [showEigen, setShowEigen] = state.eigen
 
+    
+
     // creating local state values
     const [saveMatrix, setSaveMatrix] = useState()
     //const [zoom, setZoom] = useState({zoom:1, time:Date.now()})
@@ -225,7 +227,19 @@ const Tasks = props => {
     settingsProps.type = 'main'
 
     const html = <>
-        {!selection ? <SettingsBox {...settingsProps}/> : <></>}
+        {!selection ? 
+            <div className={'matrixBox ' + 'boxOpen'}>
+                <p className='boxTitle'>
+                    Input Vector
+                </p>
+                <p style={{color:'white'}}>Input test vectors here to match the test vector</p>
+                <p><input className='matrixInput' value={vector.x} 
+                        onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value} ))  }/></p>
+                <p><input className='matrixInput' value={vector.y} 
+                        onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value} ))  }/></p>
+                    <p>&nbsp;</p>
+            </div>
+            : <></>}
         <div className='canvas1'>
             <canvas ref={canvas1Ref} {...props}/>
         </div>
