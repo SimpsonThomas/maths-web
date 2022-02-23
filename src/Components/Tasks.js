@@ -16,7 +16,7 @@ const Tasks = props => {
 
     // creating local state values
     const [saveMatrix, setSaveMatrix] = useState()
-    const [zoom, setZoom] = useState(1)
+    //const [zoom, setZoom] = useState({zoom:1, time:Date.now()})
 
     const canvas1Ref = useRef(null)
     const canvas2Ref = useRef(null)
@@ -114,35 +114,38 @@ const Tasks = props => {
         let animationFrameId
         
 
-        const canvasOnWheel = (event, canvas=canvas1, context=context1)=>{
+        /*const canvasOnWheel = (event, canvas=canvas1, context=context1)=>{
+            console.log(zoom.time)
             event.preventDefault()
-            console.log(zoom)
-            var scale = 1;
-            var originx = 0;
-            var originy = 0;
-            var mousex = event.clientX - canvas.offsetLeft;
-            var mousey = event.clientY - canvas.offsetTop;
-            var wheel = event.wheelDelta/120;//n or -n
-        
-            var newZoom = 1 + wheel/100;
-
-            //setZoom(zoom*newZoom)
-            /*context.translate(
-                originx,
-                originy
-            );
-            context.scale(zoom,zoom);
-            context.translate(
-                -( mousex / scale + originx - mousex / ( scale * zoom ) ),
-                -( mousey / scale + originy - mousey / ( scale * zoom ) )
-            );
-        
-            originx = ( mousex / scale + originx - mousex / ( scale * zoom ) );
-            originy = ( mousey / scale + originy - mousey / ( scale * zoom ) );
-            scale *= zoom;*/
+            let now = Date.now()
+            console.log(now-zoom.time < 1000)
+            if (now-zoom.time < 1000) return
+            else {
+                console.log('Heres')
+                var scale = 1;
+                var originx = 0;
+                var originy = 0;
+                var mousex = event.clientX - canvas.offsetLeft;
+                var mousey = event.clientY - canvas.offsetTop;
+                var wheel = event.wheelDelta/120;//n or -n
+                setZoom({zoom:zoom.zoom + wheel/100, time:now})
+                /*context.translate(
+                    originx,
+                    originy
+                );
+                context.scale(zoom,zoom);
+                context.translate(
+                    -( mousex / scale + originx - mousex / ( scale * zoom ) ),
+                    -( mousey / scale + originy - mousey / ( scale * zoom ) )
+                );
+            
+                originx = ( mousex / scale + originx - mousex / ( scale * zoom ) );
+                originy = ( mousey / scale + originy - mousey / ( scale * zoom ) );
+                scale *= zoom;
+            }
         }
 
-        //canvas1.addEventListener('wheel', canvasOnWheel)
+        canvas1.addEventListener('wheel', canvasOnWheel)*/
 
         const animate = (context=context2, canvas=canvas2, transformMat=[1,0,0,1]) => {
             // animating the changes in the matrix
@@ -192,7 +195,7 @@ const Tasks = props => {
             )
             : [transform1, transform2, transform3, transform4]
         
-        mat = mat.map(x => x*zoom)
+        //mat = mat.map(x => x*zoom.zoom) zoom stuff
 
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
             animate(context1, canvas1)
