@@ -238,9 +238,9 @@ const SettingsBox = props => {
                     <>
                         <p className='boxTitle'>Vector Input</p>
                         <p><input className='matrixInput' value={vector.x} 
-                                onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value} ))  }/></p>
+                                onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value, 'old':prevVec.old, 'change':'x' } ))  }/></p>
                         <p><input className='matrixInput' value={vector.y} 
-                                onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value} )) }/></p>
+                                onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value, 'old':prevVec.old, 'change':'y' } )) }/></p>
                         <p>
                             <button className='quickChange' 
                                 onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>

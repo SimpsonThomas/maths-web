@@ -115,7 +115,7 @@ const Canvas = props => {
         let frameCount = 0
         let animationFrameId
 
-        const animate = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1]) => {
+        const animateMat = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1]) => {
             // animating the changes in the matrix
 
             // initialising the canvas
@@ -141,7 +141,7 @@ const Canvas = props => {
                     change:'done'
                 })
             }
-            animationFrameId = window.requestAnimationFrame(() => {animate(context, canvas)})
+            animationFrameId = window.requestAnimationFrame(() => {animateMat(context, canvas)})
         }
 
         const render = (
@@ -165,7 +165,7 @@ const Canvas = props => {
 
 
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
-            animate(mainContext, mainCanvas)
+            animateMat(mainContext, mainCanvas)
         }
         else {
             render(mainContext, mainCanvas, mat)

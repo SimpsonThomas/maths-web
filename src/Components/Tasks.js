@@ -1,23 +1,63 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import './canvas.css'
 import './tasks.css'
 import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
 
 const Tasks = props => {
-    const inherit = props.props
+    const inherit = props.props.state
+    //const [matrix, setMatrix] = state.matrix
+    //const [vector, setVector] = state.vector
+    const [scaleAngle, setScaleAngle] = inherit.scaleAngle
+    const [showEigen, setShowEigen] = inherit.eigen
+    // creating local state values
+    //const [saveMatrix, setSaveMatrix] = useState()
+    const [currentTask, setCurrentTask] = useState(1)
+    //const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
+    //const [vector, setVector] = useState( {'new':{'x':5, 'y':5}, old:{'x':0,'y':0}, 'change': 'done'} ) 
 
-
-    // inheriting state values from App
-    let state = inherit.state
-    const [matrix, setMatrix] = state.matrix
-    const [vector, setVector] = state.vector
-    const [scaleAngle, setScaleAngle] = state.scaleAngle
-    const [showEigen, setShowEigen] = state.eigen
+    // tasks
+    const tasks = {
+        1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5},},
+        2 : {type:'vec', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':5,'y':1}, endVec: {'x':5,'y':5},},
+        3 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':5,'y':1}, endVec: {'x':5,'y':5},},
+        4 : {type:'vec', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':5}, endVec: {'x':5,'y':5},},
+    }
 
     
 
-    // creating local state values
-    const [saveMatrix, setSaveMatrix] = useState()
+    let initialState = {
+        matrixStart: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
+        matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
+        vecStart:{...tasks[1].startVec, old:tasks[1].startVec, change:'done'},
+        vecEnd:{...tasks[1].endVec, old:tasks[1].endVec, change:'done'},
+       // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
+       // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
+        currentTask:1,
+    }
+
+    const reducer = (state, action) => {
+        switch (action.type) {
+            case 'matrix':
+                return {...state, matrixStart: {...action.data}}
+            case 'vector':
+                return {...state, vectorStart: {...action.data}}
+            case 'task':
+                let nextTaskNo = state.currentTask+1
+                let nextTask = tasks[nextTaskNo]
+                if ((Object.keys(tasks).includes(nextTaskNo))) console.log('here')
+                else {
+                    switch (nextTask.type) {
+                        case 'mat':
+                            return {...state, currentTask:nextTaskNo, matrix:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'}}
+                        case 'vec':
+                            return {...state,currentTask:nextTaskNo, vector:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'}}
+                    }
+                }
+        }
+        return {...state}
+    }
+
+    const [state, updateState] = useReducer(reducer, initialState)
     //const [zoom, setZoom] = useState({zoom:1, time:Date.now()})
 
     const canvas1Ref = useRef(null)
@@ -54,12 +94,11 @@ const Tasks = props => {
         colourMajor=gridProps.majorAxColour,
         colourVector=gridProps.vectorColour,
         transform=[1,0,0,1],
-        disVector=vector) => { // creating the grid
+        disVector=state.vecStart) => { // creating the grid
         let gridSize = gridProps.size
         let width = ctx.canvas.width
         let height = ctx.canvas.height    
         ctx.save()
-
         for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
             let colour = i%5 ===0 ? colourMinor : 'grey'
             colour = i===0 ? colourMajor : colour
@@ -114,44 +153,9 @@ const Tasks = props => {
 
         let frameCount = 0
         let animationFrameId
-        
 
-        /*const canvasOnWheel = (event, canvas=canvas1, context=context1)=>{
-            console.log(zoom.time)
-            event.preventDefault()
-            let now = Date.now()
-            console.log(now-zoom.time < 1000)
-            if (now-zoom.time < 1000) return
-            else {
-                console.log('Heres')
-                var scale = 1;
-                var originx = 0;
-                var originy = 0;
-                var mousex = event.clientX - canvas.offsetLeft;
-                var mousey = event.clientY - canvas.offsetTop;
-                var wheel = event.wheelDelta/120;//n or -n
-                setZoom({zoom:zoom.zoom + wheel/100, time:now})
-                /*context.translate(
-                    originx,
-                    originy
-                );
-                context.scale(zoom,zoom);
-                context.translate(
-                    -( mousex / scale + originx - mousex / ( scale * zoom ) ),
-                    -( mousey / scale + originy - mousey / ( scale * zoom ) )
-                );
-            
-                originx = ( mousex / scale + originx - mousex / ( scale * zoom ) );
-                originy = ( mousey / scale + originy - mousey / ( scale * zoom ) );
-                scale *= zoom;
-            }
-        }
-
-        canvas1.addEventListener('wheel', canvasOnWheel)*/
-
-        const animate = (context=context2, canvas=canvas2, transformMat=[1,0,0,1]) => {
+        const animate = (context=context2, canvas=canvas2, matrix, vec) => {
             // animating the changes in the matrix
-
             // initialising the canvas
             initaliseCanvas(context, canvas, gridProps.backgroundColour)
 
@@ -161,52 +165,51 @@ const Tasks = props => {
             let [newVal, oldVal] = [parseInt(matrix.new[position]), parseInt(matrix.old[position])]
             let change = newVal-oldVal
 
-            let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
-            mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
+            let mat = [matrix.old[0],matrix.old[1],matrix.old[2],matrix.old[3]]
+            mat[position] = parseInt(mat[position])+(change/5)*frameCount
 
-            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
+            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat, vec.new)
 
-            if (showEigen) eigenVector(context,mat)
+            //if (showEigen) eigenVector(context,mat)
             if (frameCount===5) {
-                setMatrix({
-                    old: matrix.old,
-                    new:matrix.new,
-                    change:'done'
+                updateState({
+                    type: 'matrix',
+                    data:{
+                        new: matrix.new,
+                        old: matrix.new,
+                        change: 'done',
+                    }
                 })
             }
-            animationFrameId = window.requestAnimationFrame(() => {animate(context, canvas)})
+            animationFrameId = window.requestAnimationFrame(() => {animate(context, canvas, matrix, vec)})
         }
 
         const render = (
             context, 
             canvas, 
             mat=[1,0,0,1],
+            disVector={'x':0,'y':0},
             backgroundColour=gridProps.backgroundColour, 
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour}, 
-            disVector=vector) => {
+            ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
-                
                 grid(context, gridColour.minor, gridColour.major, 'green',mat, disVector)
-                if (showEigen) eigenVector(context,mat)
+                //if (showEigen) eigenVector(context,mat)
         }
 
-        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
-        let mat = !switchMat ? (
-            (matrix.new[matrix.change] !=='') ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
-            : [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]] 
-            )
-            : [transform1, transform2, transform3, transform4]
-        
-        //mat = mat.map(x => x*zoom.zoom) zoom stuff
+        let matrix = state.matrixStart
 
-        if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
-            animate(context1, canvas1)
+        let mat = (matrix.new[matrix.change] !=='') ? matrix.new
+            : matrix.old
+
+        if (matrix.change !== 'done' && matrix.new[matrix.change]!=='') {
+            animate(context1, canvas1, matrix, state.vecStart)
         }
         else {
-            render(context1, canvas1, mat)
+            render(context1, canvas1, mat, state.vecStart)
         }
 
-        render(context2, canvas2,saveMatrix, 'black', {minor:'white',major:'white'}, {'x':10,'y':20})
+        render(context2, canvas2,state.matrixEnd, state.vecEnd, 'black', {minor:'white',major:'white'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
@@ -214,30 +217,80 @@ const Tasks = props => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    const [switchMat, setSwitchMat] = useState(false)
+    //const [switchMat, setSwitchMat] = useState(false)
     const [showHelp, setShowHelp] = useState(false)
 
-    let settingsProps = {}
-    settingsProps.matrix = [matrix, setMatrix]
-    settingsProps.vector = [vector, setVector]
-    settingsProps.scaleAngle = [scaleAngle, setScaleAngle]
-    settingsProps.switchMat = [switchMat, setSwitchMat]
-    settingsProps.eigen = [showEigen, setShowEigen]
-    settingsProps.setSaveMatrix = setSaveMatrix
-    settingsProps.type = 'main'
+    const updateMatrix = (e, pos) => {
+        e.preventDefault()
+        let value = e.target.value
+        let position = pos-1
+        let matrix = state.matrixStart
+        let oldMatrix = [matrix.new[0],matrix.new[1],matrix.new[2],matrix.new[3]]
+        oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
+        let newMatrix = state.matrixStart.new
+        newMatrix[position] = value
+        /*setMatrix({
+            'old' : oldMatrix,
+            'new' : newMatrix,
+            'change' : position
+        })*/
+
+        updateState({
+            type: 'matrix',
+            data:{
+                new: newMatrix,
+                old: oldMatrix,
+                change: position,
+            }
+        })
+    }
+
+    const numberInput = (position) =>{
+        return (
+            <input className='matrixInput'  type="number" value={state.matrixStart.new[position-1] } key={position+'matrixInput'}
+                onChange={e => updateMatrix(e, position)}/>
+        )
+    }
+
+    const nextTask = (e) => {
+        e.preventDefault()
+        updateState({type:'task'})
+    }
 
     const html = <>
         {!selection ? 
             <div className={'matrixBox ' + 'boxOpen'}>
-                <p className='boxTitle'>
-                    Input Vector
-                </p>
-                <p style={{color:'white'}}>Input test vectors here to match the test vector</p>
-                <p><input className='matrixInput' value={vector.x} 
-                        onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value} ))  }/></p>
-                <p><input className='matrixInput' value={vector.y} 
-                        onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value} ))  }/></p>
-                    <p>&nbsp;</p>
+                { (tasks[currentTask].type ==='vec') ?
+                    <>
+                        <p className='boxTitle'>
+                            Input Vector
+                        </p>
+                        <p style={{color:'white'}}>Input test vectors here to match the test vector</p>
+                        <p><input className='matrixInput' value={state.vectorStart.x} 
+                                onChange={e => updateState({type:'vec', data:{'x':e.target.value}})   }/></p>
+                        <p><input className='matrixInput' value={state.vectorStart.y} 
+                                onChange={e => updateState({type:'vec', data:{'x':e.target.value}})    }/></p>
+                            <p>&nbsp;</p>
+                    </>
+                    : 
+                    <>
+                        <p className='boxTitle'>Set Matrix</p>
+                        <p style={{color:'white'}}>Try changing the matrix to match the vectors</p>                        
+                        <p>
+                            {
+                                [1,2].map(pos => numberInput(pos) )
+                            }
+                        </p>
+                            {
+                                [3,4].map(pos => numberInput(pos) )
+                            }
+                    </>
+                }
+                <p></p>
+                <button className='quickChange' 
+                    onClick={e => {nextTask(e)}}>
+                    Next Task</button>
+                <p>&nbsp;</p>
             </div>
             : <></>}
         <div className='canvas1'>

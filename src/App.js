@@ -6,7 +6,7 @@ import Tasks from './Components/Tasks';
 
 const App = props => {
   const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
-  const [vector, setVector] = useState( {'x':0, 'y':0} ) 
+  const [vector, setVector] = useState( {'x':0, 'y':0, old:{'x':0,'y':0}, 'change': 'done'} ) 
   const [scaleAngle, setScaleAngle] = useState( { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} } )
   const [showEigen, setShowEigen] = useState(true)
 
