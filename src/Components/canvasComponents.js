@@ -2,7 +2,21 @@
 import './canvas.css'
 import { gridProps } from './props'
 
-const drawLine = (ctx, start, end, colour, transform=[1,0,0,1],width=1) => { // drawing a line
+const drawLine = (ctx, start, end, colour='red', transform=[1,0,0,1],width=1) => { // drawing a line
+    //let width = ctx.canvas.width
+    //let height = ctx.canvas.height 
+    ctx.beginPath()
+    ctx.strokeStyle = colour
+    ctx.lineWidth = width
+    ctx.save()
+    //ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
+    ctx.moveTo(start.x, start.y, start.z)
+    ctx.lineTo(end.x, end.y, end.z)
+    ctx.restore()
+    ctx.stroke()
+}
+
+const drawLine3D = (ctx, start, end, colour, transform=[1,0,0,1],width=1) => { // drawing a line
     //let width = ctx.canvas.width
     //let height = ctx.canvas.height 
     ctx.beginPath()
@@ -104,6 +118,22 @@ const calculateAngleMatrix = (scaleAngle) => {
     let transform4 = Math.cos(angleRadY)*scale.y
 
     return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
+}
+
+const matVecMult = (mat, vec) => {
+    let [a,b,c,d] = mat.map(x => parseInt(x))
+    let [x, y] = [vec.x, vec.y].map(i => parseInt(i))
+    let x_new = x*a+x*c
+    let y_new = y*b+y*d
+    return ({'x':x_new, 'y':y_new})
+}
+
+const checkSolve = (mat, endMat, vec, endVec) => {
+    let startReal = matVecMult(mat,vec)
+    let endReal = matVecMult(endMat,endVec)
+    let x_solve = (startReal.x === endReal.x) ? true : false
+    let y_solve = (startReal.y === endReal.y) ? true : false
+    return {'x':x_solve, 'y':y_solve}
 }
 
 const SettingsBox = props => {
@@ -265,6 +295,6 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow, calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas}
+export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve}
 
 export default SettingsBox
