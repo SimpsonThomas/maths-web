@@ -8,3 +8,7 @@
     height: 100%;
     float:left
 }
+
+.matrixInput:disabled {
+    border-color: red
+}

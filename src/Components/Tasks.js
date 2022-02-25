@@ -1,29 +1,28 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import './canvas.css'
 import './tasks.css'
-import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
+import SettingsBox, {calculateAngleMatrix, calculateVectors, checkSolve, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
 
 const Tasks = props => {
-    const inherit = props.props.state
-    //const [matrix, setMatrix] = state.matrix
-    //const [vector, setVector] = state.vector
-    const [scaleAngle, setScaleAngle] = inherit.scaleAngle
-    const [showEigen, setShowEigen] = inherit.eigen
-    // creating local state values
-    //const [saveMatrix, setSaveMatrix] = useState()
-    const [currentTask, setCurrentTask] = useState(1)
-    //const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
-    //const [vector, setVector] = useState( {'new':{'x':5, 'y':5}, old:{'x':0,'y':0}, 'change': 'done'} ) 
+    const inherit = props.props
+    //const [scaleAngle, setScaleAngle] = inherit.scaleAngle
+    //const [showEigen, setShowEigen] = inherit.eigen
 
     // tasks
     const tasks = {
-        1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5},},
-        2 : {type:'vec', startMat: [2,0,1,1], endMat: [1,0,0,1], startVec: {'x':5,'y':5}, endVec: {'x':1,'y':5},},
-        3 : {type:'mat', startMat: [3,0,0,1], endMat: [1,0,0,1], startVec: {'x':-5,'y':1}, endVec: {'x':-5,'y':5},},
-        4 : {type:'vec', startMat: [4,2,1,1], endMat: [1,0,0,1], startVec: {'x':1,'y':-5}, endVec: {'x':5,'y':-5},},
+        1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5}, 
+            description: 'Can you scale the vector to match? ',
+            endCard: 'Congratualations! Well done on completing the first task'},
+        2 : {type:'vec', startMat: [2,1,1,2], endMat: [1,0,0,1], startVec: {'x':5,'y':5}, endVec: {'x':5,'y':5},
+            description: 'Can you figure out the matrix to map this vector ',
+            endCard: ''},
+        3 : {type:'mat', startMat: [3,0,0,1], endMat: [1,0,0,1], startVec: {'x':-5,'y':1}, endVec: {'x':-5,'y':5}, 
+            description: 'Can you figure out the matrix to map this vector ',
+            endCard: ''},
+        4 : {type:'vec', startMat: [4,2,1,1], endMat: [1,0,0,1], startVec: {'x':1,'y':-5}, endVec: {'x':5,'y':-5}, 
+            description: 'Can you figure out the matrix to map this vector ',
+            endCard: ''},
     }
-
-    
 
     let initialState = {
         matrixStart: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
@@ -32,26 +31,32 @@ const Tasks = props => {
         vecEnd:{...tasks[1].endVec, 'old':tasks[1].endVec, 'change':'done'},
        // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
        // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
-        currentTask:{num:1, type:'mat'},
+        currentTask:{num:1, type:tasks[1].type, description:tasks[1].description},
+        solve: {'x':false, 'y':false}
     }
 
     const reducer = (state, action) => {
+        let vec_start = {'x':state.vecStart.x,'y':state.vecStart.y}
+        let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
+        let solve = checkSolve(state.matrixStart.new, state.matrixEnd.new, vec_start, vec_end)
+        console.log(solve)
         switch (action.type) {
             case 'matrix':
-                return {...state, matrixStart: {...action.data}}
+                return {...state, matrixStart: {...action.data}, solve:solve}
             case 'vector':
-                return {...state, vecStart: {...state.vecStart,...action.data}}
+                return {...state, vecStart: {...state.vecStart,...action.data}, solve:solve}
             case 'task':
                 let nextTaskNo = state.currentTask.num+1
                 if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
                 let nextTask = tasks[nextTaskNo]
                 return {
                     ...state,
-                    currentTask:{num:nextTaskNo,type:'mat'},
+                    currentTask:{num:nextTaskNo,type:nextTask.type, description:nextTask.description},
                     matrixStart:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
                     matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
                     vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
                     vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
+                    solve:{'x':false,'y':false}
                 }
                 
         }
@@ -205,7 +210,7 @@ const Tasks = props => {
     })
 
     //const [switchMat, setSwitchMat] = useState(false)
-    const [showHelp, setShowHelp] = useState(false)
+    const [showHelp, setShowHelp] = useState(true)
 
     const updateMatrix = (e, pos) => {
         e.preventDefault()
@@ -228,7 +233,7 @@ const Tasks = props => {
 
     const numberInput = (position) =>{
         return (
-            <input className='matrixInput'  type="number" value={state.matrixStart.new[position-1] } key={position+'matrixInput'}
+            <input className='matrixInput'  type="number" value={state.matrixStart.new[position-1] } disabled={vec ? 'disabled':''} key={position+'matrixInput'}
                 onChange={e => updateMatrix(e, position)}/>
         )
     }
@@ -255,26 +260,27 @@ const Tasks = props => {
         })
     }
 
+    const vec = state.currentTask.type==='vec'
+    console.log(selection)
+
     const html = <>
         {!selection ? 
             <div className={'matrixBox ' + 'boxOpen'}>
-                <p>{state.currentTask.num}</p>
-                { state.currentTask.type ==='vec' ?
+                <p className='boxTitle'>Current Task: {state.currentTask.num}</p>
+                <p style={{color:'white'}}>{state.currentTask.description}</p>
                     <>
                         <p className='boxTitle'>
                             Input Vector
                         </p>
-                        <p style={{color:'white'}}>Input test vectors here to match the test vector</p>
-                        <p><input className='matrixInput' value={state.vecStart.x} 
+                        <p style={{color:'white'}}>{vec ? 'Input test vectors here to match the test vector' : 'Currently set vector'}</p>
+                        <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
                                 onChange={e => updateVec(e, 'x') }/></p>
-                        <p><input className='matrixInput' value={state.vecStart.y} 
+                        <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
                                 onChange={e => updateVec(e, 'y') }/></p>
-                            <p>&nbsp;</p>
                     </>
-                    : 
                     <>
                         <p className='boxTitle'>Set Matrix</p>
-                        <p style={{color:'white'}}>Try changing the matrix to match the vectors</p>                        
+                        <p style={{color:'white'}}>{!vec ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
                         <p>
                             {
                                 [1,2].map(pos => numberInput(pos) )
@@ -284,7 +290,7 @@ const Tasks = props => {
                                 [3,4].map(pos => numberInput(pos) )
                             }
                     </>
-                }
+                    <p>&nbsp;</p>
                 <p></p>
                 <button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
@@ -298,14 +304,24 @@ const Tasks = props => {
         <div className='canvas2'>
             <canvas ref={canvas2Ref} {...props}/>
         </div>
-      {showHelp ?
+        {state.solve.x && state.solve.y  && !selection ?
             <div className='help'>
-                <h3>Grid view</h3>
-                <p> Now you've played around with the basis vector view we can now look 
-                    at the grid view</p>
-                <p>Here you can see the whole set of grid lines</p>
-                <p>And again adjust the whole grid via the matrix set or the sliders (by clicking the angle buttons you can quickly change to set angles)</p>
-                <p>But you can also set a vector and see how it gets translated</p>
+                <h3>Well done you have completed this task</h3>
+                <p>{state.currentTask.description}</p>
+                <p> Now you can take on the next one! </p>
+                <button className='hideHelp' 
+                    onClick={e => {nextTask(e)}}>
+                    Next</button>
+            </div> 
+        : <></>
+        }
+    
+      {showHelp && !selection ?
+            <div className='help'>
+                <h3>Tasks</h3>
+                <p>Here you get to play around with vectors and matrices to get them to match</p>
+                <p>Adjust either the matrix or vector to solve the task</p>
+                <p>The aim is to get the two vectors to match</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
                 </button>
