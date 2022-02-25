@@ -1,0 +1,24 @@
+.canvas1 {
+    width: 50%;
+    height: 100%;
+    float:left;
+}
+.canvas2 {
+    width: 50%;
+    height: 100%;
+    float:left
+}
+
+.matrixInput:disabled {
+    border-color: red
+}
+
+.taskEndBox {
+    border-radius: 25px;
+    position: absolute;
+    right: 5vw;
+    top: 10vh;
+    width:200px;
+    background-color: #233cb8;
+    transition-duration: 0.5s;
+}

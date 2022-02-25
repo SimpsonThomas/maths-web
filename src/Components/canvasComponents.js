@@ -2,7 +2,21 @@
 import './canvas.css'
 import { gridProps } from './props'
 
-const drawLine = (ctx, start, end, colour, transform=[1,0,0,1],width=1) => { // drawing a line
+const drawLine3D = (ctx, start, end, colour='red', transform=[1,0,0,1],width=1,) => { // drawing a line
+    //let width = ctx.canvas.width
+    //let height = ctx.canvas.height 
+    ctx.beginPath()
+    ctx.strokeStyle = colour
+    ctx.lineWidth = width
+    ctx.save()
+    ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
+    ctx.moveTo(start.x, start.y, start.z)
+    ctx.lineTo(end.x, end.y, end.z)
+    ctx.restore()
+    ctx.stroke()
+}
+
+const drawLine = (ctx, start, end, colour, transform=[1,0,0,1],width=1,text='') => { // drawing a line
     //let width = ctx.canvas.width
     //let height = ctx.canvas.height 
     ctx.beginPath()
@@ -51,7 +65,13 @@ const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='') =>
     ctx.closePath()
     ctx.restore()
     ctx.fill()
+}
 
+const initaliseCanvas = (context, canvas, background='white') => {
+    context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
+    context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
+    context.fillStyle = background
+    context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
 }
 
 const calculateVectors = (transform) => {
@@ -81,20 +101,15 @@ const eigenVector = (ctx, transform) => {
 
     let gridSize = gridProps.size
     drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
-    //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
+    // drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
     drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
-    //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
+    // drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
     ctx.setTransform(1,0,0,1,width/2,height/2)
 }
 
-const SettingsBox = props => {
-    const [[matrix, setMatrix], [vector, setVector], [angle, setAngle], [scale, setScale]] 
-        = [props.matrix, props.vector, props.angle, props.scale]
-    const [switchMat, setSwitchMat] = props.switchMat
-    const [showEigen, setShowEigen] = props.eigen
-    let collapse = true
-    //const [switchMat, setSwitchMat] = useState(false)
-
+const calculateAngleMatrix = (scaleAngle) => {
+    let scale = scaleAngle.scale
+    let angle = scaleAngle.angle
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
     let transform1 = Math.cos(angleRadX)*scale.x
@@ -102,17 +117,51 @@ const SettingsBox = props => {
     let transform3 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
-    //const [switchMat, setSwitchMat] = useState(false)
+    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
+}
 
-    //const [showHelp, setShowHelp] = useState(true)
-    //const [showEigen, setShowEigenp] = useState(false)
+const matVecMult = (mat, vec) => {
+    let [a,b,c,d] = mat.map(x => parseInt(x))
+    let [x, y] = [vec.x, vec.y].map(i => parseInt(i))
+    let x_new = x*a+x*c
+    let y_new = y*b+y*d
+    return ({'x':x_new, 'y':y_new})
+}
+
+const matMult = (mat1, mat2) => {
+    let [a,b,c,d] = mat1.map(x => parseFloat(x))
+    let [e,f,g,h] = mat2.map(x => parseFloat(x))
+    let newMat = [a*e+b*g,a*f+b*h, c*e+d*g, c*f+d*h]
+    return newMat
+}
+
+
+const checkSolve = (mat, endMat, vec, endVec) => {
+    let startReal = matVecMult(mat,vec)
+    let endReal = matVecMult(endMat,endVec)
+    let x_solve = (startReal.x === endReal.x) ? true : false
+    let y_solve = (startReal.y === endReal.y) ? true : false
+    return {'x':x_solve, 'y':y_solve}
+}
+
+const SettingsBox = props => {
+    const [[matrix, setMatrix], [vector, setVector]] 
+        = [props.matrix, props.vector]
+    const [switchMat, setSwitchMat] = props.switchMat
+    const [showEigen, setShowEigen] = props.eigen
+    const [scaleAngle, setScaleAngle] = props.scaleAngle
+    const type = props.type
+    const setSaveMatrix = type !== 'basic' ? props.setSaveMatrix : null
+    let collapse = true
+
+    let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
 
     let mat = !switchMat ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
         : [transform1, transform2, transform3, transform4] 
 
     const quickSetAngle = (change, keep) => {
         const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
-        const current = angle[change]
+        const current = scaleAngle.angle[change]
         let newAngle = current
         if (setAngles.includes(current)) {
             let nextIndex = setAngles.indexOf(current)+1
@@ -123,8 +172,8 @@ const SettingsBox = props => {
                 return Math.abs(b - current) < Math.abs(a - current) ? b : a;
             });
         }
-        if (change==='x') setAngle({'x':newAngle, 'y':angle[keep]})
-        else setAngle({'y':newAngle, 'x':angle[keep]})
+        if (change==='x') setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle,'x':newAngle} } ))
+        else setScaleAngle(prevState => ( { ...prevState, 'angle':{...prevState.angle, 'y':newAngle } } ) )
     }
 
     let [eigenVal1, eigenVal2, eigenVec1, eigenVec2] = calculateVectors(mat)
@@ -143,12 +192,34 @@ const SettingsBox = props => {
         })
     }
 
+    const updateSave = (e) => {
+        e.preventDefault()
+        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
+        let mat = (!switchMat) ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]]
+            :[transform1, transform2, transform3, transform4]
+        setSaveMatrix(mat)
+    }
+
+    const numberInput = (position) =>{
+        return (
+            <input className='matrixInput'  type="number" value={matrix.new[position] } key={position+'matrixInput'}
+                onChange={e => updateMatrix(e, position)}/>
+        )
+    }
+
+    const angleScaleInput = (type, axis, range) => {
+        return (
+            <input type="range" min={-range} max={range} value={scaleAngle[type][axis]} className="slider" id="myRange"
+                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value} })) }/>
+        )
+    }
+
     return (
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
             <p className='boxTitle'>
-                Settings2
+                Settings
             </p>
-            <div className={'settings ' + (collapse ? 'settingsOpen' : 'settingsClosed')}>
+            <div className={'settings ' + 'settingsOpen'}>
                 <label className="switch">
                     <input type="checkbox" checked={switchMat}
                         onChange={e=> setSwitchMat(e.target.checked)}/>
@@ -157,15 +228,13 @@ const SettingsBox = props => {
                 <div style={{display : !switchMat ? '' : 'none'}}s>
                     <p className='boxTitle'>Set Matrix</p>
                     <p>
-                        <input className='matrixInput'  type="number" value={matrix.new[1]} 
-                            onChange={e => updateMatrix(e, 1)}/>
-                        <input className='matrixInput' type="number"  value={matrix.new[2]}
-                            onChange={e => updateMatrix(e, 2)}/>
+                        {
+                            [1,2].map(pos => numberInput(pos) )
+                        }
                     </p>
-                    <input className='matrixInput' type="number"  value={matrix.new[3]} 
-                        onChange={e => updateMatrix(e, 3)}/>
-                    <input className='matrixInput' type="number"  value={matrix.new[4]} 
-                        onChange={e => updateMatrix(e, 4)}/>
+                        {
+                            [3,4].map(pos => numberInput(pos) )
+                        }
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
                     <p className='boxTitle'>Matrix</p>
@@ -176,50 +245,57 @@ const SettingsBox = props => {
                         {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
                     </p>
         
-                    <p>
+                    <div>
                         <p className='boxTitle'>
                             <button className='quickChange' 
                                 onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
                                     Angle X:</button>
-                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.x}</span></p>
-                        <input type="range" min="-180" max="180" value={angle.x} className="slider" id="myRange" onChange={e => setAngle({'x':e.target.value,'y':angle.y})}/>
-                    </p>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.angle.x}</span></p>
+                        {angleScaleInput('angle', 'x', 180)}
+                    </div>
                     
-                    <p className='boxTitle'>
+                    <div className='boxTitle'>
                         <p>
                             <button className='quickChange' 
                                 onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
                                     Angle Y:</button>
-                             &nbsp; &nbsp; <span className='sliderDisplay'>{angle.y}</span></p>
-                        <input type="range" min="-180" max="180" value={angle.y} className="slider" id="myRange" onChange={e => setAngle({'y':e.target.value,'x':angle.x})}/>
-                    </p>
-                    <p className='boxTitle'>
-                        <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.x}</span></p>
-                        <input type="range" min="-10" max="10" value={scale.x} className="slider" id="myRange" onChange={e => setScale({'x':e.target.value,'y':scale.y})}/>
-                    </p>
-                    <p className='boxTitle'>
-                        <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scale.y}</span></p>
-                        <input type="range" min="-10" max="10" value={scale.y} className="slider" id="myRange" onChange={e => setScale({'y':e.target.value,'x':scale.x})}/>
-                    </p>
+                             &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.angle.y}</span></p>
+                        {angleScaleInput('angle', 'y', 180)}
+                    </div>
+                    <div className='boxTitle'>
+                        <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.scale.x}</span></p>
+                        {angleScaleInput('scale', 'x', 5)}
+                    </div>
+                    <div className='boxTitle'>
+                        <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{scaleAngle.scale.y}</span></p>
+                        {angleScaleInput('scale', 'y', 5)}
+                    </div>
                 </div>
 
-                <p className='boxTitle'>Vector Input</p>
-                <p><input className='matrixInput' value={vector.x} 
-                        onChange={e => setVector({'x':e.target.value,'y':vector.y})}/></p>
-                <p><input className='matrixInput' value={vector.y} 
-                        onChange={e => setVector({'y':e.target.value,'x':vector.x})}/></p>
-                <p>
-                    <button className='quickChange' 
-                        onClick={e => {e.preventDefault(); setShowEigen(!showEigen)}}>
-                        {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
-                </p>
-                {
-                    showEigen ?
-                        <>
-                        <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
-                        <p className='matrixDisplay'>Value: {eigenVal2} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
-                        </>
-                    : <></>
+                { type!=='basic' ?
+                    <>
+                        <p className='boxTitle'>Vector Input</p>
+                        <p><input className='matrixInput' value={vector.x} 
+                                onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value, 'old':prevVec.old, 'change':'x' } ))  }/></p>
+                        <p><input className='matrixInput' value={vector.y} 
+                                onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value, 'old':prevVec.old, 'change':'y' } )) }/></p>
+                        <p>
+                            <button className='quickChange' 
+                                onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>
+                                {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
+                        </p>
+                        {
+                            showEigen ?
+                                <>
+                                <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
+                                <p className='matrixDisplay'>Value: {eigenVal2} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
+                                </>
+                            : <></>
+                        }
+                            <button className='quickChange' 
+                                onClick={e => {updateSave(e)}}>
+                                Save</button>
+                    </> : <></>
                 }
                 <p>&nbsp;</p>
             </div>
@@ -227,6 +303,6 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow, calculateVectors, eigenVector}
+export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve, matMult}
 
 export default SettingsBox
