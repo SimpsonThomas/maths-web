@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import './canvas.css'
 import './tasks.css'
-import SettingsBox, {calculateAngleMatrix, calculateVectors, checkSolve, drawLine, drawLineArrow, initaliseCanvas, matMult} from "./canvasComponents";
+import {drawLine, initaliseCanvas, matMult} from "./canvasComponents";
 
 const Inverse = props => {
     const inherit = props.props
@@ -16,7 +16,7 @@ const Inverse = props => {
         2 : {type:'mat', startMat: [-4,0,0,4], endMat: [1,0,0,1], 
             description: '',
             endCard: ''},
-        3 : {type:'vec', startMat: [4,2,1,1], endMat: [1,0,0,1],
+        3 : {type:'vec', startMat: [1,1,1,1], endMat: [1,0,0,1],
             description: 'Can you figure out the matrix to map this vector ',
             endCard: ''},
     }
@@ -55,9 +55,9 @@ const Inverse = props => {
                     //vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
                     solve:false
                 }
-                
+            default:
+                return {...state}
         }
-        //return {...state}
     }
 
     const [state, updateState] = useReducer(reducer, initialState)
@@ -242,28 +242,11 @@ const Inverse = props => {
         updateState({type:'task'})
     }
 
-    const updateVec = (e, direct) => {
-        e.preventDefault()
-        let value = e.target.value
-        let oldVec = {'x':state.vecStart.x, 'y':state.vecStart.y}
-        let newVec = {...state.vecStart.new, [direct]:value}
-        oldVec[direct] = (oldVec[direct] === '') ? state.vecStart.old[direct] : oldVec[direct]
-        newVec[direct] = value
-        updateState({
-            type: 'vector',
-            data: {
-                ...newVec,
-                'old': oldVec,
-                'change': direct
-            }
-        })
-    }
-
     const vec = state.currentTask.type==='vec'
 
     const html = <>
         {!selection ? 
-            <div className={'matrixBox ' + 'boxOpen'}>
+            <div className={'matrixBox boxOpen'}>
                 <p className='boxTitle'>Current Task: {state.currentTask.num}</p>
                 <p style={{color:'white'}}>{state.currentTask.description}</p>
                     <>

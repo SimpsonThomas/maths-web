@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import './canvas.css'
 import './tasks.css'
-import SettingsBox, {calculateAngleMatrix, calculateVectors, checkSolve, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
+import { checkSolve, drawLine, initaliseCanvas} from "./canvasComponents";
 
 const Tasks = props => {
     const inherit = props.props
@@ -13,13 +13,13 @@ const Tasks = props => {
         1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5}, 
             description: 'Can you scale the vector to match? ',
             endCard: 'Congratualations! Well done on completing the first task'},
-        2 : {type:'vec', startMat: [2,1,1,2], endMat: [2,0,0,1], startVec: {'x':5,'y':5}, endVec: {'x':5,'y':5},
-            description: '',
+        2 : {type:'vec', startMat: [2,0,0,2], endMat: [-1,0,0,-1], startVec: {'x':5,'y':5}, endVec: {'x':5,'y':5},
+            description: 'Here you have both a scale and a reflection',
             endCard: ''},
         3 : {type:'mat', startMat: [3,0,0,1], endMat: [1,0,0,1], startVec: {'x':-5,'y':1}, endVec: {'x':-5,'y':5}, 
             description: 'Can you figure out the matrix to map this vector ',
             endCard: ''},
-        4 : {type:'vec', startMat: [4,2,1,1], endMat: [1,0,0,1], startVec: {'x':1,'y':-5}, endVec: {'x':5,'y':-5}, 
+        4 : {type:'vec', startMat: [4,1,1,4], endMat: [1,0,0,1], startVec: {'x':1,'y':-5}, endVec: {'x':5,'y':-5}, 
             description: 'Can you figure out the matrix to map this vector ',
             endCard: ''},
     }
@@ -57,9 +57,9 @@ const Tasks = props => {
                     vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
                     solve:{'x':false,'y':false}
                 }
-                
+            default:
+                return {...state}
         }
-        return {...state}
     }
 
     const [state, updateState] = useReducer(reducer, initialState)
@@ -263,7 +263,7 @@ const Tasks = props => {
 
     const html = <>
         {!selection ? 
-            <div className={'matrixBox ' + 'boxOpen'}>
+            <div className={'matrixBox boxOpen'}>
                 <p className='boxTitle'>Current Task: {state.currentTask.num}</p>
                 <p style={{color:'white'}}>{state.currentTask.description}</p>
                     <>
