@@ -2,21 +2,21 @@
 import './canvas.css'
 import { gridProps } from './props'
 
-const drawLine = (ctx, start, end, colour='red', transform=[1,0,0,1],width=1) => { // drawing a line
+const drawLine3D = (ctx, start, end, colour='red', transform=[1,0,0,1],width=1,) => { // drawing a line
     //let width = ctx.canvas.width
     //let height = ctx.canvas.height 
     ctx.beginPath()
     ctx.strokeStyle = colour
     ctx.lineWidth = width
     ctx.save()
-    //ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
+    ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
     ctx.moveTo(start.x, start.y, start.z)
     ctx.lineTo(end.x, end.y, end.z)
     ctx.restore()
     ctx.stroke()
 }
 
-const drawLine3D = (ctx, start, end, colour, transform=[1,0,0,1],width=1) => { // drawing a line
+const drawLine = (ctx, start, end, colour, transform=[1,0,0,1],width=1,text='') => { // drawing a line
     //let width = ctx.canvas.width
     //let height = ctx.canvas.height 
     ctx.beginPath()
@@ -101,9 +101,9 @@ const eigenVector = (ctx, transform) => {
 
     let gridSize = gridProps.size
     drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
-    //drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
+    // drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
     drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
-    //drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
+    // drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
     ctx.setTransform(1,0,0,1,width/2,height/2)
 }
 
@@ -127,6 +127,14 @@ const matVecMult = (mat, vec) => {
     let y_new = y*b+y*d
     return ({'x':x_new, 'y':y_new})
 }
+
+const matMult = (mat1, mat2) => {
+    let [a,b,c,d] = mat1.map(x => parseFloat(x))
+    let [e,f,g,h] = mat2.map(x => parseFloat(x))
+    let newMat = [a*e+b*g,a*f+b*h, c*e+d*g, c*f+d*h]
+    return newMat
+}
+
 
 const checkSolve = (mat, endMat, vec, endVec) => {
     let startReal = matVecMult(mat,vec)
@@ -295,6 +303,6 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve}
+export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve, matMult}
 
 export default SettingsBox
