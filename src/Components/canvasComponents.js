@@ -219,7 +219,7 @@ const SettingsBox = props => {
             <p className='boxTitle'>
                 Settings
             </p>
-            <div className={'settings ' + 'settingsOpen'}>
+            <div className={'settings settingsOpen'}>
                 <label className="switch">
                     <input type="checkbox" checked={switchMat}
                         onChange={e=> setSwitchMat(e.target.checked)}/>
