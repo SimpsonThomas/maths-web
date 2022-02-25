@@ -18,9 +18,9 @@ const Tasks = props => {
     // tasks
     const tasks = {
         1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5},},
-        2 : {type:'vec', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':5,'y':1}, endVec: {'x':5,'y':5},},
-        3 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':5,'y':1}, endVec: {'x':5,'y':5},},
-        4 : {type:'vec', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':5}, endVec: {'x':5,'y':5},},
+        2 : {type:'vec', startMat: [2,0,1,1], endMat: [1,0,0,1], startVec: {'x':5,'y':5}, endVec: {'x':1,'y':5},},
+        3 : {type:'mat', startMat: [3,0,0,1], endMat: [1,0,0,1], startVec: {'x':-5,'y':1}, endVec: {'x':-5,'y':5},},
+        4 : {type:'vec', startMat: [4,2,1,1], endMat: [1,0,0,1], startVec: {'x':1,'y':-5}, endVec: {'x':5,'y':-5},},
     }
 
     
@@ -28,11 +28,11 @@ const Tasks = props => {
     let initialState = {
         matrixStart: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
         matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
-        vecStart:{...tasks[1].startVec, old:tasks[1].startVec, change:'done'},
-        vecEnd:{...tasks[1].endVec, old:tasks[1].endVec, change:'done'},
+        vecStart:{...tasks[1].startVec, 'old':tasks[1].startVec, 'change':'done'},
+        vecEnd:{...tasks[1].endVec, 'old':tasks[1].endVec, 'change':'done'},
        // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
        // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
-        currentTask:1,
+        currentTask:{num:1, type:'mat'},
     }
 
     const reducer = (state, action) => {
@@ -40,25 +40,25 @@ const Tasks = props => {
             case 'matrix':
                 return {...state, matrixStart: {...action.data}}
             case 'vector':
-                return {...state, vectorStart: {...action.data}}
+                return {...state, vecStart: {...state.vecStart,...action.data}}
             case 'task':
-                let nextTaskNo = state.currentTask+1
+                let nextTaskNo = state.currentTask.num+1
+                if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
                 let nextTask = tasks[nextTaskNo]
-                if ((Object.keys(tasks).includes(nextTaskNo))) console.log('here')
-                else {
-                    switch (nextTask.type) {
-                        case 'mat':
-                            return {...state, currentTask:nextTaskNo, matrix:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'}}
-                        case 'vec':
-                            return {...state,currentTask:nextTaskNo, vector:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'}}
-                    }
+                return {
+                    ...state,
+                    currentTask:{num:nextTaskNo,type:'mat'},
+                    matrixStart:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                    matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
+                    vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
+                    vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
                 }
+                
         }
         return {...state}
     }
 
     const [state, updateState] = useReducer(reducer, initialState)
-    //const [zoom, setZoom] = useState({zoom:1, time:Date.now()})
 
     const canvas1Ref = useRef(null)
     const canvas2Ref = useRef(null)
@@ -75,19 +75,6 @@ const Tasks = props => {
     }
 
     const selection = inherit.selection // are we in the selection window?
-
-    const eigenVector = (ctx, transform) => {
-        const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
-    
-        
-        let width = ctx.canvas.width
-        let height = ctx.canvas.height
-    
-        let gridSize = gridProps.size
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'blue', transform)
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'blue', transform)
-        ctx.setTransform(1,0,0,1,width/2,height/2)
-    }
 
     const grid = (ctx,
         colourMinor=gridProps.minorAxColour,
@@ -229,12 +216,6 @@ const Tasks = props => {
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
         let newMatrix = state.matrixStart.new
         newMatrix[position] = value
-        /*setMatrix({
-            'old' : oldMatrix,
-            'new' : newMatrix,
-            'change' : position
-        })*/
-
         updateState({
             type: 'matrix',
             data:{
@@ -257,19 +238,37 @@ const Tasks = props => {
         updateState({type:'task'})
     }
 
+    const updateVec = (e, direct) => {
+        e.preventDefault()
+        let value = e.target.value
+        let oldVec = {'x':state.vecStart.x, 'y':state.vecStart.y}
+        let newVec = {...state.vecStart.new, [direct]:value}
+        oldVec[direct] = (oldVec[direct] === '') ? state.vecStart.old[direct] : oldVec[direct]
+        newVec[direct] = value
+        updateState({
+            type: 'vector',
+            data: {
+                ...newVec,
+                'old': oldVec,
+                'change': direct
+            }
+        })
+    }
+
     const html = <>
         {!selection ? 
             <div className={'matrixBox ' + 'boxOpen'}>
-                { (tasks[currentTask].type ==='vec') ?
+                <p>{state.currentTask.num}</p>
+                { state.currentTask.type ==='vec' ?
                     <>
                         <p className='boxTitle'>
                             Input Vector
                         </p>
                         <p style={{color:'white'}}>Input test vectors here to match the test vector</p>
-                        <p><input className='matrixInput' value={state.vectorStart.x} 
-                                onChange={e => updateState({type:'vec', data:{'x':e.target.value}})   }/></p>
-                        <p><input className='matrixInput' value={state.vectorStart.y} 
-                                onChange={e => updateState({type:'vec', data:{'x':e.target.value}})    }/></p>
+                        <p><input className='matrixInput' value={state.vecStart.x} 
+                                onChange={e => updateVec(e, 'x') }/></p>
+                        <p><input className='matrixInput' value={state.vecStart.y} 
+                                onChange={e => updateVec(e, 'y') }/></p>
                             <p>&nbsp;</p>
                     </>
                     : 
