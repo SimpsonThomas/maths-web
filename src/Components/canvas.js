@@ -27,7 +27,7 @@ const Canvas = props => {
         majorAxColour: inherit.major, // default colours
         minorAxColour: inherit.minor, 
         backgroundColour: inherit.background,
-        vectorColour: 'green'
+        vectorColour: 'yellow'
     }
 
     const selection = inherit.selection // are we in the selection window?
@@ -70,7 +70,7 @@ const Canvas = props => {
         }
 
         // draw the vector
-        drawLine(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform, 2)
+        drawLineArrow(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
         ctx.restore()
     }
 
@@ -131,7 +131,7 @@ const Canvas = props => {
 
             mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
 
-            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat)
+            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'yellow',mat)
 
             if (showEigen) eigenVector(context,mat)
             if (frameCount===5) {

@@ -23,7 +23,7 @@ const drawLine = (ctx, start, end, colour, transform=[1,0,0,1],width=1,text='') 
     ctx.strokeStyle = colour
     ctx.lineWidth = width
     ctx.save()
-    ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
+    ctx.transform(transform[0],transform[2],transform[1],transform[3],0,0)
     ctx.moveTo(start.x, start.y)
     ctx.lineTo(end.x, end.y)
     ctx.restore()
@@ -38,26 +38,31 @@ const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='') =>
     ctx.fillStyle = colour
     ctx.font = "30px Arial"
     ctx.save()
-    ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
+    ctx.transform(transform[0],transform[2],transform[1],transform[3],0,0)
     ctx.moveTo(start.x, start.y)
     ctx.lineTo(end.x, end.y)
     //ctx.transform(1,0,0,-1,0,0)
-    ctx.translate(end.x,end.y)
+    let endMat = matVecMult(transform, end)
+    let startMat = matVecMult(transform, start)
+    ctx.restore()
+    ctx.save()
+    ctx.translate(endMat.x,endMat.y)
     ctx.rotate(Math.PI*3)
     ctx.scale(-1,1)
     ctx.fillText(text,0,0)
-    ctx.restore()
     ctx.stroke()
+    ctx.restore()
 
+    
     // creating arrowheads
 
-    var endRadians=Math.atan((end.y-start.y)/(end.x-start.x));
-    endRadians+=((end.x>=start.x)?90:-90)*Math.PI/180;
+    var endRadians=Math.atan((endMat.y-startMat.y)/(endMat.x-startMat.x));
+    endRadians+=((endMat.x>=startMat.x)?90:-90)*Math.PI/180;
 
     ctx.beginPath()
     ctx.save()
-    ctx.transform(transform[0],transform[1],transform[2],transform[3],0,0)
-    ctx.translate(end.x, end.y)
+    //ctx.transform(transform[0],transform[2],transform[1],transform[3],0,0)
+    ctx.translate(endMat.x, endMat.y)
     ctx.rotate(endRadians)
     ctx.moveTo(0,0)
     ctx.lineTo(5,10)
@@ -121,10 +126,10 @@ const calculateAngleMatrix = (scaleAngle) => {
 }
 
 const matVecMult = (mat, vec) => {
-    let [a,b,c,d] = mat.map(x => parseInt(x))
-    let [x, y] = [vec.x, vec.y].map(i => parseInt(i))
-    let x_new = x*a+x*c
-    let y_new = y*b+y*d
+    let [a,b,c,d] = mat.map(x => parseFloat(x))
+    let [x, y] = [vec.x, vec.y].map(i => parseFloat(i))
+    let x_new = x*a+y*b
+    let y_new = y*d+x*c
     return ({'x':x_new, 'y':y_new})
 }
 
