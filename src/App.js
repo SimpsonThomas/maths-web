@@ -2,9 +2,9 @@ import './App.css';
 import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
 import React, { useState } from "react";
-import Tasks from './Components/Tasks';
+import Tasks from './Components/activities/Tasks';
 //import Canvas3D from './Components/3dcanvas';
-import Inverse from './Components/Inverse';
+import Inverse from './Components/activities/Inverse';
 
 const App = props => {
   const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
@@ -14,9 +14,22 @@ const App = props => {
 
   let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
 
-  let canvasProps = {background:'white',major:'red',minor:'black', selection:false, state: canvasState}
+  //let canvasProps = {background:'white',major:'red',minor:'black', selection:false, state: canvasState}
 
-  let selectionProps = {background:'white',major:'red',minor:'black', selection:true, state: canvasState}
+  let gridProps = {
+    size : 20, // size of grid squares
+    majorAxColour: 'red', // default colours
+    minorAxColour: 'black', 
+    minorAxSecColour: 'grey',
+    backgroundColour: 'white',
+    vectorColour: 'yellow',
+    state: canvasState,
+}
+
+  let selectionProps = {...gridProps}
+  let canvasProps = {...gridProps}
+  selectionProps.selection = true
+  canvasProps.selection = false
 
   const [activity, setActivity] = useState({set:'Initial', selection: false})
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
-import './canvas.css'
+import '../canvas.css'
 import './tasks.css'
-import { checkSolve, drawLine, initaliseCanvas} from "./canvasComponents";
+import { checkSolve, drawLine, initaliseCanvas} from "../canvasComponents";
 
 const Tasks = props => {
     const inherit = props.props

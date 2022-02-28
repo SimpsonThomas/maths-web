@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
-import './canvas.css'
+import '../canvas.css'
 import './tasks.css'
-import {drawLine, initaliseCanvas, matMult} from "./canvasComponents";
+import {drawLine, initaliseCanvas, matMult} from "../canvasComponents";
 
 const Inverse = props => {
     const inherit = props.props
