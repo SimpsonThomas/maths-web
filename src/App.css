@@ -80,6 +80,11 @@
   transition: background-color 0.25s;
 }
 
+.clear {
+  position:absolute;
+  right: 10px
+}
+
 .navButton:hover {
   background-color: white;
   color: black;

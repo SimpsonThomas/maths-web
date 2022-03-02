@@ -93,7 +93,6 @@ const App = props => {
         case 'task':
             let nextTaskNo = state.currentTask.num+1
             if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
-            console.log(tasks)
             let nextTask = tasks[nextTaskNo]
             let newState = {
                 ...state,
@@ -151,8 +150,8 @@ const App = props => {
     solve: false
   }
 
-  if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('inverseState', JSON.stringify(initialStateNormal))
-  if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('normalState', JSON.stringify(initialStateInverse))
+  if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('inverseState', JSON.stringify(initialStateInverse))
+  if (!window.localStorage.getItem('normalState')) window.localStorage.setItem('normalState', JSON.stringify(initialStateNormal))
 
   const [stateNormal, updateStateNormal] = useReducer(reducerTask, JSON.parse( localStore.getItem('normalState')))
   const [stateInverse, updateStateInverse] = useReducer(reducerTask, JSON.parse( localStore.getItem('inverseState')))
@@ -211,6 +210,7 @@ const App = props => {
     <div className="App">
       <div className='navBar'>
         <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>Select Activity</button>
+        <button onClick={e => window.localStorage.clear()} className='navButton clear'>Reset App</button>
       </div>
       { activity.selection ?
         <center className='selectionDiv'>
