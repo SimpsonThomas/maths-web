@@ -1,9 +1,8 @@
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { checkSolve, initaliseCanvas, matMult} from "../canvasComponents";
+import { initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
-import { inverseTasks, tasksNormal } from "../constants/tasksList";
 
 const Tasks = props => {
     const inherit = props.props
