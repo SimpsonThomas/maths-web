@@ -143,7 +143,6 @@ const checkSolve = (mat, endMat, vec, endVec) => {
     let endReal = matVecMult(endMat,endVec)
     let x_solve = (startReal.x === endReal.x) ? true : false
     let y_solve = (startReal.y === endReal.y) ? true : false
-    console.log(x_solve & y_solve)
     return x_solve && y_solve
 }
 

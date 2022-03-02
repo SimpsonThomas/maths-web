@@ -359,7 +359,17 @@ const Tasks = props => {
                         <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
                                 onChange={e => updateVec(e, 'y') }/></p>
                     </>
-                    : <></>}
+                    : <>
+                        <p className='boxTitle'>
+                            Start Matrix
+                        </p>
+                        <p className='matrixDisplay'>
+                            {state.matrixStart.new[0]} &nbsp; &nbsp; &nbsp; {state.matrixStart.new[1]}
+                        </p>
+                        <p className='matrixDisplay'>
+                            {state.matrixStart.new[2]} &nbsp; &nbsp; &nbsp; {state.matrixStart.new[3]}
+                        </p>
+                    </>}
                     <>
                         <p className='boxTitle'>Set Matrix</p>
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
