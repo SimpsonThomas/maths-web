@@ -3,6 +3,7 @@ import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
 import React, { useState } from "react";
 import Tasks from './Components/activities/Tasks';
+import { gridProps } from './Components/constants';
 //import Canvas3D from './Components/3dcanvas';
 
 const App = props => {
@@ -13,20 +14,8 @@ const App = props => {
 
   let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
 
-  //let canvasProps = {background:'white',major:'red',minor:'black', selection:false, state: canvasState}
-
-  let gridProps = {
-    size : 20, // size of grid squares
-    majorAxColour: 'red', // default colours
-    minorAxColour: 'black', 
-    minorAxSecColour: 'grey',
-    backgroundColour: 'white',
-    vectorColour: 'yellow',
-    state: canvasState,
-}
-
-  let selectionProps = {...gridProps}
-  let canvasProps = {...gridProps}
+  let selectionProps = {...gridProps, state:canvasState}
+  let canvasProps = {...gridProps, state:canvasState}
   selectionProps.selection = true
   canvasProps.selection = false
 

@@ -2,6 +2,7 @@ import React, { useEffect, useReducer, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
 import { checkSolve, drawLine, initaliseCanvas, matMult} from "../canvasComponents";
+import { grid } from "../grid";
 
 const Tasks = props => {
     const inherit = props.props
@@ -151,7 +152,7 @@ const Tasks = props => {
 
     const selection = inherit.selection // are we in the selection window?
 
-    const grid = (ctx,
+    /*const grid = (ctx,
         colourMinor=gridProps.minorAxColour,
         colourMinorSec=gridProps.minorAxSecColour,
         colourMajor=gridProps.majorAxColour,
@@ -179,7 +180,7 @@ const Tasks = props => {
             // draw the vector
             drawLine(ctx, {x:0,y:0}, {x:disVector.x*gridSize, y:disVector.y*gridSize}, colourVector,transform, 2, 'test')
             ctx.restore()
-    }
+    }*/
 
     const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
         width: undefined,
@@ -235,7 +236,7 @@ const Tasks = props => {
 
             switch (taskType){
                 case 'normal':
-                    vector = vec.new
+                    vector = vec
                     break;
                 case 'inverse':
                     mat = matMult(state.matrixStart.new, mat)

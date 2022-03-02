@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
 import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
+import { grid } from "./grid";
 
 const Canvas = props => {
     const inherit = props.props
@@ -26,7 +27,7 @@ const Canvas = props => {
         minorAxColour: inherit.minorAxColour,
         minorAxSecColour: inherit.minorAxSecColour,
         backgroundColour: inherit.background,
-        vectorColour: 'yellow'
+        vectorColour: inherit.vectorColour
     }
 
     const selection = inherit.selection // are we in the selection window?
@@ -44,7 +45,7 @@ const Canvas = props => {
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
-    const grid = (ctx,
+   /* const grid = (ctx,
         colourMinor=gridProps.minorAxColour,
         colourSecMinor=gridProps.minorAxSecColour,
         colourMajor=gridProps.majorAxColour,
@@ -72,7 +73,7 @@ const Canvas = props => {
         // draw the vector
         drawLineArrow(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
         ctx.restore()
-    }
+    }*/
 
     /*const detShape = (ctx, colour='red') => {
         ctx.fillStyle = colour
@@ -132,7 +133,7 @@ const Canvas = props => {
 
             mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
 
-            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat)
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat, vector)
 
             if (showEigen) eigenVector(context,mat)
             if (frameCount===5) {
@@ -153,7 +154,7 @@ const Canvas = props => {
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}, ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
                 
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector)
                 if (showEigen) eigenVector(context,mat)
         }
 
