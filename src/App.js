@@ -3,7 +3,7 @@ import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
 import React, { useState } from "react";
 import Tasks from './Components/activities/Tasks';
-import { gridProps } from './Components/constants';
+import { gridProps } from './Components/constants/constants';
 //import Canvas3D from './Components/3dcanvas';
 
 const App = props => {
@@ -48,11 +48,11 @@ const App = props => {
   }
 
   const activities = {
-    'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator'},
-    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal'}},
+    'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator', state:canvasState},
+    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal'}, state:canvasState},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
-    'Inverse':{activityCanvas: Tasks, name:'Inverse', description: 'Find the inverse of the matrix', props:{taskType:'inverse'}},
-    'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
+    'Inverse':{activityCanvas: Tasks, name:'Inverse', description: 'Find the inverse of the matrix', props:{taskType:'inverse'}, state:canvasState},
+    'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator', state:canvasState},
   }
 
   return (
