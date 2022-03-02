@@ -293,9 +293,9 @@ const Tasks = props => {
 
                 : 
                 <>
-                    <h3>INverse</h3>
-                    <p>Here you get to play around with vectors and matrices to get them to match</p>
-                    <p>Adjust either the matrix or vector to solve the task</p>
+                    <h3>Invert</h3>
+                    <p>Here you get to play around with matrices to get them to match</p>
+                    <p>Adjust either the matrix to find inverse</p>
                     <p>The aim is to get the two vectors to match</p>
                 </>
                 }
