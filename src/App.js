@@ -41,7 +41,7 @@ const App = props => {
     })
   }
 
-  const activityButton = (Activity=Basic, name='Main', description='Testing testing testing 1231234') => {
+  const activityButton = (Activity=Basic, name='Main', description='Testing testing testing 1231234', extraProps={}) => {
     return (
       <>
         <div className='selectionCanvas' key={name}>
@@ -50,7 +50,7 @@ const App = props => {
             <p className='activityDescription'>{description}</p>
             {React.createElement(
               Activity,
-              {className: 'selectionCanvas', props:selectionProps, key:{name}},
+              {className: 'selectionCanvas', props:{...selectionProps, ...extraProps}, key:{name}},
               'Click Me'
             )}
           </button>
@@ -61,9 +61,9 @@ const App = props => {
 
   const activities = {
     'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator'},
-    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector'},
+    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal'}},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
-    'Inverse':{activityCanvas: Inverse, name:'Inverse', description: 'Find the inverse of the matrix'},
+    'Inverse':{activityCanvas: Tasks, name:'Inverse', description: 'Find the inverse of the matrix', props:{taskType:'inverse'}},
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
 
@@ -79,7 +79,7 @@ const App = props => {
             {Object.keys(activities).map(key => {
               let act = activities[key]
               return(
-                activityButton(act.activityCanvas, act.name, act.description)
+                activityButton(act.activityCanvas, act.name, act.description, act.props)
               )
             })}     
           </div>     
@@ -89,7 +89,7 @@ const App = props => {
       {(activity.set) ? 
         React.createElement(
           activities[activity.set].activityCanvas,
-          {className:'canvas', props:canvasProps, key:activity.set}
+          {className:'canvas', props:{...canvasProps, ...activities[activity.set].props}, key:activity.set}
         )
         : <></>
       }

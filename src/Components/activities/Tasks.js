@@ -1,15 +1,16 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { checkSolve, drawLine, initaliseCanvas} from "../canvasComponents";
+import { checkSolve, drawLine, initaliseCanvas, matMult} from "../canvasComponents";
 
 const Tasks = props => {
     const inherit = props.props
+    const taskType = props.props.taskType ? props.props.taskType : 'none'
     //const [scaleAngle, setScaleAngle] = inherit.scaleAngle
     //const [showEigen, setShowEigen] = inherit.eigen
 
-    // tasks
-    const tasks = {
+    // list of tasks to complete
+    const tasksNormal = {
         1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5}, 
             description: 'Can you scale the vector to match? ',
             endCard: 'Congratualations! Well done on completing the first task'},
@@ -24,39 +25,108 @@ const Tasks = props => {
             endCard: ''},
     }
 
-    let initialState = {
-        matrixStart: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
-        matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
-        vecStart:{...tasks[1].startVec, 'old':tasks[1].startVec, 'change':'done'},
-        vecEnd:{...tasks[1].endVec, 'old':tasks[1].endVec, 'change':'done'},
-       // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
-       // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
-        currentTask:{num:1, type:tasks[1].type, description:tasks[1].description},
-        solve: {'x':false, 'y':false}
+    // inverse tasks to be implemented
+    const inverseTasks = {
+        1 : {type:'inverse', startMat: [5,0,0,5], endMat: [1,0,0,1], 
+            description: 'Can you inverse this matrix? ',
+            endCard: 'Congratualations! Well done on completing the first task'},
+        2 : {type:'inverse', startMat: [-4,0,0,4], endMat: [1,0,0,1], 
+            description: '',
+            endCard: ''},
+        3 : {type:'inverse', startMat: [1,1,1,1], endMat: [1,0,0,1],
+            description: 'Can you figure out the matrix to map this vector ',
+            endCard: ''},
+    }
+
+    let tasks = taskType === 'normal' ? tasksNormal 
+        : taskType === 'inverse' ? inverseTasks
+        : tasksNormal
+
+    let initialState = {}
+
+    switch (taskType) {
+        case 'normal':
+            tasks = tasksNormal
+            initialState = {
+                matrix: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
+                matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
+                vecStart:{...tasks[1].startVec, 'old':tasks[1].startVec, 'change':'done'},
+                vecEnd:{...tasks[1].endVec, 'old':tasks[1].endVec, 'change':'done'},
+               // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
+               // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
+                currentTask:{num:1, type:tasks[1].type, description:tasks[1].description},
+                solve: false
+            }
+            break;
+        case 'inverse':
+            tasks = inverseTasks
+            initialState = {
+                matrixStart: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
+                matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+                matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
+                currentTask:{num:1, type:tasks[1].type, description:tasks[1].description},
+                solve: false
+            }
+            break;
+        default:
+            break
     }
 
     const reducer = (state, action) => {
-        let vec_start = {'x':state.vecStart.x,'y':state.vecStart.y}
-        let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
-        let solve = checkSolve(state.matrixStart.new, state.matrixEnd.new, vec_start, vec_end)
+        let solve = false
+        if (action.type !== 'task') {
+            switch (taskType) {
+                case 'normal' :
+                    let vec_start = {...state.vecStart, ...action.data}
+                    let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
+                    solve = checkSolve(state.matrix.new, state.matrixEnd.new, vec_start, vec_end)
+                    break;
+                case 'inverse':
+                    let mult = matMult(state.matrixStart.new, action.data.new)
+                    solve = mult.every((x, i) => state.matrixEnd.new[i] === x)
+                    break;
+                default:
+                    solve = false;
+                    break;
+            }
+        }
         switch (action.type) {
             case 'matrix':
-                return {...state, matrixStart: {...action.data}, solve:solve}
+                return {...state, matrix: {...action.data}, solve:solve}
             case 'vector':
                 return {...state, vecStart: {...state.vecStart,...action.data}, solve:solve}
             case 'task':
                 let nextTaskNo = state.currentTask.num+1
                 if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
                 let nextTask = tasks[nextTaskNo]
-                return {
+                let newState = {
                     ...state,
                     currentTask:{num:nextTaskNo,type:nextTask.type, description:nextTask.description},
-                    matrixStart:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
-                    matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
-                    vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
-                    vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
-                    solve:{'x':false,'y':false}
                 }
+                switch (taskType) {
+                    case 'normal':
+                        newState = {...newState,
+                            matrix:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                            matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
+                            vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
+                            vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
+                            solve:false,
+                        }
+                        break;
+                    case 'inverse':
+                        newState = {...newState,
+                            matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                            matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
+                            matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+                            //vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
+                            //vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
+                            solve:false,
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return newState
             default:
                 return {...state}
         }
@@ -72,16 +142,18 @@ const Tasks = props => {
         size : 20, // size of grid squares
         startX: 15,
         startY: 15,
-        majorAxColour: inherit.major, // default colours
-        minorAxColour: inherit.minor, 
-        backgroundColour: inherit.background,
-        vectorColour: 'green'
+        majorAxColour: inherit.majorAxColour, // default colours
+        minorAxColour: inherit.minorAxColour, 
+        minorAxSecColour: inherit.minorAxSecColour,
+        backgroundColour: inherit.backgroundColour,
+        vectorColour: inherit.vectorColour,
     }
 
     const selection = inherit.selection // are we in the selection window?
 
     const grid = (ctx,
         colourMinor=gridProps.minorAxColour,
+        colourMinorSec=gridProps.minorAxSecColour,
         colourMajor=gridProps.majorAxColour,
         colourVector=gridProps.vectorColour,
         transform,
@@ -91,7 +163,7 @@ const Tasks = props => {
             let height = ctx.canvas.height    
             ctx.save()
             for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
-                let colour = i%5 ===0 ? colourMinor : 'grey'
+                let colour = i%5 ===0 ? colourMinor : colourMinorSec
                 colour = i===0 ? colourMajor : colour
                 let lineWidth = i%5===0 ? 1.2 : 0.35
                 lineWidth = i===0 ? 2 : lineWidth
@@ -123,7 +195,6 @@ const Tasks = props => {
                 oldSize: windowSize
             })
         }
-
 
         window.addEventListener('resize', handleResize)
 
@@ -160,7 +231,18 @@ const Tasks = props => {
             let mat = [matrix.old[0],matrix.old[1],matrix.old[2],matrix.old[3]]
             mat[position] = parseInt(mat[position])+(change/5)*frameCount
 
-            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'green',mat, vec.new)
+            let vector={x:0,y:0}
+
+            switch (taskType){
+                case 'normal':
+                    vector = vec.new
+                    break;
+                case 'inverse':
+                    mat = matMult(state.matrixStart.new, mat)
+                    break;
+            }
+
+            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector)
 
             //if (showEigen) eigenVector(context,mat)
             if (frameCount===5) {
@@ -182,25 +264,26 @@ const Tasks = props => {
             mat,
             disVector={'x':0,'y':0},
             backgroundColour=gridProps.backgroundColour, 
-            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour}, 
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour,minorSec:gridProps.minorAxSecColours}, 
             ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
-                grid(context, gridColour.minor, gridColour.major, 'green',mat, disVector)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, 'green',mat, disVector)
                 //if (showEigen) eigenVector(context,mat)
         }
 
-        let matrix = state.matrixStart
+        let matrix = state.matrix
 
         let mat = (matrix.new[matrix.change] !=='') ? matrix.new
             : matrix.old
 
+        if (taskType === 'inverse') mat = matMult(state.matrixStart.new, mat)
         if (matrix.change !== 'done' && matrix.new[matrix.change]!=='') {
             animate(context1, canvas1, matrix, state.vecStart)
         }
         else {
             render(context1, canvas1, mat, state.vecStart)
         }
-        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white'})
+        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
@@ -215,10 +298,10 @@ const Tasks = props => {
         e.preventDefault()
         let value = e.target.value
         let position = pos-1
-        let matrix = state.matrixStart
+        let matrix = state.matrix
         let oldMatrix = [matrix.new[0],matrix.new[1],matrix.new[2],matrix.new[3]]
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
-        let newMatrix = state.matrixStart.new
+        let newMatrix = state.matrix.new
         newMatrix[position] = value
         updateState({
             type: 'matrix',
@@ -232,7 +315,7 @@ const Tasks = props => {
 
     const numberInput = (position) =>{
         return (
-            <input className='matrixInput'  type="number" value={state.matrixStart.new[position-1] } disabled={vec ? 'disabled':''} key={position+'matrixInput'}
+            <input className='matrixInput'  type="number" value={state.matrix.new[position-1] } disabled={vec ? 'disabled':''} key={position+'matrixInput'}
                 onChange={e => updateMatrix(e, position)}/>
         )
     }
@@ -266,7 +349,7 @@ const Tasks = props => {
             <div className={'matrixBox boxOpen'}>
                 <p className='boxTitle'>Current Task: {state.currentTask.num}</p>
                 <p style={{color:'white'}}>{state.currentTask.description}</p>
-                    <>
+                    {taskType !== 'inverse' ? <>
                         <p className='boxTitle'>
                             Input Vector
                         </p>
@@ -276,9 +359,10 @@ const Tasks = props => {
                         <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
                                 onChange={e => updateVec(e, 'y') }/></p>
                     </>
+                    : <></>}
                     <>
                         <p className='boxTitle'>Set Matrix</p>
-                        <p style={{color:'white'}}>{!vec ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
+                        <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
                         <p>
                             {
                                 [1,2].map(pos => numberInput(pos) )
@@ -307,13 +391,16 @@ const Tasks = props => {
                     {state.matrixEnd.new[2]} &nbsp; &nbsp; &nbsp; {state.matrixEnd.new[3]}
                 </p>
                 
-                <p className='boxTitle'>Vector</p>
-                <p className='matrixDisplay'>
-                    {state.vecEnd.x}
-                </p>
-                <p className='matrixDisplay'>
-                    {state.vecEnd.y}
-                </p>
+                {taskType !== 'inverse' ? <>
+                    <p className='boxTitle'>Vector</p>
+                    <p className='matrixDisplay'>
+                        {state.vecEnd.x}
+                    </p>
+                    <p className='matrixDisplay'>
+                        {state.vecEnd.y}
+                    </p>
+                </> : <></>
+                }
             </div>
         : <></>}
         <div className='canvas1'>
@@ -322,7 +409,7 @@ const Tasks = props => {
         <div className='canvas2'>
             <canvas ref={canvas2Ref} {...props}/>
         </div>
-        {state.solve.x && state.solve.y  && !selection ?
+        {state.solve  && !selection ?
             <div className='help'>
                 <h3>Well done you have completed this task</h3>
                 <p>{state.currentTask.description}</p>

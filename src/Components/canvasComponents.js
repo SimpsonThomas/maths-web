@@ -143,7 +143,8 @@ const checkSolve = (mat, endMat, vec, endVec) => {
     let endReal = matVecMult(endMat,endVec)
     let x_solve = (startReal.x === endReal.x) ? true : false
     let y_solve = (startReal.y === endReal.y) ? true : false
-    return {'x':x_solve, 'y':y_solve}
+    console.log(x_solve & y_solve)
+    return x_solve && y_solve
 }
 
 const SettingsBox = props => {
