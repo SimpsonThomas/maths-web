@@ -433,10 +433,22 @@ const Tasks = props => {
     
       {showHelp && !selection ?
             <div className='help'>
-                <h3>Tasks</h3>
-                <p>Here you get to play around with vectors and matrices to get them to match</p>
-                <p>Adjust either the matrix or vector to solve the task</p>
-                <p>The aim is to get the two vectors to match</p>
+                { taskType === 'normal' ?
+                <>
+                    <h3>Tasks</h3>
+                    <p>Here you get to play around with vectors and matrices to get them to match</p>
+                    <p>Adjust either the matrix or vector to solve the task</p>
+                    <p>The aim is to get the two vectors to match</p>
+                </>
+
+                : 
+                <>
+                    <h3>INverse</h3>
+                    <p>Here you get to play around with vectors and matrices to get them to match</p>
+                    <p>Adjust either the matrix or vector to solve the task</p>
+                    <p>The aim is to get the two vectors to match</p>
+                </>
+                }
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
                     Hide
                 </button>
