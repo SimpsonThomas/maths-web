@@ -16,7 +16,7 @@ const App = props => {
 
   let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
 
-  console.log(process.env.REACT_APP_MODE)
+  console.log(process.env)
   // creating tasks reducer state
   const reducer = (state, action) => {
     let solve = false
