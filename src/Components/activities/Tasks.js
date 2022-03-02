@@ -240,6 +240,8 @@ const Tasks = props => {
                 case 'inverse':
                     mat = matMult(state.matrixStart.new, mat)
                     break;
+                default:
+                    break;
             }
 
             grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector)
