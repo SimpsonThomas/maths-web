@@ -5,16 +5,11 @@ import React, { useEffect, useReducer, useState } from "react";
 import Tasks from './Components/activities/Tasks';
 import { gridProps } from './Components/constants/constants';
 import { inverseTasks, tasksNormal } from './Components/constants/tasksList';
-import { checkSolve, matMult } from './Components/canvasComponents';
+import { checkSolve, initaliseCanvas, matMult } from './Components/canvasComponents';
 //import Canvas3D from './Components/3dcanvas';
 
 const App = props => {
-  const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
-  const [vector, setVector] = useState( {'x':0, 'y':0, old:{'x':0,'y':0}, 'change': 'done'} ) 
-  const [scaleAngle, setScaleAngle] = useState( { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} } )
-  const [showEigen, setShowEigen] = useState(true)
-
-  let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
+  let localStore = window.localStorage
 
   let activityStart
 
@@ -29,12 +24,49 @@ const App = props => {
       activityStart = {set:'Initial', selection: false}
   }
 
+  if (!window.localStorage.getItem('screen')) window.localStorage.setItem('screen', JSON.stringify(activityStart))
+
+  activityStart = JSON.parse( localStore.getItem('screen'))
+
+  const [activity, setActivity] = useState(activityStart)
+
+  useEffect(() => {
+    window.localStorage.setItem('screen', JSON.stringify(activity))
+  }, [activity])
+  
+  let initialStateCanvas = {
+    matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
+    vector: {'x':0, 'y':0, old:{'x':0,'y':0}, 'change': 'done'},
+    angle: { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} },
+    eigen: true
+  }
+
+  if (!window.localStorage.getItem('canvasState')) window.localStorage.setItem('canvasState', JSON.stringify(initialStateCanvas))
+
+  initialStateCanvas = JSON.parse( localStore.getItem('canvasState'))
+
+  const [matrix, setMatrix] = useState( initialStateCanvas.matrix )
+  const [vector, setVector] = useState( initialStateCanvas.vector ) 
+  const [scaleAngle, setScaleAngle] = useState( initialStateCanvas.angle )
+  const [showEigen, setShowEigen] = useState(initialStateCanvas.eigen)
+
+  useEffect(() => {
+    let saveState = {
+      matrix: matrix,
+      vector: vector,
+      angle: scaleAngle,
+      eigen: showEigen,
+    }
+    window.localStorage.setItem('canvasState', JSON.stringify(saveState))
+  }, [matrix, vector, scaleAngle, showEigen])
+
+  let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
+
   // creating tasks reducer state
-  const reducer = (state, action) => {
+  const reducerTask = (state, action) => {
     let solve = false
     let taskType = state.taskType
     let tasks =  taskType === 'normal' ? tasksNormal : inverseTasks
-    console.log(state)
     if (action.type !== 'task') {
         switch (taskType) {
             case 'normal' :
@@ -118,14 +150,12 @@ const App = props => {
     currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description},
     solve: false
   }
-  
-  let localStore = window.localStorage
-  
+
   if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('inverseState', JSON.stringify(initialStateNormal))
   if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('normalState', JSON.stringify(initialStateInverse))
 
-  const [stateNormal, updateStateNormal] = useReducer(reducer, JSON.parse( localStore.getItem('normalState')))
-  const [stateInverse, updateStateInverse] = useReducer(reducer, JSON.parse( localStore.getItem('inverseState')))
+  const [stateNormal, updateStateNormal] = useReducer(reducerTask, JSON.parse( localStore.getItem('normalState')))
+  const [stateInverse, updateStateInverse] = useReducer(reducerTask, JSON.parse( localStore.getItem('inverseState')))
 
   /*useEffect(() => {
     let localStore = window.localStorage
@@ -142,8 +172,6 @@ const App = props => {
   let canvasProps = {...gridProps, state:canvasState}
   selectionProps.selection = true
   canvasProps.selection = false
-
-  const [activity, setActivity] = useState(activityStart)
 
   const selectActivty = (e, type, select=false) => {
     e.preventDefault()
