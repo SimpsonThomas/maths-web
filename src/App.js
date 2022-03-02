@@ -1,9 +1,11 @@
 import './App.css';
 import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import Tasks from './Components/activities/Tasks';
 import { gridProps } from './Components/constants/constants';
+import { inverseTasks, tasksNormal } from './Components/constants/tasksList';
+import { checkSolve, matMult } from './Components/canvasComponents';
 //import Canvas3D from './Components/3dcanvas';
 
 const App = props => {
@@ -13,6 +15,95 @@ const App = props => {
   const [showEigen, setShowEigen] = useState(true)
 
   let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
+
+  // creating tasks reducer state
+  const reducer = (state, action) => {
+    let solve = false
+    let tasks = {}
+    let taskType = state.taskType
+    if (action.type !== 'task') {
+        switch (taskType) {
+            case 'normal' :
+                let vec_start = {...state.vecStart, ...action.data}
+                let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
+                solve = checkSolve(state.matrix.new, state.matrixEnd.new, vec_start, vec_end)
+                tasks = tasksNormal
+                break;
+            case 'inverse':
+                let mult = matMult(state.matrixStart.new, action.data.new)
+                solve = mult.every((x, i) => state.matrixEnd.new[i] === x)
+                tasks = inverseTasks
+                break;
+            default:
+                solve = false;
+                break;
+        }
+    }
+    switch (action.type) {
+        case 'matrix':
+            return {...state, matrix: {...action.data}, solve:solve}
+        case 'vector':
+            return {...state, vecStart: {...state.vecStart,...action.data}, solve:solve}
+        case 'task':
+            let nextTaskNo = state.currentTask.num+1
+            if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
+            let nextTask = tasks[nextTaskNo]
+            let newState = {
+                ...state,
+                currentTask:{num:nextTaskNo,type:nextTask.type, description:nextTask.description},
+            }
+            switch (taskType) {
+                case 'normal':
+                    newState = {...newState,
+                        matrix:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                        matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
+                        vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
+                        vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
+                        solve:false,
+                    }
+                    break;
+                case 'inverse':
+                    newState = {...newState,
+                        matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                        matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
+                        matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+                        //vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
+                        //vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
+                        solve:false,
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return newState
+        default:
+            return {...state}
+    }
+  }
+
+  let initialStateNormal = {
+    taskType: 'normal',
+    matrix: {'new':tasksNormal[1].startMat,'old':tasksNormal[1].startMat, 'change':'done'},
+    matrixEnd: {'new':tasksNormal[1].endMat,'old':tasksNormal[1].endMat, 'change':'done'},
+    vecStart:{...tasksNormal[1].startVec, 'old':tasksNormal[1].startVec, 'change':'done'},
+    vecEnd:{...tasksNormal[1].endVec, 'old':tasksNormal[1].endVec, 'change':'done'},
+   // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
+   // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
+    currentTask:{num:1, type:tasksNormal[1].type, description:tasksNormal[1].description},
+    solve: false
+  }
+
+  let initialStateInverse = {
+    taskType: 'inverse',
+    matrixStart: {'new':inverseTasks[1].startMat,'old':inverseTasks[1].startMat, 'change':'done'},
+    matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+    matrixEnd: {'new':inverseTasks[1].endMat,'old':inverseTasks[1].endMat, 'change':'done'},
+    currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description},
+    solve: false
+  }
+
+  const [stateNormal, updateStateNormal] = useReducer(reducer, initialStateNormal)
+  const [stateInverse, updateStateInverse] = useReducer(reducer, initialStateInverse)
 
   let selectionProps = {...gridProps, state:canvasState}
   let canvasProps = {...gridProps, state:canvasState}
@@ -48,11 +139,11 @@ const App = props => {
   }
 
   const activities = {
-    'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator', state:canvasState},
-    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal'}, state:canvasState},
+    'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator',},
+    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
-    'Inverse':{activityCanvas: Tasks, name:'Inverse', description: 'Find the inverse of the matrix', props:{taskType:'inverse'}, state:canvasState},
-    'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator', state:canvasState},
+    'Inverse':{activityCanvas: Tasks, name:'Inverse', description: 'Find the inverse of the matrix', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
+    'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
 
   return (
