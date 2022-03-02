@@ -54,21 +54,22 @@ const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='') =>
 
     
     // creating arrowheads
+    if (start.x - end.x || start.y-end.y) {
+        var endRadians=Math.atan((endMat.y-startMat.y)/(endMat.x-startMat.x));
+        endRadians+=((endMat.x>=startMat.x)?90:-90)*Math.PI/180;
 
-    var endRadians=Math.atan((endMat.y-startMat.y)/(endMat.x-startMat.x));
-    endRadians+=((endMat.x>=startMat.x)?90:-90)*Math.PI/180;
-
-    ctx.beginPath()
-    ctx.save()
-    //ctx.transform(transform[0],transform[2],transform[1],transform[3],0,0)
-    ctx.translate(endMat.x, endMat.y)
-    ctx.rotate(endRadians)
-    ctx.moveTo(0,0)
-    ctx.lineTo(5,10)
-    ctx.lineTo(-5,10)
-    ctx.closePath()
-    ctx.restore()
-    ctx.fill()
+        ctx.beginPath()
+        ctx.save()
+        //ctx.transform(transform[0],transform[2],transform[1],transform[3],0,0)
+        ctx.translate(endMat.x, endMat.y)
+        ctx.rotate(endRadians)
+        ctx.moveTo(0,0)
+        ctx.lineTo(5,10)
+        ctx.lineTo(-5,10)
+        ctx.closePath()
+        ctx.restore()
+        ctx.fill()
+    }
 }
 
 const initaliseCanvas = (context, canvas, background='white') => {
