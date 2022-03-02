@@ -31,6 +31,7 @@ const Canvas = props => {
     }
 
     const selection = inherit.selection // are we in the selection window?
+    console.log(selection)
 
     const eigenVector = (ctx, transform) => {
         const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
@@ -211,7 +212,7 @@ const Canvas = props => {
         <div className={(saveMatrix) ? 'smallCanvas' : 'hideCanvas'}>
             <canvas ref={smallCanvasRef} {...props}/>
         </div>
-      {showHelp ?
+      {showHelp && !selection?
             <div className='help'>
                 <h3>Grid view</h3>
                 <p> Now you've played around with the basis vector view we can now look 

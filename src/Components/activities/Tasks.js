@@ -203,9 +203,7 @@ const Tasks = props => {
             }
         })
     }
-
     const vec = state.currentTask.type==='vec'
-
     const html = <>
         {!selection ? 
             <div className={'matrixBox boxOpen'}>
