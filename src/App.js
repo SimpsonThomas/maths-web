@@ -1,7 +1,7 @@
 import './App.css';
 import Canvas from './Components/canvas';
 import Basic from './Components/basicCanvas';
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import Tasks from './Components/activities/Tasks';
 import { gridProps } from './Components/constants/constants';
 import { inverseTasks, tasksNormal } from './Components/constants/tasksList';
@@ -15,8 +15,6 @@ const App = props => {
   const [showEigen, setShowEigen] = useState(true)
 
   let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
-
-  console.log(process.env.NODE_ENV)
 
   let activityStart
 
@@ -34,8 +32,9 @@ const App = props => {
   // creating tasks reducer state
   const reducer = (state, action) => {
     let solve = false
-    let tasks = {}
     let taskType = state.taskType
+    let tasks =  taskType === 'normal' ? tasksNormal : inverseTasks
+    console.log(state)
     if (action.type !== 'task') {
         switch (taskType) {
             case 'normal' :
@@ -62,6 +61,7 @@ const App = props => {
         case 'task':
             let nextTaskNo = state.currentTask.num+1
             if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
+            console.log(tasks)
             let nextTask = tasks[nextTaskNo]
             let newState = {
                 ...state,
@@ -91,6 +91,8 @@ const App = props => {
                     break;
             }
             return newState
+          case 'full':
+            return {...action.data}
         default:
             return {...state}
     }
@@ -116,9 +118,25 @@ const App = props => {
     currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description},
     solve: false
   }
+  
+  let localStore = window.localStorage
+  
+  if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('inverseState', JSON.stringify(initialStateNormal))
+  if (!window.localStorage.getItem('inverseState')) window.localStorage.setItem('normalState', JSON.stringify(initialStateInverse))
 
-  const [stateNormal, updateStateNormal] = useReducer(reducer, initialStateNormal)
-  const [stateInverse, updateStateInverse] = useReducer(reducer, initialStateInverse)
+  const [stateNormal, updateStateNormal] = useReducer(reducer, JSON.parse( localStore.getItem('normalState')))
+  const [stateInverse, updateStateInverse] = useReducer(reducer, JSON.parse( localStore.getItem('inverseState')))
+
+  /*useEffect(() => {
+    let localStore = window.localStorage
+    updateStateNormal( {data:JSON.parse( localStore.getItem('normalState') ), type:'full'} )
+    updateStateInverse( {data:JSON.parse( localStore.getItem('inverseState') ), type:'full'} )
+  }, [])*/
+
+  useEffect(() => {
+    window.localStorage.setItem('inverseState', JSON.stringify(stateInverse))
+    window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
+  }, [stateNormal, stateInverse])
 
   let selectionProps = {...gridProps, state:canvasState}
   let canvasProps = {...gridProps, state:canvasState}
