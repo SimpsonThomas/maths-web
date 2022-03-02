@@ -5,7 +5,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import Tasks from './Components/activities/Tasks';
 import { gridProps } from './Components/constants/constants';
 import { inverseTasks, tasksNormal } from './Components/constants/tasksList';
-import { checkSolve, initaliseCanvas, matMult } from './Components/canvasComponents';
+import { checkSolve, matMult } from './Components/canvasComponents';
 //import Canvas3D from './Components/3dcanvas';
 
 const App = props => {
