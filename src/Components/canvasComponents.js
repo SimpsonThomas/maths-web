@@ -1,6 +1,5 @@
 //import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
-import { gridProps } from './props'
 
 const drawLine3D = (ctx, start, end, colour='red', transform=[1,0,0,1],width=1,) => { // drawing a line
     //let width = ctx.canvas.width
@@ -97,14 +96,12 @@ const calculateVectors = (transform) => {
     return [eigenVal1, eigenVal2, eigenVec1, eigenVec2]
 }
 
-const eigenVector = (ctx, transform) => {
+const eigenVector = (ctx, transform,gridSize) => {
     const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
 
     
     let width = ctx.canvas.width
     let height = ctx.canvas.height
-
-    let gridSize = gridProps.size
     drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
     // drawLine(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'yellow')
     drawLine(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'yellow')
@@ -146,7 +143,7 @@ const checkSolve = (mat, endMat, vec, endVec) => {
     let endReal = matVecMult(endMat,endVec)
     let x_solve = (startReal.x === endReal.x) ? true : false
     let y_solve = (startReal.y === endReal.y) ? true : false
-    return {'x':x_solve, 'y':y_solve}
+    return x_solve && y_solve
 }
 
 const SettingsBox = props => {
@@ -308,6 +305,6 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve, matMult}
+export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve, matMult, matVecMult}
 
 export default SettingsBox

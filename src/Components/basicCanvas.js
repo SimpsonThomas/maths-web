@@ -7,7 +7,6 @@ const Basic = props => {
 
     // creating state items 
     let state = inherit.state
-
     const [matrix, setMatrix] = state.matrix
     const [vector, setVector] = state.vector
     const [scaleAngle, setScaleAngle] = state.scaleAngle
@@ -18,11 +17,9 @@ const Basic = props => {
     // basic props for the grid
     const gridProps = {
         size : 100, // size of grid squares
-        startX: 15,
-        startY: 15,
-        majorAxColour: inherit.major, // default colours
-        minorAxColour: inherit.minor, 
-        backgroundColour: inherit.background,
+        majorAxColour: inherit.majorAxColour, // default colours
+        minorAxColour: inherit.minorAxColour, 
+        backgroundColour: inherit.backgroundColour,
     }
 
     const selection = inherit.selection

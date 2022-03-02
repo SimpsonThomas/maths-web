@@ -22,10 +22,9 @@ const Canvas = props => {
     // basic props for the grid
     const gridProps = {
         size : 20, // size of grid squares
-        startX: 15,
-        startY: 15,
-        majorAxColour: inherit.major, // default colours
-        minorAxColour: inherit.minor, 
+        majorAxColour: inherit.majorAxColour, // default colours
+        minorAxColour: inherit.minorAxColour,
+        minorAxSecColour: inherit.minorAxSecColour,
         backgroundColour: inherit.background,
         vectorColour: 'yellow'
     }
@@ -47,6 +46,7 @@ const Canvas = props => {
 
     const grid = (ctx,
         colourMinor=gridProps.minorAxColour,
+        colourSecMinor=gridProps.minorAxSecColour,
         colourMajor=gridProps.majorAxColour,
         colourVector=gridProps.vectorColour,
         transform=[1,0,0,1]) => { // creating the grid
@@ -56,7 +56,7 @@ const Canvas = props => {
         ctx.save()
 
         for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
-            let colour = i%5 ===0 ? colourMinor : 'grey'
+            let colour = i%5 ===0 ? colourMinor : colourSecMinor
             colour = i===0 ? colourMajor : colour
             let lineWidth = i%5===0 ? 1.2 : 0.35
             lineWidth = i===0 ? 2 : lineWidth
@@ -115,7 +115,8 @@ const Canvas = props => {
         let frameCount = 0
         let animationFrameId
 
-        const animateMat = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1]) => {
+        const animateMat = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1],
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}) => {
             // animating the changes in the matrix
 
             // initialising the canvas
@@ -131,7 +132,7 @@ const Canvas = props => {
 
             mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
 
-            grid(context, gridProps.minorAxColour, gridProps.majorAxColour, 'yellow',mat)
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat)
 
             if (showEigen) eigenVector(context,mat)
             if (frameCount===5) {
@@ -149,10 +150,10 @@ const Canvas = props => {
             canvas, 
             mat=[1,0,0,1],
             backgroundColour=gridProps.backgroundColour, 
-            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour}, ) => {
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}, ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
                 
-                grid(context, gridColour.minor, gridColour.major, 'green',mat)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat)
                 if (showEigen) eigenVector(context,mat)
         }
 
