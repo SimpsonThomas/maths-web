@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
-import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLine, drawLineArrow, initaliseCanvas} from "./canvasComponents";
+import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLineArrow, initaliseCanvas} from "./canvasComponents";
 import { grid } from "./grid";
 
 const Canvas = props => {
