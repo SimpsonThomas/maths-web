@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { checkSolve, initaliseCanvas, matMult} from "../canvasComponents";
+import { initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
 
 const Tasks = props => {
@@ -10,130 +10,7 @@ const Tasks = props => {
     //const [scaleAngle, setScaleAngle] = inherit.scaleAngle
     //const [showEigen, setShowEigen] = inherit.eigen
 
-    // list of tasks to complete
-    const tasksNormal = {
-        1 : {type:'mat', startMat: [1,0,0,1], endMat: [1,0,0,1], startVec: {'x':1,'y':1}, endVec: {'x':5,'y':5}, 
-            description: 'Can you scale the vector to match? ',
-            endCard: 'Congratualations! Well done on completing the first task'},
-        2 : {type:'vec', startMat: [2,0,0,2], endMat: [-1,0,0,-1], startVec: {'x':5,'y':5}, endVec: {'x':5,'y':5},
-            description: 'Here you have both a scale and a reflection',
-            endCard: ''},
-        3 : {type:'mat', startMat: [3,0,0,1], endMat: [1,0,0,1], startVec: {'x':-5,'y':1}, endVec: {'x':-5,'y':5}, 
-            description: 'Can you figure out the matrix to map this vector ',
-            endCard: ''},
-        4 : {type:'vec', startMat: [4,1,1,4], endMat: [1,0,0,1], startVec: {'x':1,'y':-5}, endVec: {'x':5,'y':-5}, 
-            description: 'Can you figure out the matrix to map this vector ',
-            endCard: ''},
-    }
-
-    // inverse tasks to be implemented
-    const inverseTasks = {
-        1 : {type:'inverse', startMat: [5,0,0,5], endMat: [1,0,0,1], 
-            description: 'Can you inverse this matrix? ',
-            endCard: 'Congratualations! Well done on completing the first task'},
-        2 : {type:'inverse', startMat: [-4,0,0,4], endMat: [1,0,0,1], 
-            description: '',
-            endCard: ''},
-        3 : {type:'inverse', startMat: [1,1,1,1], endMat: [1,0,0,1],
-            description: 'Can you figure out the matrix to map this vector ',
-            endCard: ''},
-    }
-
-    let tasks = taskType === 'normal' ? tasksNormal 
-        : taskType === 'inverse' ? inverseTasks
-        : tasksNormal
-
-    let initialState = {}
-
-    switch (taskType) {
-        case 'normal':
-            tasks = tasksNormal
-            initialState = {
-                matrix: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
-                matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
-                vecStart:{...tasks[1].startVec, 'old':tasks[1].startVec, 'change':'done'},
-                vecEnd:{...tasks[1].endVec, 'old':tasks[1].endVec, 'change':'done'},
-               // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
-               // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
-                currentTask:{num:1, type:tasks[1].type, description:tasks[1].description},
-                solve: false
-            }
-            break;
-        case 'inverse':
-            tasks = inverseTasks
-            initialState = {
-                matrixStart: {'new':tasks[1].startMat,'old':tasks[1].startMat, 'change':'done'},
-                matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
-                matrixEnd: {'new':tasks[1].endMat,'old':tasks[1].endMat, 'change':'done'},
-                currentTask:{num:1, type:tasks[1].type, description:tasks[1].description},
-                solve: false
-            }
-            break;
-        default:
-            break
-    }
-
-    const reducer = (state, action) => {
-        let solve = false
-        if (action.type !== 'task') {
-            switch (taskType) {
-                case 'normal' :
-                    let vec_start = {...state.vecStart, ...action.data}
-                    let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
-                    solve = checkSolve(state.matrix.new, state.matrixEnd.new, vec_start, vec_end)
-                    break;
-                case 'inverse':
-                    let mult = matMult(state.matrixStart.new, action.data.new)
-                    solve = mult.every((x, i) => state.matrixEnd.new[i] === x)
-                    break;
-                default:
-                    solve = false;
-                    break;
-            }
-        }
-        switch (action.type) {
-            case 'matrix':
-                return {...state, matrix: {...action.data}, solve:solve}
-            case 'vector':
-                return {...state, vecStart: {...state.vecStart,...action.data}, solve:solve}
-            case 'task':
-                let nextTaskNo = state.currentTask.num+1
-                if (!Object.keys(tasks).includes(nextTaskNo.toString() ) ) nextTaskNo = 1
-                let nextTask = tasks[nextTaskNo]
-                let newState = {
-                    ...state,
-                    currentTask:{num:nextTaskNo,type:nextTask.type, description:nextTask.description},
-                }
-                switch (taskType) {
-                    case 'normal':
-                        newState = {...newState,
-                            matrix:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
-                            matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
-                            vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
-                            vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
-                            solve:false,
-                        }
-                        break;
-                    case 'inverse':
-                        newState = {...newState,
-                            matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
-                            matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
-                            matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
-                            //vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
-                            //vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
-                            solve:false,
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                return newState
-            default:
-                return {...state}
-        }
-    }
-
-    const [state, updateState] = useReducer(reducer, initialState)
+    const [state, updateState] = inherit.state
 
     const canvas1Ref = useRef(null)
     const canvas2Ref = useRef(null)
@@ -151,36 +28,6 @@ const Tasks = props => {
     }
 
     const selection = inherit.selection // are we in the selection window?
-
-    /*const grid = (ctx,
-        colourMinor=gridProps.minorAxColour,
-        colourMinorSec=gridProps.minorAxSecColour,
-        colourMajor=gridProps.majorAxColour,
-        colourVector=gridProps.vectorColour,
-        transform,
-        disVector=state.vecStart) => { // creating the grid
-            let gridSize = gridProps.size
-            let width = ctx.canvas.width
-            let height = ctx.canvas.height    
-            ctx.save()
-            for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
-                let colour = i%5 ===0 ? colourMinor : colourMinorSec
-                colour = i===0 ? colourMajor : colour
-                let lineWidth = i%5===0 ? 1.2 : 0.35
-                lineWidth = i===0 ? 2 : lineWidth
-
-                // x gridlines
-                drawLine(ctx, {x:-50*width,y:i*gridSize}, {x:50*width,y:i*gridSize}, colour, transform, lineWidth)
-                drawLine(ctx, {x:-50*width,y:-i*gridSize}, {x:50*width,y:-i*gridSize}, colour,transform, lineWidth)
-                // y gridlines
-                drawLine(ctx, {y:-50*height,x:i*gridSize}, {y:50*height,x:i*gridSize}, colour,transform, lineWidth)
-                drawLine(ctx, {y:-50*height,x:-i*gridSize}, {y:50*height,x:-i*gridSize}, colour,transform, lineWidth)
-            }
-
-            // draw the vector
-            drawLine(ctx, {x:0,y:0}, {x:disVector.x*gridSize, y:disVector.y*gridSize}, colourVector,transform, 2, 'test')
-            ctx.restore()
-    }*/
 
     const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
         width: undefined,
@@ -446,9 +293,9 @@ const Tasks = props => {
 
                 : 
                 <>
-                    <h3>INverse</h3>
-                    <p>Here you get to play around with vectors and matrices to get them to match</p>
-                    <p>Adjust either the matrix or vector to solve the task</p>
+                    <h3>Invert</h3>
+                    <p>Here you get to play around with matrices to get them to match</p>
+                    <p>Adjust either the matrix to find inverse</p>
                     <p>The aim is to get the two vectors to match</p>
                 </>
                 }

@@ -1,5 +1,5 @@
 import { drawLine, drawLineArrow } from "./canvasComponents"
-import { gridProps } from "./constants"
+import { gridProps } from "./constants/constants"
 
 const grid = (ctx,
     colourMinor=gridProps.minorAxColour,
