@@ -4,7 +4,6 @@ import Basic from './Components/basicCanvas';
 import React, { useState } from "react";
 import Tasks from './Components/activities/Tasks';
 //import Canvas3D from './Components/3dcanvas';
-import Inverse from './Components/activities/Inverse';
 
 const App = props => {
   const [matrix, setMatrix] = useState( {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'} )
