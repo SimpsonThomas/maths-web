@@ -142,7 +142,19 @@ const Tasks = props => {
     })
 
     //const [switchMat, setSwitchMat] = useState(false)
-    const [showHelp, setShowHelp] = useState(true)
+
+    let helpSaveName = 'helpTask'+taskType
+    let localStore = window.localStorage
+
+    if (!localStore.getItem(helpSaveName)) localStore.setItem(helpSaveName, JSON.stringify(true))
+
+    let initialHelp = JSON.parse( localStore.getItem(helpSaveName))
+
+    const [showHelp, setShowHelp] = useState(initialHelp)
+
+    useEffect(() => {
+        window.localStorage.setItem(helpSaveName, JSON.stringify(showHelp))
+    }, [showHelp,helpSaveName])
 
     const updateMatrix = (e, pos) => {
         e.preventDefault()
