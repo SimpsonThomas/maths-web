@@ -11,8 +11,6 @@ import { checkSolve, matMult } from './Components/canvasComponents';
 const App = props => {
   let localStore = window.localStorage
 
-  console.log(process.env.REACT_APP_CURRENT_GIT_SHA)
-
   const APP_VERSION = process.env.REACT_APP_CURRENT_GIT_SHA;
 
   if (typeof localStorage.APP_VERSION === 'undefined' || localStorage.APP_VERSION === null) {
@@ -24,6 +22,8 @@ const App = props => {
   }
 
   let activityStart
+
+  console.log(process.env.NODE_ENV)
 
   switch(process.env.NODE_ENV){
     case 'production':
@@ -194,19 +194,17 @@ const App = props => {
 
   const activityButton = (Activity=Basic, name='Main', description='Testing testing testing 1231234', extraProps={}) => {
     return (
-      <>
-        <div className='selectionCanvas' key={name}>
-          <button onClick={e => {selectActivty(e, name)}} className='selectionButton'>
-            {name}
-            <p className='activityDescription'>{description}</p>
-            {React.createElement(
-              Activity,
-              {className: 'selectionCanvas', props:{...selectionProps, ...extraProps}, key:{name}},
-              'Click Me'
-            )}
-          </button>
-        </div>
-      </>
+      <div className='selectionCanvas' key={name}>
+        <button onClick={e => {selectActivty(e, name)}} className='selectionButton'>
+          {name}
+          <p className='activityDescription'>{description}</p>
+          {React.createElement(
+            Activity,
+            {className: 'selectionCanvas', props:{...selectionProps, ...extraProps}, key:{name}},
+            'Click Me'
+          )}
+        </button>
+      </div>
     )
   }
 
