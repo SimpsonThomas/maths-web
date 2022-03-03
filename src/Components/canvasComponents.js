@@ -80,11 +80,11 @@ const initaliseCanvas = (context, canvas, background='white') => {
 }
 
 const calculateVectors = (transform) => {
-    let [a,b,c,d] = transform
+    let [a,b,c,d] = transform.map(x => parseFloat(x))
     const trace = a+d
     const det = a*d - b*c
-    const eigenVal1 = trace/2 + ((trace^2)/4-det)^(1/2)
-    const eigenVal2 = trace/2 - ((trace^2)/4-det)^(1/2)
+    const eigenVal1 = trace/2 + ((trace**2)/4-det)**(1/2)
+    const eigenVal2 = trace/2 - ((trace**2)/4-det)**(1/2)
     let eigenVec1 = [1,0]
     let eigenVec2 = [0,1]
     if (c !== 0) {
@@ -290,8 +290,8 @@ const SettingsBox = props => {
                         {
                             showEigen ?
                                 <>
-                                <p className='matrixDisplay'>Value: {eigenVal1} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
-                                <p className='matrixDisplay'>Value: {eigenVal2} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
+                                <p className='matrixDisplay'>Value: {Math.round(eigenVal1*100)/100} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
+                                <p className='matrixDisplay'>Value: {Math.round(eigenVal2*100)/100} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
                                 </>
                             : <></>
                         }
