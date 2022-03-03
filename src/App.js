@@ -19,7 +19,7 @@ const App = props => {
       localStorage.setItem('APP_VERSION', APP_VERSION);
   }
 
-  if (localStorage.APP_VERSION != APP_VERSION) {
+  if (localStorage.APP_VERSION !== APP_VERSION) {
       localStorage.clear();
   }
 
