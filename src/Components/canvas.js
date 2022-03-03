@@ -40,8 +40,8 @@ const Canvas = props => {
         let height = ctx.canvas.height
     
         let gridSize = gridProps.size
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'blue', transform)
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'blue', transform)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 

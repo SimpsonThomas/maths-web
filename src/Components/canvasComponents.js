@@ -29,12 +29,13 @@ const drawLine = (ctx, start, end, colour, transform=[1,0,0,1],width=1,text='') 
     ctx.stroke()
 }
 
-const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='') => { // drawing a line
+const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='',width=2) => { // drawing a line
     //let width = ctx.canvas.width
     //let height = ctx.canvas.height 
     ctx.beginPath()
     ctx.strokeStyle = colour
     ctx.fillStyle = colour
+    ctx.lineWidth = width
     ctx.font = "30px Arial"
     ctx.save()
     ctx.transform(transform[0],transform[2],transform[1],transform[3],0,0)
