@@ -13,8 +13,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "git": "REACT_APP_CURRENT_GIT_SHA=`git rev-parse --short HEAD` react-scripts start",
+    "start": "REACT_APP_CURRENT_GIT_SHA=`git rev-parse --short HEAD` react-scripts start",
+    "build": "REACT_APP_CURRENT_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
