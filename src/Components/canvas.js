@@ -31,7 +31,6 @@ const Canvas = props => {
     }
 
     const selection = inherit.selection // are we in the selection window?
-    console.log(selection)
 
     const eigenVector = (ctx, transform) => {
         const [, , eigenVec1, eigenVec2] = calculateVectors(transform)

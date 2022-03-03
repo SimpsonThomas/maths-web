@@ -11,6 +11,18 @@ import { checkSolve, matMult } from './Components/canvasComponents';
 const App = props => {
   let localStore = window.localStorage
 
+  console.log(process.env.REACT_APP_CURRENT_GIT_SHA)
+
+  const APP_VERSION = process.env.REACT_APP_CURRENT_GIT_SHA;
+
+  if (typeof localStorage.APP_VERSION === 'undefined' || localStorage.APP_VERSION === null) {
+      localStorage.setItem('APP_VERSION', APP_VERSION);
+  }
+
+  if (localStorage.APP_VERSION !== APP_VERSION) {
+      localStorage.clear();
+  }
+
   let activityStart
 
   switch(process.env.NODE_ENV){
