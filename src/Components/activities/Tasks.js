@@ -63,6 +63,7 @@ const Tasks = props => {
         canvas2.height = canvas2.offsetHeight;
 
         let frameCount = 0
+        let frameMax = 10
         let animationFrameId
 
         const animate = (context=context2, canvas=canvas2, matrix, vec) => {
@@ -77,7 +78,7 @@ const Tasks = props => {
             let change = newVal-oldVal
 
             let mat = [matrix.old[0],matrix.old[1],matrix.old[2],matrix.old[3]]
-            mat[position] = parseInt(mat[position])+(change/5)*frameCount
+            mat[position] = parseInt(mat[position])+(change/frameMax)*frameCount
 
             let vector={x:0,y:0}
 
@@ -95,7 +96,7 @@ const Tasks = props => {
             grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector)
 
             //if (showEigen) eigenVector(context,mat)
-            if (frameCount===5) {
+            if (frameCount===frameMax) {
                 updateState({
                     type: 'matrix',
                     data:{

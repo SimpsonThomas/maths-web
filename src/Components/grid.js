@@ -13,7 +13,7 @@ const grid = (ctx,
     let height = ctx.canvas.height    
     ctx.save()
 
-    for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
+    for (let i=-2*Math.max(height/2,width/2); i*gridSize<=0; i++) {
         let colour = i%5 ===0 ? colourMinor : colourSecMinor
         colour = i===0 ? colourMajor : colour
         let lineWidth = i%5===0 ? 1.2 : 0.35
