@@ -63,6 +63,7 @@ const Tasks = props => {
         canvas2.height = canvas2.offsetHeight;
 
         let frameCount = 0
+        let frameMax = 10
         let animationFrameId
 
         const animate = (context=context2, canvas=canvas2, matrix, vec) => {
@@ -77,7 +78,7 @@ const Tasks = props => {
             let change = newVal-oldVal
 
             let mat = [matrix.old[0],matrix.old[1],matrix.old[2],matrix.old[3]]
-            mat[position] = parseInt(mat[position])+(change/5)*frameCount
+            mat[position] = parseInt(mat[position])+(change/frameMax)*frameCount
 
             let vector={x:0,y:0}
 
@@ -92,10 +93,10 @@ const Tasks = props => {
                     break;
             }
 
-            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector)
+            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector,true)
 
             //if (showEigen) eigenVector(context,mat)
-            if (frameCount===5) {
+            if (frameCount===frameMax) {
                 updateState({
                     type: 'matrix',
                     data:{
@@ -117,7 +118,7 @@ const Tasks = props => {
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour,minorSec:gridProps.minorAxSecColours}, 
             ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, 'green',mat, disVector)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, 'green',mat, disVector,true)
                 //if (showEigen) eigenVector(context,mat)
         }
 

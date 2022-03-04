@@ -40,8 +40,8 @@ const Canvas = props => {
         let height = ctx.canvas.height
     
         let gridSize = gridProps.size
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*10, y:-eigenVec1[1]*gridSize*10}, 'blue', transform)
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*10, y:-eigenVec2[1]*gridSize*10}, 'blue', transform)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -114,6 +114,7 @@ const Canvas = props => {
         mainCanvas.height = mainCanvas.offsetHeight;
 
         let frameCount = 0
+        let frameMax = 10
         let animationFrameId
 
         const animateMat = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1],
@@ -125,23 +126,32 @@ const Canvas = props => {
 
             frameCount++
 
-            let position = matrix.change
-            let [newVal, oldVal] = [parseInt(matrix.new[position]), parseInt(matrix.old[position])]
+            let positionMat = matrix.change
+            let [newVal, oldVal] = [parseFloat(matrix.new[positionMat]), parseFloat(matrix.old[positionMat])]
             let change = newVal-oldVal
 
             let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
 
-            mat[position-1] = parseInt(mat[position-1])+(change/5)*frameCount
+            mat[positionMat-1] = parseFloat(mat[positionMat-1])+(change/frameMax)*frameCount
 
-            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat, vector)
+            /*let positionVec = vector.change
+            let [newVec, oldVec] = [parseFloat(vector[positionVec]), parseFloat(vector.old[positionVec]) ]
+            let changeVec = newVec-oldVec
 
+            let vec = {'x':parseFloat(vector.old.x),'y':parseFloat(vector.old.y)}
+            vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
+            
+            console.log(vector.change)*/
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector)
+            
             if (showEigen) eigenVector(context,mat)
-            if (frameCount===5) {
-                setMatrix({
+            if (frameCount===frameMax) {
+                if (change !== 0) setMatrix({
                     old: matrix.old,
                     new:matrix.new,
                     change:'done'
                 })
+                //if (changeVec !== 0) setVector(prevVec => ( {...prevVec, 'old':{'x':prevVec.x, 'y':prevVec.y}, 'change':'done' } ))
             }
             animationFrameId = window.requestAnimationFrame(() => {animateMat(context, canvas)})
         }
@@ -164,9 +174,15 @@ const Canvas = props => {
             : [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]] 
             )
             : [transform1, transform2, transform3, transform4]
+        
+        /*let vec = vector[vector.change] !== '' ? {'x':vector.x, 'y':vector.y} : vector.old
 
-
+        console.log(vector.change)
+        console.log(vector[vector.change])
+        console.log((matrix.change !== 'done' && matrix.new[matrix.change]!=='') || (vector.change !== 'done' && vector[vector.change]!==''))
+        console.log(matrix.change)*/
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
+            console.log('anmiate')
             animateMat(mainContext, mainCanvas)
         }
         else {

@@ -7,13 +7,14 @@ const grid = (ctx,
     colourMajor=gridProps.majorAxColour,
     colourVector=gridProps.vectorColour,
     transform=[1,0,0,1],
-    vector={x:0,y:0}) => { // creating the grid
+    vector={x:0,y:0},
+    axisArrow=false) => { // creating the grid
     let gridSize = gridProps.size
     let width = ctx.canvas.width
     let height = ctx.canvas.height    
     ctx.save()
 
-    for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
+    for (let i=-2*Math.max(height/2,width/2); i*gridSize<=0; i++) {
         let colour = i%5 ===0 ? colourMinor : colourSecMinor
         colour = i===0 ? colourMajor : colour
         let lineWidth = i%5===0 ? 1.2 : 0.35
@@ -29,6 +30,12 @@ const grid = (ctx,
 
     // draw the vector
     drawLineArrow(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
+
+    //draw axis arrows
+    if(axisArrow) {
+        drawLineArrow(ctx, {x:0,y:0}, {x:0, y:5*gridSize}, 'red',transform,'y')
+        drawLineArrow(ctx, {x:0,y:0}, {x:5*gridSize, y:0}, 'red',transform, 'x')
+    }
     ctx.restore()
 }
 

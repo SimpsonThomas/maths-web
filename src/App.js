@@ -23,8 +23,6 @@ const App = props => {
 
   let activityStart
 
-  console.log(process.env.NODE_ENV)
-
   switch(process.env.NODE_ENV){
     case 'production':
       activityStart = {set:'Initial', selection: false}
