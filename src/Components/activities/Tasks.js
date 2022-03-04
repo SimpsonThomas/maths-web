@@ -305,10 +305,9 @@ const Tasks = props => {
 
                 : 
                 <>
-                    <h3>Invert</h3>
+                    <h3>Multiply Matrices</h3>
                     <p>Here you get to play around with matrices to get them to match</p>
-                    <p>Adjust either the matrix to find inverse</p>
-                    <p>The aim is to get the two vectors to match</p>
+                    <p>Adjust the matrice you control to make the two sides match</p>
                 </>
                 }
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
