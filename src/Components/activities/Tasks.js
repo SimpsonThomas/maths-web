@@ -284,7 +284,7 @@ const Tasks = props => {
         {state.solve  && !selection ?
             <div className='help'>
                 <h3>Well done you have completed this task</h3>
-                <p>{state.currentTask.description}</p>
+                <p>{state.currentTask.endCard}</p>
                 <p> Now you can take on the next one! </p>
                 <button className='hideHelp' 
                     onClick={e => {nextTask(e)}}>
