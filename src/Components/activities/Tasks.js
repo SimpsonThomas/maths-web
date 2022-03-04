@@ -25,6 +25,7 @@ const Tasks = props => {
         minorAxSecColour: inherit.minorAxSecColour,
         backgroundColour: inherit.backgroundColour,
         vectorColour: inherit.vectorColour,
+        colourAxis:  inherit.colourAxis
     }
 
     const selection = inherit.selection // are we in the selection window?
@@ -93,7 +94,7 @@ const Tasks = props => {
                     break;
             }
 
-            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector,true)
+            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector,true,gridProps.colourAxis)
 
             //if (showEigen) eigenVector(context,mat)
             if (frameCount===frameMax) {
@@ -115,10 +116,10 @@ const Tasks = props => {
             mat,
             disVector={'x':0,'y':0},
             backgroundColour=gridProps.backgroundColour, 
-            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour,minorSec:gridProps.minorAxSecColours}, 
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour,minorSec:gridProps.minorAxSecColours,axis:gridProps.colourAxis}, 
             ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, 'green',mat, disVector,true)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major,gridColour.vector,mat, disVector,true,gridColour.axis)
                 //if (showEigen) eigenVector(context,mat)
         }
 
@@ -134,7 +135,7 @@ const Tasks = props => {
         else {
             render(context1, canvas1, mat, state.vecStart)
         }
-        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey'})
+        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey',axis:'pink'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
@@ -304,10 +305,9 @@ const Tasks = props => {
 
                 : 
                 <>
-                    <h3>Invert</h3>
+                    <h3>Multiply Matrices</h3>
                     <p>Here you get to play around with matrices to get them to match</p>
-                    <p>Adjust either the matrix to find inverse</p>
-                    <p>The aim is to get the two vectors to match</p>
+                    <p>Adjust the matrice you control to make the two sides match</p>
                 </>
                 }
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
