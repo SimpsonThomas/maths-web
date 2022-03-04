@@ -8,7 +8,8 @@ const grid = (ctx,
     colourVector=gridProps.vectorColour,
     transform=[1,0,0,1],
     vector={x:0,y:0},
-    axisArrow=false) => { // creating the grid
+    axisArrow=false,
+    colourAxis=gridProps.axisColour,) => { // creating the grid
     let gridSize = gridProps.size
     let width = ctx.canvas.width
     let height = ctx.canvas.height    
@@ -33,8 +34,8 @@ const grid = (ctx,
 
     //draw axis arrows
     if(axisArrow) {
-        drawLineArrow(ctx, {x:0,y:0}, {x:0, y:5*gridSize}, 'red',transform,'y')
-        drawLineArrow(ctx, {x:0,y:0}, {x:5*gridSize, y:0}, 'red',transform, 'x')
+        drawLineArrow(ctx, {x:0,y:0}, {x:0, y:5*gridSize}, colourAxis,transform,'y')
+        drawLineArrow(ctx, {x:0,y:0}, {x:5*gridSize, y:0}, colourAxis,transform, 'x')
     }
     ctx.restore()
 }
