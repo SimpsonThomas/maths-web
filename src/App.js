@@ -28,7 +28,7 @@ const App = props => {
       activityStart = {set:'Initial', selection: false}
       break;
     case 'development':
-      activityStart = {set:'Inverse', selection: false}
+      activityStart = {set:'Multiply', selection: false}
       break;
     default:
       activityStart = {set:'Initial', selection: false}
@@ -210,7 +210,7 @@ const App = props => {
     'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator',},
     'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
-    'Inverse':{activityCanvas: Tasks, name:'Inverse', description: 'Find the inverse of the matrix', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
+    'Multiply':{activityCanvas: Tasks, name:'Multiply', description: 'Multiply matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
 
