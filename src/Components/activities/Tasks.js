@@ -93,7 +93,7 @@ const Tasks = props => {
                     break;
             }
 
-            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector)
+            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector,true)
 
             //if (showEigen) eigenVector(context,mat)
             if (frameCount===frameMax) {
@@ -118,7 +118,7 @@ const Tasks = props => {
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour,minorSec:gridProps.minorAxSecColours}, 
             ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, 'green',mat, disVector)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, 'green',mat, disVector,true)
                 //if (showEigen) eigenVector(context,mat)
         }
 
