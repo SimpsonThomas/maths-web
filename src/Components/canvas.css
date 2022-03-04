@@ -1,44 +1,247 @@
+canvas {
+  border-color: red;
+}
+
+.smallCanvas {
+  position: absolute;
+  top: 5vh;
+  right: 3vw;
+  width:30vw;
+  height:30vh;
+  border: 1px solid black;
+  opacity: 0.95;
+}
+
+.hideCanvas {
+  display: none;
+}
+
+.mainCanvas {
+  width: 100vw;
+  height: 100%;
+}
+
+.boxOpen {
+    max-height: 80vh;
+}
+
+.boxClosed {
+}
+
 .matrixBox {
+    border-radius: 25px;
     position: absolute;
-    left: 10px;
-    top: 10px;
-    height: 100px;
-    width:100px;
-    background-color: grey;
-    opacity: 0.5;
+    left: 5vw;
+    top: 10vh;
+    width:200px;
+    background-color: #233cb8;
+    transition-duration: 0.5s;
 }
 
-.matrixTitle {
-    position: absolute;
+.boxTitle {
     color: white;
-    margin-top: 0;
     font-size: medium;
+    font-weight: bold;
 }
 
-.matrixInput1 {
-    position: absolute;
-    left:10px;
-    top:35px;
-    width:25px;
+.matrixInput {
+    width: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: white;
+    background-color: #233cb8;
+    border-radius: 10px;
+    border-color: #23b8a9;
+    border-style: solid;
+    border-width: 2px;
 }
 
-.matrixInput2 {
-    position: absolute;
-    right:10px;
-    top:35px;
-    width:25px;
+.matrixInput:focus {
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    border-color: #23b8a9;
+    border-style: solid;
+    border-width: 2px;
+
 }
 
-.matrixInput3 {
-    position: absolute;
-    left:10px;
-    bottom:10px;
-    width:25px;
+.matrixDisplay {
+  color: white
 }
 
-.matrixInput4 {
+.collapseButton {
+    background-color: #23b8a9;
+    color: white;
+    border-radius: 100%;
+    border: #23b8a9;
+    font-weight: bolder;
     position: absolute;
-    right:10px;
-    bottom:10px;
-    width:25px;
+    bottom: -15px;
+    left: 85px;
+    font-size: larger;
+    width: 30px;
+    height: 30px
+}
+
+.settingsButton {
+    background-color: #23b8a9;
+    color: white;
+    border-radius: 15%;
+    border: #23b8a9;
+    font-weight: bolder;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.sliderToggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #23b8a9;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.sliderToggle:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .sliderToggle {
+  background-color: #ba34eb;
+}
+
+input:focus + .sliderToggle {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .sliderToggle:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+input:checked + .slider {
+  background-color: red;
+}
+
+/* Rounded sliders */
+.sliderToggle.round {
+  border-radius: 34px;
+}
+
+.sliderToggle.round:before {
+  border-radius: 50%;
+}
+
+.sliderDisplay {
+  color:white;
+  font-style:italic;
+}
+
+.settings {
+}
+
+.settingsOpen {
+    transition: display 0.5s;
+}
+
+.settingsClosed {
+    display: none
+}
+
+.help {
+  position: absolute;
+  border-radius: 25px;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  top: 50%;
+  width:20vw;
+  background-color: #949ea8;
+  padding: 10px;
+  padding-bottom: 20px;
+  opacity: 0.95;
+}
+
+@media only screen and (max-width:1300px) {
+  .help {
+    width: 40vw
+  }
+}
+
+@media only screen and (max-width:1000px) {
+  .help {
+    width:50vw;
+  }
+}
+
+.hideHelp {
+  background-color: #23b8a9;
+  color: white;
+  border-radius: 50%;
+  border: #23b8a9;
+  font-weight: bolder;
+  position: absolute;
+  bottom: -15px;
+  left: calc(50% - 30px);
+  font-size: larger;
+  width: 60px;
+  height: 40px
+}
+
+.quickChange {
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  background-color: #233cb8;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 1px;
+  transition: background-color 0.25s;
+}
+
+.quickChange:hover {
+  background-color: white;
+  color: black;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+}
+
+input[type="number"] {
+  -webkit-appearance: textfield;
+     -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
 }

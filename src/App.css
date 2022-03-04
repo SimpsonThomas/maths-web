@@ -39,5 +39,128 @@
 }
 
 .canvas {
-  height: 100vh
+  height: 50vh;
+  overflow: auto;
+}
+
+.navBar {
+  height: 40px;
+  position: absolute;
+  top: 0;
+  right:0;
+  width:100vw;
+  background-color: #233cb8;
+  color: white;
+  font-size: larger;
+  font-weight: bold;
+  margin: auto;
+}
+
+.rightNavButton {
+  float:right;
+}
+
+.leftNavButton {
+  float:left;
+}
+
+.navButton {
+  margin-top: 7px;
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: white;
+  background-color: #233cb8;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+  transition: background-color 0.25s;
+}
+
+.clear {
+  position:absolute;
+  right: 10px
+}
+
+.navButton:hover {
+  background-color: white;
+  color: black;
+  border-radius: 10px;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+}
+
+
+.selectionDiv {
+  position: absolute;
+  width: 40vw;
+  height: 90vh;
+  top: 5vh;
+  right: 30vw;
+  background-color: #282c34;
+  opacity: 1;
+  border-radius: 5%;
+  z-index:100000;
+}
+
+.selectionMain {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.selectionTitle {
+  color:white;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.selectionCanvas {
+  width: 40%;
+  height: 100%;
+}
+
+.selectionButton {
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  padding: 10px;
+  background-color: #282c34;
+  border-radius: 10px;
+  border-width: 0px;
+  transition: background-color 0.25s;
+  width:100%;
+  height: 100%;
+}
+
+.activityDescription {
+  font-weight: normal;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  padding: 10px;
+  margin: 100px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  border-radius: 10px;
 }

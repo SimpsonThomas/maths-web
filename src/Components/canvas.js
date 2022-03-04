@@ -1,120 +1,246 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import './canvas.css'
+import SettingsBox, {calculateAngleMatrix, calculateVectors, drawLineArrow, initaliseCanvas} from "./canvasComponents";
+import { grid } from "./grid";
 
 const Canvas = props => {
-    /*super(props)
-    this.state = {
-        test: 'test'
-    }*/
+    const inherit = props.props
 
+
+    // inheriting state values from App
+    let state = inherit.state
+    const [matrix, setMatrix] = state.matrix
+    const [vector, setVector] = state.vector
+    const [scaleAngle, setScaleAngle] = state.scaleAngle
+    const [showEigen, setShowEigen] = state.eigen
+
+    // creating local state values
+    const [saveMatrix, setSaveMatrix] = useState()
+
+    const smallCanvasRef = useRef(null)
+    const mainCanvasRef = useRef(null)
+
+    // basic props for the grid
     const gridProps = {
-        size : 30,
-        startX: 15,
-        startY: 15,
-        majorAxColour: 'white',
-        minorAxColour: '#9a9ca1',
-        backgroundColour: '#161617'
+        size : 20, // size of grid squares
+        majorAxColour: inherit.majorAxColour, // default colours
+        minorAxColour: inherit.minorAxColour,
+        minorAxSecColour: inherit.minorAxSecColour,
+        backgroundColour: inherit.background,
+        vectorColour: inherit.vectorColour
     }
 
-    const canvasRef = useRef(null)
+    const selection = inherit.selection // are we in the selection window?
 
-    const draw = (ctx, frameCount) => {
-        ctx.fillStyle = 'white'
-        ctx.beginPath()
-        ctx.arc(50,100,20*Math.sin(frameCount*0.05)**2,0,2*Math.PI)
-        ctx.fill()
-    }
-
-    const drawLine = (ctx, start, end, colour) => {
-        ctx.beginPath()
-        ctx.strokeStyle = colour
-        ctx.moveTo(start.x, start.y)
-        ctx.lineTo(end.x, end.y)
-        ctx.stroke()
-    }
-
-    const grid = (ctx, colourMinor=gridProps.minorAxColour, colourMajor=gridProps.majorAxColour) => {
+    const eigenVector = (ctx, transform) => {
+        const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
+    
+        
+        let width = ctx.canvas.width
+        let height = ctx.canvas.height
+    
         let gridSize = gridProps.size
-        let width = ctx.canvas.width
-        let height = ctx.canvas.height    
-
-        for (let i=-10; i*gridSize<=2*Math.max(height/2,width/2); i++) {
-            let colour = i===0 ? colourMajor : colourMinor
-            //let colour = colour2
-            // x gridlines
-            drawLine(ctx, {x:-width/2,y:i*gridSize}, {x:width/2,y:i*gridSize}, colour)
-            drawLine(ctx, {x:-width,y:-i*gridSize}, {x:width,y:-i*gridSize}, colour)
-
-            // y gridlines
-            drawLine(ctx, {y:-2*height,x:i*gridSize}, {y:2*height,x:i*gridSize}, colour)
-            drawLine(ctx, {y:-2*height,x:-i*gridSize}, {y:2*height,x:-i*gridSize}, colour)
-        }
-    }
-
-    const detShape = (ctx, colour='red') => {
-        ctx.fillStyle = colour
-        ctx.fillRect(0,0,gridProps.size+1, -gridProps.size-1)
-    }
-
-    const shiftGrid = (ctx) => {
-        //let gridSize = gridProps.size
-        let width = ctx.canvas.width
-        let height = ctx.canvas.height 
-
-        //ctx.setTransform(0.1,2,1,0.5,width/2,height/2)
-        ctx.setTransform(-1,-5,-5,-3,width/2,height/2)
-        grid(ctx,'red', 'blue')
-        detShape(ctx, 'yellow')
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
+        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
-    useEffect( () => {
-        
-        const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
+   /* const grid = (ctx,
+        colourMinor=gridProps.minorAxColour,
+        colourSecMinor=gridProps.minorAxSecColour,
+        colourMajor=gridProps.majorAxColour,
+        colourVector=gridProps.vectorColour,
+        transform=[1,0,0,1]) => { // creating the grid
+        let gridSize = gridProps.size
+        let width = ctx.canvas.width
+        let height = ctx.canvas.height    
+        ctx.save()
 
-        
-        canvas.style.width ='100%';
-        canvas.style.height='100%';
+        for (let i=-10*Math.max(height/2,width/2); i*gridSize<=0; i++) {
+            let colour = i%5 ===0 ? colourMinor : colourSecMinor
+            colour = i===0 ? colourMajor : colour
+            let lineWidth = i%5===0 ? 1.2 : 0.35
+            lineWidth = i===0 ? 2 : lineWidth
+
+            // x gridlines
+            drawLine(ctx, {x:-50*width,y:i*gridSize}, {x:50*width,y:i*gridSize}, colour, transform, lineWidth)
+            drawLine(ctx, {x:-50*width,y:-i*gridSize}, {x:50*width,y:-i*gridSize}, colour,transform, lineWidth)
+            // y gridlines
+            drawLine(ctx, {y:-50*height,x:i*gridSize}, {y:50*height,x:i*gridSize}, colour,transform, lineWidth)
+            drawLine(ctx, {y:-50*height,x:-i*gridSize}, {y:50*height,x:-i*gridSize}, colour,transform, lineWidth)
+        }
+
+        // draw the vector
+        drawLineArrow(ctx, {x:0,y:0}, {x:vector.x*gridSize, y:vector.y*gridSize}, colourVector,transform)
+        ctx.restore()
+    }*/
+
+    /*const detShape = (ctx, colour='red') => {
+        ctx.fillStyle = colour
+        ctx.fillRect(0,0,gridProps.size+1, gridProps.size+1)
+    }*/
+
+    const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
+        width: undefined,
+        height: undefined,
+        oldSize: undefined,
+    })
+
+    useEffect( () => {
+        function handleResize() {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+                oldSize: windowSize
+            })
+        }
+
+        window.addEventListener('resize', handleResize)
+
+        const smallCanvas = smallCanvasRef.current
+        const smallContext = smallCanvas.getContext('2d')
+        smallCanvas.style.width ='100%';
+        smallCanvas.style.height='100%';
+        smallCanvas.width  = smallCanvas.offsetWidth;
+        smallCanvas.height = smallCanvas.offsetHeight;
+
+        const mainCanvas = mainCanvasRef.current
+        const mainContext = mainCanvas.getContext('2d')
+        // max out height
+        mainCanvas.style.width ='100%';
+        mainCanvas.style.height='100%';
         // ...then set the internal size to match
-        canvas.width  = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
+        mainCanvas.width  = mainCanvas.offsetWidth;
+        mainCanvas.height = mainCanvas.offsetHeight;
 
         let frameCount = 0
+        let frameMax = 10
         let animationFrameId
 
-        const render = () => {
-            context.setTransform(1,0,0,1,canvas.width/2, canvas.height/2)
+        const animateMat = (context=mainContext, canvas=mainCanvas, transformMat=[1,0,0,1],
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}) => {
+            // animating the changes in the matrix
+
+            // initialising the canvas
+            initaliseCanvas(context, canvas, gridProps.backgroundColour)
+
             frameCount++
-            context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
-            context.fillStyle = gridProps.backgroundColour
-            context.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height)
-            grid(context)
-            detShape(context, 'blue')
-            draw(context,frameCount)
-            shiftGrid(context)
 
-            animationFrameId = window.requestAnimationFrame(render)
+            let positionMat = matrix.change
+            let [newVal, oldVal] = [parseFloat(matrix.new[positionMat]), parseFloat(matrix.old[positionMat])]
+            let change = newVal-oldVal
+
+            let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
+
+            mat[positionMat-1] = parseFloat(mat[positionMat-1])+(change/frameMax)*frameCount
+
+            /*let positionVec = vector.change
+            let [newVec, oldVec] = [parseFloat(vector[positionVec]), parseFloat(vector.old[positionVec]) ]
+            let changeVec = newVec-oldVec
+
+            let vec = {'x':parseFloat(vector.old.x),'y':parseFloat(vector.old.y)}
+            vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
+            
+            console.log(vector.change)*/
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector)
+            
+            if (showEigen) eigenVector(context,mat)
+            if (frameCount===frameMax) {
+                if (change !== 0) setMatrix({
+                    old: matrix.old,
+                    new:matrix.new,
+                    change:'done'
+                })
+                //if (changeVec !== 0) setVector(prevVec => ( {...prevVec, 'old':{'x':prevVec.x, 'y':prevVec.y}, 'change':'done' } ))
+            }
+            animationFrameId = window.requestAnimationFrame(() => {animateMat(context, canvas)})
         }
-        
-        window.addEventListener('resize', render, false)
-        render()
 
+        const render = (
+            context, 
+            canvas, 
+            mat=[1,0,0,1],
+            backgroundColour=gridProps.backgroundColour, 
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}, ) => {
+                initaliseCanvas(context, canvas, backgroundColour)
+                
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector)
+                if (showEigen) eigenVector(context,mat)
+        }
+
+        let [, , transform1, transform2, transform3, transform4] = calculateAngleMatrix(scaleAngle)
+        let mat = !switchMat ? (
+            (matrix.new[matrix.change] !=='') ? [matrix.new[1],matrix.new[2],matrix.new[3],matrix.new[4]] 
+            : [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]] 
+            )
+            : [transform1, transform2, transform3, transform4]
+        
+        /*let vec = vector[vector.change] !== '' ? {'x':vector.x, 'y':vector.y} : vector.old
+
+        console.log(vector.change)
+        console.log(vector[vector.change])
+        console.log((matrix.change !== 'done' && matrix.new[matrix.change]!=='') || (vector.change !== 'done' && vector[vector.change]!==''))
+        console.log(matrix.change)*/
+        if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
+            console.log('anmiate')
+            animateMat(mainContext, mainCanvas)
+        }
+        else {
+            render(mainContext, mainCanvas, mat)
+        }
+
+        render(smallContext, smallCanvas,saveMatrix, 'black', {minor:'white',major:'white'})
+        
         return () => {
             window.cancelAnimationFrame(animationFrameId)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    })
+
+    const [switchMat, setSwitchMat] = useState(false)
+    
+    const helpSaveName = 'helpCanvas'
+    let localStore = window.localStorage
+
+    if (!localStore.getItem(helpSaveName)) localStore.setItem(helpSaveName, JSON.stringify(true))
+
+    let initialHelp = JSON.parse( localStore.getItem(helpSaveName))
+
+    const [showHelp, setShowHelp] = useState(initialHelp)
+
+    useEffect(() => {
+        window.localStorage.setItem(helpSaveName, JSON.stringify(showHelp))
+    }, [showHelp, helpSaveName])
+
+    let settingsProps = {}
+    settingsProps.matrix = [matrix, setMatrix]
+    settingsProps.vector = [vector, setVector]
+    settingsProps.scaleAngle = [scaleAngle, setScaleAngle]
+    settingsProps.switchMat = [switchMat, setSwitchMat]
+    settingsProps.eigen = [showEigen, setShowEigen]
+    settingsProps.setSaveMatrix = setSaveMatrix
+    settingsProps.type = 'main'
 
     const html = <>
-        <div class='matrixBox'>
-            <p class='matrixTitle'>Input Matrix Here</p>
-            <input class='matrixInput1' placeholder='1'/>
-            <input class='matrixInput2' placeholder='2'/>
-            <input class='matrixInput3' placeholder='3'/>
-            <input class='matrixInput4' placeholder='4'/>
+        {!selection ? <SettingsBox {...settingsProps}/> : <></>}
+        <canvas ref={mainCanvasRef} {...props}/>
+        <div className={(saveMatrix) ? 'smallCanvas' : 'hideCanvas'}>
+            <canvas ref={smallCanvasRef} {...props}/>
         </div>
-        <canvas ref={canvasRef} {...props}/>
+      {showHelp && !selection?
+            <div className='help'>
+                <h3>Grid view</h3>
+                <p> Now you've played around with the basis vector view we can now look 
+                    at the grid view</p>
+                <p>Here you can see the whole set of grid lines</p>
+                <p>And again adjust the whole grid via the matrix set or the sliders (by clicking the angle buttons you can quickly change to set angles)</p>
+                <p>But you can also set a vector and see how it gets translated</p>
+                <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>
+                    Hide
+                </button>
+            </div> 
+        : <></>
+      }
     </>
 
     return html
