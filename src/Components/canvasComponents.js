@@ -117,11 +117,11 @@ const calculateAngleMatrix = (scaleAngle) => {
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
     let transform1 = Math.cos(angleRadX)*scale.x
-    let transform2 = -Math.sin(angleRadX)*scale.x
-    let transform3 = Math.sin(angleRadY)*scale.y
+    let transform3 = -Math.sin(angleRadX)*scale.x
+    let transform2 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
-    return [angleRadX, angleRadY, transform1, transform3, transform2, transform4]
+    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
 }
 
 const matVecMult = (mat, vec) => {
