@@ -28,7 +28,7 @@ const App = props => {
       activityStart = {set:'Initial', selection: false}
       break;
     case 'development':
-      activityStart = {set:'Multiply', selection: false}
+      activityStart = {set:'Tasks', selection: false}
       break;
     default:
       activityStart = {set:'Initial', selection: false}
@@ -159,8 +159,8 @@ const App = props => {
 
   let initialStateInverse = {
     taskType: 'inverse',
-    matrixStart: {'new':inverseTasks[1].startMat,'old':inverseTasks[1].startMat, 'change':'done', angleMat: false, angle: {x:0,y:0}, scale:{x:1,y:1}},
-    matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+    matrixStart: {'new':inverseTasks[1].startMat,'old':inverseTasks[1].startMat, 'change':'done',},
+    matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done', angleMat: false, angle: {x:0,y:0}, scale:{x:1,y:1}},
     matrixEnd: {'new':inverseTasks[1].endMat,'old':inverseTasks[1].endMat, 'change':'done'},
     currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description},
     solve: false

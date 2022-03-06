@@ -241,9 +241,9 @@ const Tasks = props => {
 
     const vec = state.currentTask.type==='vec'
 
-    const scaleAngleMat = calculateAngleMatrix(state.matrix)
-    const [,,transform1,transform2,transform3,transform4] = scaleAngleMat(state.matrix)
-    console.log(scaleAngleMat)
+    const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
+    const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
+    console.log(scaleAngleMatrix)
 
     const html = <>
         {!selection ? 
