@@ -77,18 +77,23 @@ const App = props => {
     let solve = false
     let taskType = state.taskType
     let tasks =  taskType === 'normal' ? tasksNormal : inverseTasks
-    if (action.type !== 'task') {
+    let mat
+    if (!['task', 'switchMat'].includes(action.type)) {
         switch (taskType) {
             case 'normal' :
                 let vec_start = {...state.vecStart, ...action.data}
                 let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
-                let mat = !state.matrix.angleMat ? state.matrix.new
-                  : calculateAngleMatrix(state.matrix).slice(-4)
+                mat = !state.matrix.angleMat ? state.matrix.new
+                  : calculateAngleMatrix({...state.matrix, ...action.data}).slice(-4)
                 solve = checkSolve(mat, state.matrixEnd.new, vec_start, vec_end)
                 tasks = tasksNormal
                 break;
             case 'inverse':
-                let mult = matMult(state.matrixStart.new, action.data.new)
+                console.log(state)
+                console.log(action)
+                mat = !state.matrix.angleMat ? action.data.new
+                  : calculateAngleMatrix({...state.matrix, ...action.data}).slice(-4)
+                let mult = matMult(state.matrixStart.new, mat)
                 solve = mult.every((x, i) => state.matrixEnd.new[i] === x)
                 tasks = inverseTasks
                 break;

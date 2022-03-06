@@ -125,9 +125,13 @@ const Tasks = props => {
 
         let matrix = state.matrix
 
-        let mat = (matrix.new[matrix.change] !=='') ? matrix.new
+        let matNorm = (matrix.new[matrix.change] !=='') ? matrix.new
             : matrix.old
 
+        let matAngle = calculateAngleMatrix(state.matrix).slice(-4)
+
+        let mat = state.matrix.angleMat ? matAngle : matNorm
+        
         if (taskType === 'inverse') mat = matMult(state.matrixStart.new, mat)
         if (matrix.change !== 'done' && matrix.new[matrix.change]!=='') {
             animate(context1, canvas1, matrix, state.vecStart)
@@ -240,8 +244,9 @@ const Tasks = props => {
                 return Math.abs(b - current) < Math.abs(a - current) ? b : a;
             });
         }
-        updateState( {type:'matrix',data:{scale:{...state.matrix.angle,[change]:newAngle, } } } )
+        updateState( {type:'matrix',data:{angle:{...state.matrix.angle,[change]:newAngle, } } } )
     }
+    //console.log(state.matrix)
 
     const vec = state.currentTask.type==='vec'
 
