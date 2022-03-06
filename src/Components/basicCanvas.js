@@ -109,7 +109,6 @@ const Basic = props => {
     settingsProps.eigen = [showEigen, setShowEigen]
     settingsProps.setSaveMatrix = null
     settingsProps.type = 'basic'
-
     const html = <>
         {!selection ? <SettingsBox {...settingsProps}/>
         : <></>

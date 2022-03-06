@@ -229,7 +229,7 @@ const SettingsBox = props => {
                         onChange={e=> setSwitchMat(e.target.checked)}/>
                     <span className="sliderToggle round"></span>
                 </label>
-                <div style={{display : !switchMat ? '' : 'none'}}s>
+                <div style={{display : !switchMat ? '' : 'none'}}>
                     <p className='boxTitle'>Set Matrix</p>
                     <p>
                         {

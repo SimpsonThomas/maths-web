@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { initaliseCanvas, matMult} from "../canvasComponents";
+import { calculateAngleMatrix, initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
 
 const Tasks = props => {
@@ -125,9 +125,13 @@ const Tasks = props => {
 
         let matrix = state.matrix
 
-        let mat = (matrix.new[matrix.change] !=='') ? matrix.new
+        let matNorm = (matrix.new[matrix.change] !=='') ? matrix.new
             : matrix.old
 
+        let matAngle = calculateAngleMatrix(state.matrix).slice(-4)
+
+        let mat = state.matrix.angleMat ? matAngle : matNorm
+        
         if (taskType === 'inverse') mat = matMult(state.matrixStart.new, mat)
         if (matrix.change !== 'done' && matrix.new[matrix.change]!=='') {
             animate(context1, canvas1, matrix, state.vecStart)
@@ -205,7 +209,50 @@ const Tasks = props => {
             }
         })
     }
+
+    const slider = (type,axis,range) => {
+        const updateMatAng = (e) => {
+            e.preventDefault()
+            let value = e.target.value
+            updateState({
+                type: 'matrix',
+                data: {
+                    [type] : {
+                        ...state.matrix[type],
+                        [axis] : value
+                    }
+                }
+            })
+        }
+
+        return (
+            <input type="range" min={-range} max={range} value={state.matrix[type][axis]} className="slider" id="myRange"
+                onChange={e => updateMatAng(e) }/>
+        )
+    }
+
+    const quickSetAngle = (change, keep) => {
+        const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
+        const current = state.matrix.angle[change]
+        let newAngle = current
+        if (setAngles.includes(current)) {
+            let nextIndex = setAngles.indexOf(current)+1
+            newAngle = setAngles[(nextIndex < setAngles.length) ? nextIndex : 0]
+        }
+        else {
+            newAngle = setAngles.reduce((a, b) => {
+                return Math.abs(b - current) < Math.abs(a - current) ? b : a;
+            });
+        }
+        updateState( {type:'matrix',data:{angle:{...state.matrix.angle,[change]:newAngle, } } } )
+    }
+    //console.log(state.matrix)
+
     const vec = state.currentTask.type==='vec'
+
+    const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
+    const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
+
     const html = <>
         {!selection ? 
             <div className={'matrixBox boxOpen'}>
@@ -233,6 +280,14 @@ const Tasks = props => {
                         </p>
                     </>}
                     <>
+                    <>
+                        <label className="switch">
+                            <input type="checkbox" checked={state.matrix.angleMat}
+                                onChange={e=> updateState({type:'switchMat'})}/>
+                            <span className="sliderToggle round"></span>
+                        </label>
+                    </>
+                    <div style={{display : !state.matrix.angleMat ? '' : 'none'}}>
                         <p className='boxTitle'>Set Matrix</p>
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
                         <p>
@@ -243,6 +298,44 @@ const Tasks = props => {
                             {
                                 [3,4].map(pos => numberInput(pos) )
                             }
+                    </div>
+                    </>
+                    <>
+                        <div style={{display : state.matrix.angleMat ? '' : 'none'}} >
+                        <p className='boxTitle'>Matrix</p>
+                        <p className='matrixDisplay'>
+                            {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
+                        </p>
+                        <p className='matrixDisplay'>
+                            {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
+                        </p>
+            
+                        <div>
+                            <p className='boxTitle'>
+                                <button className='quickChange' 
+                                    onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
+                                        Angle X:</button>
+                                &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.x}</span></p>
+                            {slider('angle', 'x', 180)}
+                        </div>
+                        
+                        <div className='boxTitle'>
+                            <p>
+                                <button className='quickChange' 
+                                    onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
+                                        Angle Y:</button>
+                                &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.y}</span></p>
+                            {slider('angle', 'y', 180)}
+                        </div>
+                        <div className='boxTitle'>
+                            <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.scale.x}</span></p>
+                            {slider('scale', 'x', 5)}
+                        </div>
+                        <div className='boxTitle'>
+                            <p>Scale Y: &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.scale.y}</span></p>
+                            {slider('scale', 'y', 5)}
+                        </div>
+                </div>
                     </>
                     <p>&nbsp;</p>
                 <p></p>
@@ -284,7 +377,7 @@ const Tasks = props => {
         {state.solve  && !selection ?
             <div className='help'>
                 <h3>Well done you have completed this task</h3>
-                <p>{state.currentTask.description}</p>
+                <p>{state.currentTask.endCard}</p>
                 <p> Now you can take on the next one! </p>
                 <button className='hideHelp' 
                     onClick={e => {nextTask(e)}}>
