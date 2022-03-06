@@ -99,7 +99,7 @@ const App = props => {
     }
     switch (action.type) {
         case 'switchMat':
-          return {...state, matrix: {...state.matrix, angle:!state.matrix.angle}}
+          return {...state, matrix: {...state.matrix, angleMat:!state.matrix.angleMat}}
         case 'matrix':
             return {...state, matrix: {...state.matrix, ...action.data}, solve:solve}
         case 'matrixAng':
@@ -219,8 +219,6 @@ const App = props => {
     'Multiply':{activityCanvas: Tasks, name:'Multiply', description: 'Multiply matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
-
-  console.log(stateInverse)
 
   return (
     <div className="App">

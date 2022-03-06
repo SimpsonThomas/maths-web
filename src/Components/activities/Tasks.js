@@ -207,19 +207,23 @@ const Tasks = props => {
     }
 
     const slider = (type,axis,range) => {
-        const updateMatAng = (e, value) => {
+        const updateMatAng = (e) => {
             e.preventDefault()
+            let value = e.target.value
             updateState({
                 type: 'matrix',
                 data: {
-
+                    [type] : {
+                        ...state.matrix[type],
+                        [axis] : value
+                    }
                 }
             })
         }
 
         return (
             <input type="range" min={-range} max={range} value={state.matrix[type][axis]} className="slider" id="myRange"
-                onChange={e => updateMatAng(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value} })) }/>
+                onChange={e => updateMatAng(e) }/>
         )
     }
 
@@ -243,7 +247,6 @@ const Tasks = props => {
 
     const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
     const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
-    console.log(scaleAngleMatrix)
 
     const html = <>
         {!selection ? 
@@ -274,11 +277,12 @@ const Tasks = props => {
                     <>
                     <>
                         <label className="switch">
-                            <input type="checkbox" checked={state.matrix.angle}
+                            <input type="checkbox" checked={state.matrix.angleMat}
                                 onChange={e=> updateState({type:'switchMat'})}/>
                             <span className="sliderToggle round"></span>
                         </label>
                     </>
+                    <div style={{display : !state.matrix.angleMat ? '' : 'none'}}>
                         <p className='boxTitle'>Set Matrix</p>
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
                         <p>
@@ -289,9 +293,10 @@ const Tasks = props => {
                             {
                                 [3,4].map(pos => numberInput(pos) )
                             }
+                    </div>
                     </>
                     <>
-                        <div style={{selection : state.matrix.angle ? '' : 'none'}} >
+                        <div style={{display : state.matrix.angleMat ? '' : 'none'}} >
                         <p className='boxTitle'>Matrix</p>
                         <p className='matrixDisplay'>
                             {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
