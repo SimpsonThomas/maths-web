@@ -246,7 +246,6 @@ const Tasks = props => {
         }
         updateState( {type:'matrix',data:{angle:{...state.matrix.angle,[change]:newAngle, } } } )
     }
-    //console.log(state.matrix)
 
     const vec = state.currentTask.type==='vec'
 
