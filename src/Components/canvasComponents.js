@@ -114,6 +114,7 @@ const eigenVector = (ctx, transform,gridSize) => {
 const calculateAngleMatrix = (scaleAngle) => {
     let scale = scaleAngle.scale
     let angle = scaleAngle.angle
+    console.log(scaleAngle)
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
     let transform1 = Math.cos(angleRadX)*scale.x

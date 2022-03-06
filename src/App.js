@@ -5,7 +5,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import Tasks from './Components/activities/Tasks';
 import { gridProps } from './Components/constants/constants';
 import { inverseTasks, tasksNormal } from './Components/constants/tasksList';
-import { checkSolve, matMult } from './Components/canvasComponents';
+import { calculateAngleMatrix, checkSolve, matMult } from './Components/canvasComponents';
 //import Canvas3D from './Components/3dcanvas';
 
 const App = props => {
@@ -82,7 +82,9 @@ const App = props => {
             case 'normal' :
                 let vec_start = {...state.vecStart, ...action.data}
                 let vec_end = {'x':state.vecEnd.x,'y':state.vecEnd.y}
-                solve = checkSolve(state.matrix.new, state.matrixEnd.new, vec_start, vec_end)
+                let mat = !state.matrix.angleMat ? state.matrix.new
+                  : calculateAngleMatrix(state.matrix).slice(-4)
+                solve = checkSolve(mat, state.matrixEnd.new, vec_start, vec_end)
                 tasks = tasksNormal
                 break;
             case 'inverse':
@@ -96,7 +98,11 @@ const App = props => {
         }
     }
     switch (action.type) {
+        case 'switchMat':
+          return {...state, matrix: {...state.matrix, angle:!state.matrix.angle}}
         case 'matrix':
+            return {...state, matrix: {...state.matrix, ...action.data}, solve:solve}
+        case 'matrixAng':
             return {...state, matrix: {...action.data}, solve:solve}
         case 'vector':
             return {...state, vecStart: {...state.vecStart,...action.data}, solve:solve}
@@ -111,7 +117,7 @@ const App = props => {
             switch (taskType) {
                 case 'normal':
                     newState = {...newState,
-                        matrix:{'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                        matrix:{...state.matrix,'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
                         matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
                         vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
                         vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
@@ -141,7 +147,7 @@ const App = props => {
 
   let initialStateNormal = {
     taskType: 'normal',
-    matrix: {'new':tasksNormal[1].startMat,'old':tasksNormal[1].startMat, 'change':'done'},
+    matrix: {'new':tasksNormal[1].startMat,'old':tasksNormal[1].startMat, 'change':'done', angleMat: false, angle: {x:0,y:0}, scale:{x:1,y:1}},
     matrixEnd: {'new':tasksNormal[1].endMat,'old':tasksNormal[1].endMat, 'change':'done'},
     vecStart:{...tasksNormal[1].startVec, 'old':tasksNormal[1].startVec, 'change':'done'},
     vecEnd:{...tasksNormal[1].endVec, 'old':tasksNormal[1].endVec, 'change':'done'},
@@ -153,7 +159,7 @@ const App = props => {
 
   let initialStateInverse = {
     taskType: 'inverse',
-    matrixStart: {'new':inverseTasks[1].startMat,'old':inverseTasks[1].startMat, 'change':'done'},
+    matrixStart: {'new':inverseTasks[1].startMat,'old':inverseTasks[1].startMat, 'change':'done', angleMat: false, angle: {x:0,y:0}, scale:{x:1,y:1}},
     matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
     matrixEnd: {'new':inverseTasks[1].endMat,'old':inverseTasks[1].endMat, 'change':'done'},
     currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description},
@@ -213,6 +219,8 @@ const App = props => {
     'Multiply':{activityCanvas: Tasks, name:'Multiply', description: 'Multiply matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
+
+  console.log(stateInverse)
 
   return (
     <div className="App">
