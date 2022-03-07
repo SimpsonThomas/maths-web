@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { calculateAngleMatrix, initaliseCanvas, matMult} from "../canvasComponents";
+import { calculateAngleMatrix, checkSingular, initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
 
 const Tasks = props => {

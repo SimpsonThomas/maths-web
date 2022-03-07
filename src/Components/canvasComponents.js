@@ -148,6 +148,12 @@ const checkSolve = (mat, endMat, vec, endVec) => {
     return x_solve && y_solve
 }
 
+const checkSingular = (mat) => {
+    let [a,b,c,d] = mat.map(x => parseFloat(x))
+    const det = a*d - b*c
+    return det === 0
+}
+
 const SettingsBox = props => {
     const [[matrix, setMatrix], [vector, setVector]] 
         = [props.matrix, props.vector]
@@ -307,6 +313,7 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve, matMult, matVecMult}
+export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, 
+    checkSolve, matMult, matVecMult, checkSingular}
 
 export default SettingsBox
