@@ -264,10 +264,8 @@ const [scrollLevel, setScroll] = useState(1)
   const zoomButton =(e, type) => {
     e.preventDefault()
     const zoomLevel = [10,25,50,75,80,90,100,110,125,150,175,200,250,300,350,400]
-    let nextZoom
     let newIndex
     let current = scrollLevel
-    let level = zoomLevel.includes(current)
     let nearestZoom = zoomLevel.indexOf(zoomLevel.reduce((a, b) => {
       return Math.abs(current*100-b) < Math.abs(current*100-a) ? b : a;
     }))+1
