@@ -38,6 +38,12 @@ const [scrollLevel, setScroll] = useState(1)
       })
     }
 
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize',handleResize)
+  })
+
+  useEffect(() => {
     function handleScroll(e) {
       let delta = e.wheelDeltaY*0.001
       let current = scrollLevel
@@ -46,7 +52,6 @@ const [scrollLevel, setScroll] = useState(1)
       setScroll(newScroll)
     }
 
-    window.addEventListener('resize', handleResize)
     window.addEventListener('wheel', handleScroll)
 
     return () => window.removeEventListener('wheel', handleScroll)
@@ -256,9 +261,46 @@ const [scrollLevel, setScroll] = useState(1)
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
 
+  const zoomButton =(e, type) => {
+    e.preventDefault()
+    const zoomLevel = [10,25,50,75,80,90,100,110,125,150,175,200,250,300,350,400]
+    let nextZoom
+    let newIndex
+    let current = scrollLevel
+    let level = zoomLevel.includes(current)
+    let nearestZoom = zoomLevel.indexOf(zoomLevel.reduce((a, b) => {
+      return Math.abs(current*100-b) < Math.abs(current*100-a) ? b : a;
+    }))+1
+    switch (type) {
+      case 'out':
+        newIndex = nearestZoom+1
+        if(newIndex > zoomLevel.length-1) newIndex = zoomLevel.length-1
+        setScroll((zoomLevel[newIndex])/100)
+        break;
+      case 'in':
+        newIndex = nearestZoom-2
+        if(newIndex < 0) newIndex = nearestZoom-1
+        console.log(newIndex)
+        setScroll((zoomLevel[newIndex])/100)
+        break;
+      case 'reset':
+        setScroll(1)
+        break;
+      default:
+        break;
+    }
+  }
+
+  console.log(scrollLevel)
+
   return (
     <div className="App">
       <div className='navBar'>
+        <span className='buttonGroup'>
+          <button className='zoomButton' onClick={(e => zoomButton(e,'in'))}>-</button>
+          <button className='zoomButton' onClick={(e => zoomButton(e,'reset'))}>{Math.round(scrollLevel*100)}%</button>
+          <button className='zoomButton' onClick={(e => zoomButton(e,'out'))}>+</button>
+        </span>
         <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>Select Activity</button>
         <button onClick={e => window.localStorage.clear()} className='navButton clear'>Reset App</button>
       </div>
