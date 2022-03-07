@@ -22,7 +22,7 @@ const Canvas = props => {
 
     // basic props for the grid
     const gridProps = {
-        size : 20, // size of grid squares
+        size : 20*inherit.scroll, // size of grid squares
         majorAxColour: inherit.majorAxColour, // default colours
         minorAxColour: inherit.minorAxColour,
         minorAxSecColour: inherit.minorAxSecColour,
@@ -80,22 +80,7 @@ const Canvas = props => {
         ctx.fillRect(0,0,gridProps.size+1, gridProps.size+1)
     }*/
 
-    const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
-        width: undefined,
-        height: undefined,
-        oldSize: undefined,
-    })
-
     useEffect( () => {
-        function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-                oldSize: windowSize
-            })
-        }
-
-        window.addEventListener('resize', handleResize)
 
         const smallCanvas = smallCanvasRef.current
         const smallContext = smallCanvas.getContext('2d')
@@ -142,7 +127,7 @@ const Canvas = props => {
             vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
             
             console.log(vector.change)*/
-            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector)
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,false,gridProps.colourAxis,gridProps.size)
             
             if (showEigen) eigenVector(context,mat)
             if (frameCount===frameMax) {
@@ -164,7 +149,7 @@ const Canvas = props => {
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}, ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
                 
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,false,gridProps.colourAxis,gridProps.size)
                 if (showEigen) eigenVector(context,mat)
         }
 
@@ -182,7 +167,6 @@ const Canvas = props => {
         console.log((matrix.change !== 'done' && matrix.new[matrix.change]!=='') || (vector.change !== 'done' && vector[vector.change]!==''))
         console.log(matrix.change)*/
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
-            console.log('anmiate')
             animateMat(mainContext, mainCanvas)
         }
         else {

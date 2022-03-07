@@ -21,6 +21,37 @@ const App = props => {
       localStorage.clear();
   }
 
+  const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
+    width: undefined,
+    height: undefined,
+    oldSize: undefined,
+})
+
+const [scrollLevel, setScroll] = useState(1)
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+          oldSize: windowSize
+      })
+    }
+
+    function handleScroll(e) {
+      let delta = e.wheelDeltaY*0.001
+      let current = scrollLevel
+      let newScroll = current + delta
+      newScroll = Math.min(Math.max(0.1, newScroll), 4)
+      setScroll(newScroll)
+    }
+
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('wheel', handleScroll)
+
+    return () => window.removeEventListener('wheel', handleScroll)
+  })
+
   let activityStart
 
   switch(process.env.NODE_ENV){
@@ -70,7 +101,7 @@ const App = props => {
     window.localStorage.setItem('canvasState', JSON.stringify(saveState))
   }, [matrix, vector, scaleAngle, showEigen])
 
-  let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
+  let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen],}
 
   // creating tasks reducer state
   const reducerTask = (state, action) => {
@@ -188,8 +219,8 @@ const App = props => {
     window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
   }, [stateNormal, stateInverse])
 
-  let selectionProps = {...gridProps, state:canvasState}
-  let canvasProps = {...gridProps, state:canvasState}
+  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel}
+  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel}
   selectionProps.selection = true
   canvasProps.selection = false
 

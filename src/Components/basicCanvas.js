@@ -27,7 +27,7 @@ const Basic = props => {
     const grid = (ctx,
         colour=gridProps.majorAxColour,
         transform=[1,0,0,1]) => { // creating the grid
-        let gridSize = gridProps.size 
+        let gridSize = gridProps.size*inherit.scroll
 
         drawLineArrow(ctx, {x:0,y:0}, {x:gridSize, y:0},colour, transform, 'x')
         drawLineArrow(ctx, {x:0,y:0}, {y:gridSize, x:0},colour, transform, 'y')
