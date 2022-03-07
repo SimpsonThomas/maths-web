@@ -57,6 +57,12 @@ const [scrollLevel, setScroll] = useState(1)
     return () => window.removeEventListener('wheel', handleScroll)
   })
 
+  useEffect(() => {
+    function touchHandler(e) {
+    }
+    window.addEventListener("touchstart", touchHandler, false);
+  })
+
   let activityStart
 
   switch(process.env.NODE_ENV){
@@ -288,8 +294,6 @@ const [scrollLevel, setScroll] = useState(1)
         break;
     }
   }
-
-  console.log(scrollLevel)
 
   return (
     <div className="App">

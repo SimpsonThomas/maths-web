@@ -205,3 +205,8 @@
   border-style: solid;
   border-width: 2px;
 }
+
+:root {
+  touch-action: none;
+  height: 100% 
+}

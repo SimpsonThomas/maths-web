@@ -31,7 +31,6 @@ const Tasks = props => {
     const selection = inherit.selection // are we in the selection window?
 
     useEffect( () => {
-        console.log(gridProps.size)
         const canvas1 = canvas1Ref.current
         const context1 = canvas1.getContext('2d')
         canvas1.style.width ='100%';
