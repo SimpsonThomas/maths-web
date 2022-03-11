@@ -117,8 +117,8 @@ const calculateAngleMatrix = (scaleAngle) => {
     let angleRadX = 2*Math.PI*angle.x/360
     let angleRadY = 2*Math.PI*angle.y/360
     let transform1 = Math.cos(angleRadX)*scale.x
-    let transform2 = -Math.sin(angleRadX)*scale.x
-    let transform3 = Math.sin(angleRadY)*scale.y
+    let transform3 = -Math.sin(angleRadX)*scale.x
+    let transform2 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
     return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
@@ -146,6 +146,12 @@ const checkSolve = (mat, endMat, vec, endVec) => {
     let x_solve = (startReal.x === endReal.x) ? true : false
     let y_solve = (startReal.y === endReal.y) ? true : false
     return x_solve && y_solve
+}
+
+const checkSingular = (mat) => {
+    let [a,b,c,d] = mat.map(x => parseFloat(x))
+    const det = a*d - b*c
+    return det === 0
 }
 
 const SettingsBox = props => {
@@ -307,6 +313,7 @@ const SettingsBox = props => {
     )
 }
 
-export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, checkSolve, matMult, matVecMult}
+export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, 
+    checkSolve, matMult, matVecMult, checkSingular}
 
 export default SettingsBox

@@ -21,6 +21,48 @@ const App = props => {
       localStorage.clear();
   }
 
+  const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
+    width: undefined,
+    height: undefined,
+    oldSize: undefined,
+})
+
+const [scrollLevel, setScroll] = useState(1)
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+          oldSize: windowSize
+      })
+    }
+
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize',handleResize)
+  })
+
+  useEffect(() => {
+    function handleScroll(e) {
+      let delta = e.wheelDeltaY*0.001
+      let current = scrollLevel
+      let newScroll = current + delta
+      newScroll = Math.min(Math.max(0.1, newScroll), 4)
+      setScroll(newScroll)
+    }
+
+    window.addEventListener('wheel', handleScroll)
+
+    return () => window.removeEventListener('wheel', handleScroll)
+  })
+
+  useEffect(() => {
+    function touchHandler(e) {
+    }
+    window.addEventListener("touchstart", touchHandler, false);
+  })
+
   let activityStart
 
   switch(process.env.NODE_ENV){
@@ -70,7 +112,7 @@ const App = props => {
     window.localStorage.setItem('canvasState', JSON.stringify(saveState))
   }, [matrix, vector, scaleAngle, showEigen])
 
-  let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen]}
+  let canvasState = {'matrix': [matrix, setMatrix], 'vector': [vector, setVector], 'scaleAngle':[scaleAngle, setScaleAngle], 'eigen': [showEigen, setShowEigen],}
 
   // creating tasks reducer state
   const reducerTask = (state, action) => {
@@ -188,8 +230,8 @@ const App = props => {
     window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
   }, [stateNormal, stateInverse])
 
-  let selectionProps = {...gridProps, state:canvasState}
-  let canvasProps = {...gridProps, state:canvasState}
+  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel}
+  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel}
   selectionProps.selection = true
   canvasProps.selection = false
 
@@ -225,9 +267,42 @@ const App = props => {
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
   }
 
+  const zoomButton =(e, type) => {
+    e.preventDefault()
+    const zoomLevel = [10,25,50,75,80,90,100,110,125,150,175,200,250,300,350,400]
+    let newIndex
+    let current = scrollLevel
+    let nearestZoom = zoomLevel.indexOf(zoomLevel.reduce((a, b) => {
+      return Math.abs(current*100-b) < Math.abs(current*100-a) ? b : a;
+    }))+1
+    switch (type) {
+      case 'out':
+        newIndex = nearestZoom+1
+        if(newIndex > zoomLevel.length-1) newIndex = zoomLevel.length-1
+        setScroll((zoomLevel[newIndex])/100)
+        break;
+      case 'in':
+        newIndex = nearestZoom-2
+        if(newIndex < 0) newIndex = nearestZoom-1
+        console.log(newIndex)
+        setScroll((zoomLevel[newIndex])/100)
+        break;
+      case 'reset':
+        setScroll(1)
+        break;
+      default:
+        break;
+    }
+  }
+
   return (
     <div className="App">
       <div className='navBar'>
+        <span className='buttonGroup'>
+          <button className='zoomButton' onClick={(e => zoomButton(e,'in'))}>-</button>
+          <button className='zoomButton' onClick={(e => zoomButton(e,'reset'))}>{Math.round(scrollLevel*100)}%</button>
+          <button className='zoomButton' onClick={(e => zoomButton(e,'out'))}>+</button>
+        </span>
         <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>Select Activity</button>
         <button onClick={e => window.localStorage.clear()} className='navButton clear'>Reset App</button>
       </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { calculateAngleMatrix, initaliseCanvas, matMult} from "../canvasComponents";
+import { calculateAngleMatrix, checkSingular, initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
 
 const Tasks = props => {
@@ -17,7 +17,7 @@ const Tasks = props => {
 
     // basic props for the grid
     const gridProps = {
-        size : 20, // size of grid squares
+        size : 20*inherit.scroll, // size of grid squares
         startX: 15,
         startY: 15,
         majorAxColour: inherit.majorAxColour, // default colours
@@ -30,23 +30,7 @@ const Tasks = props => {
 
     const selection = inherit.selection // are we in the selection window?
 
-    const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
-        width: undefined,
-        height: undefined,
-        oldSize: undefined,
-    })
-
     useEffect( () => {
-        function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-                oldSize: windowSize
-            })
-        }
-
-        window.addEventListener('resize', handleResize)
-
         const canvas1 = canvas1Ref.current
         const context1 = canvas1.getContext('2d')
         canvas1.style.width ='100%';
@@ -94,7 +78,7 @@ const Tasks = props => {
                     break;
             }
 
-            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector,true,gridProps.colourAxis)
+            grid(context, gridProps.minorAxColour, gridProps.minorAxSecColour,gridProps.majorAxColour, gridProps.vectorColour,mat, vector,true,gridProps.colourAxis,gridProps.size)
 
             //if (showEigen) eigenVector(context,mat)
             if (frameCount===frameMax) {
@@ -119,7 +103,7 @@ const Tasks = props => {
             gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour,minorSec:gridProps.minorAxSecColours,axis:gridProps.colourAxis}, 
             ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major,gridColour.vector,mat, disVector,true,gridColour.axis)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major,gridColour.vector,mat, disVector,true,gridColour.axis,gridProps.size)
                 //if (showEigen) eigenVector(context,mat)
         }
 
@@ -246,7 +230,6 @@ const Tasks = props => {
         }
         updateState( {type:'matrix',data:{angle:{...state.matrix.angle,[change]:newAngle, } } } )
     }
-    //console.log(state.matrix)
 
     const vec = state.currentTask.type==='vec'
 
