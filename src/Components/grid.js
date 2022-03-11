@@ -1,4 +1,3 @@
-import { scrollLevel } from "../App"
 import { drawLine, drawLineArrow } from "./canvasComponents"
 import { gridProps } from "./constants/constants"
 

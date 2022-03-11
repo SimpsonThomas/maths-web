@@ -159,7 +159,7 @@ const [scrollLevel, setScroll] = useState(1)
             let nextTask = tasks[nextTaskNo]
             let newState = {
                 ...state,
-                currentTask:{num:nextTaskNo,type:nextTask.type, description:nextTask.description},
+                currentTask:{num:nextTaskNo,type:nextTask.type, description:nextTask.description,endCard:nextTask.endCard},
             }
             switch (taskType) {
                 case 'normal':
@@ -200,7 +200,7 @@ const [scrollLevel, setScroll] = useState(1)
     vecEnd:{...tasksNormal[1].endVec, 'old':tasksNormal[1].endVec, 'change':'done'},
    // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
    // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
-    currentTask:{num:1, type:tasksNormal[1].type, description:tasksNormal[1].description},
+    currentTask:{num:1, type:tasksNormal[1].type, description:tasksNormal[1].description,endCard:tasksNormal[1].endCard},
     solve: false
   }
 
@@ -209,7 +209,7 @@ const [scrollLevel, setScroll] = useState(1)
     matrixStart: {'new':inverseTasks[1].startMat,'old':inverseTasks[1].startMat, 'change':'done',},
     matrix: {'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done', angleMat: false, angle: {x:0,y:0}, scale:{x:1,y:1}},
     matrixEnd: {'new':inverseTasks[1].endMat,'old':inverseTasks[1].endMat, 'change':'done'},
-    currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description},
+    currentTask:{num:1, type:inverseTasks[1].type, description:inverseTasks[1].description,endCard:tasksNormal[1].endCard},
     solve: false
   }
 
