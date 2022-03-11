@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { calculateAngleMatrix, checkSingular, initaliseCanvas, matMult} from "../canvasComponents";
+import { calculateAngleMatrix, initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
 
 const Tasks = props => {
@@ -235,6 +235,8 @@ const Tasks = props => {
 
     const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
     const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
+
+    console.log(state.currentTask)
 
     const html = <>
         {!selection ? 
