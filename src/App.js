@@ -45,6 +45,7 @@ const [scrollLevel, setScroll] = useState(1)
 
   useEffect(() => {
     function handleScroll(e) {
+      console.log(e)
       let delta = e.wheelDeltaY*0.001
       let current = scrollLevel
       let newScroll = current + delta
@@ -52,11 +53,19 @@ const [scrollLevel, setScroll] = useState(1)
       setScroll(newScroll)
     }
 
-    var mainApp = document.getElementsByClassName("mainSelection")[0]
+    var canvasLists = document.getElementsByClassName("canvas")
+    console.log(canvasLists)
+    for (let i =0;i<canvasLists.length;i++) {
+      canvasLists[i].addEventListener('wheel', handleScroll)
+    }
     //console.log(mainApp)
-    mainApp.addEventListener('wheel', handleScroll)
+    //mainApp.addEventListener('wheel', handleScroll)
 
-    return () => mainApp.removeEventListener('wheel', handleScroll)
+    return () => {
+      for (let i =0;i<canvasLists.length;i++) {
+        canvasLists[i].removeEventListener('wheel', handleScroll)
+      }
+    }
   })
 
   useEffect(() => {
@@ -288,7 +297,6 @@ const [scrollLevel, setScroll] = useState(1)
       case 'in':
         newIndex = nearestZoom-2
         if(newIndex < 0) newIndex = nearestZoom-1
-        console.log(newIndex)
         setScroll((zoomLevel[newIndex])/100)
         break;
       case 'reset':
