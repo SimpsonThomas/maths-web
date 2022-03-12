@@ -1,4 +1,4 @@
-import { drawLine, drawLineArrow } from "./canvasComponents"
+    import { drawLine, drawLineArrow } from "./canvasComponents"
 import { gridProps } from "./constants/constants"
 
 const grid = (ctx,

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import '../canvas.css'
 import './tasks.css'
-import { calculateAngleMatrix, initaliseCanvas, matMult} from "../canvasComponents";
+import { calculateAngleMatrix, calculateAngleVec, initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
 
 const Tasks = props => {
     const inherit = props.props
+
+    const selection = inherit.selection // are we in the selection window?
     const taskType = props.props.taskType ? props.props.taskType : 'none'
     //const [scaleAngle, setScaleAngle] = inherit.scaleAngle
     //const [showEigen, setShowEigen] = inherit.eigen
@@ -17,7 +19,7 @@ const Tasks = props => {
 
     // basic props for the grid
     const gridProps = {
-        size : 20*inherit.scroll, // size of grid squares
+        size : selection ? 20 : 20*inherit.scroll , // size of grid squares
         startX: 15,
         startY: 15,
         majorAxColour: inherit.majorAxColour, // default colours
@@ -27,8 +29,6 @@ const Tasks = props => {
         vectorColour: inherit.vectorColour,
         colourAxis:  inherit.colourAxis
     }
-
-    const selection = inherit.selection // are we in the selection window?
 
     useEffect( () => {
         const canvas1 = canvas1Ref.current
@@ -115,13 +115,17 @@ const Tasks = props => {
         let matAngle = calculateAngleMatrix(state.matrix).slice(-4)
 
         let mat = state.matrix.angleMat ? matAngle : matNorm
+
+        
+        let vec = (taskType === 'inverse') ? state.vecStart  
+        : !state.vecStart.angleVec ? state.vecStart : calculateAngleVec(state.vecStart)
         
         if (taskType === 'inverse') mat = matMult(state.matrixStart.new, mat)
         if (matrix.change !== 'done' && matrix.new[matrix.change]!=='') {
-            animate(context1, canvas1, matrix, state.vecStart)
+            animate(context1, canvas1, matrix, vec)
         }
         else {
-            render(context1, canvas1, mat, state.vecStart)
+            render(context1, canvas1, mat, vec)
         }
         render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey',axis:'pink'})
         
@@ -215,6 +219,24 @@ const Tasks = props => {
         )
     }
 
+    const sliderVec = (type,range) => {
+        const updateVecAng = (e) => {
+            e.preventDefault()
+            let value = e.target.value
+            updateState({
+                type: 'vector',
+                data: {
+                    [type] : value
+                }
+            })
+        }
+
+        return (
+            <input type="range" min={-range} max={range} value={state.vecStart[type]} className="slider" id="myRange"
+                onChange={e => updateVecAng(e) }/>
+        )
+    }
+
     const quickSetAngle = (change, keep) => {
         const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
         const current = state.matrix.angle[change]
@@ -235,9 +257,6 @@ const Tasks = props => {
 
     const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
     const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
-
-    console.log(state.currentTask)
-
     const html = <>
         {!selection ? 
             <div className={'matrixBox boxOpen'}>
@@ -247,11 +266,31 @@ const Tasks = props => {
                         <p className='boxTitle'>
                             Input Vector
                         </p>
+                        {/*<label className="switch">
+                            <input type="checkbox" checked={state.vecStart.angleVec}
+                                onChange={e=> updateState({type:'switchVec'})}/>
+                            <span className="sliderToggle round"></span>
+                        </label>*/}
                         <p style={{color:'white'}}>{vec ? 'Input test vectors here to match the test vector' : 'Currently set vector'}</p>
-                        <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
-                                onChange={e => updateVec(e, 'x') }/></p>
-                        <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
-                                onChange={e => updateVec(e, 'y') }/></p>
+                        { !state.vecStart.angleVec ?
+                        <>
+                            <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
+                                    onChange={e => updateVec(e, 'x') }/></p>
+                            <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
+                                    onChange={e => updateVec(e, 'y') }/></p>
+                        </>
+                        :
+                        <>                                
+                            <div className='boxTitle'>
+                                <p>Scale: &nbsp; &nbsp; <span className='sliderDisplay'>{state.vecStart.scale}</span></p>
+                                {sliderVec('scale', 5)}
+                            </div>                        
+                            <div className='boxTitle'>
+                                <p>Angle: &nbsp; &nbsp; <span className='sliderDisplay'>{state.vecStart.angle}</span></p>
+                                {sliderVec('angle', 180)}
+                            </div>
+                        </>
+                        }
                     </>
                     : <>
                         <p className='boxTitle'>
@@ -287,7 +326,8 @@ const Tasks = props => {
                     </>
                     <>
                         <div style={{display : state.matrix.angleMat ? '' : 'none'}} >
-                        <p className='boxTitle'>Matrix</p>
+                        <p className='boxTitle'>Matrix Sliders</p>
+                        <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p> 
                         <p className='matrixDisplay'>
                             {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
                         </p>

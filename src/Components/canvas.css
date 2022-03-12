@@ -36,6 +36,7 @@ canvas {
     width:200px;
     background-color: #233cb8;
     transition-duration: 0.5s;
+    overflow-y: auto;
 }
 
 .boxTitle {

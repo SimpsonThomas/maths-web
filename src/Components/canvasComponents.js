@@ -124,6 +124,17 @@ const calculateAngleMatrix = (scaleAngle) => {
     return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
 }
 
+const calculateAngleVec = (vec) => {
+    let angle = vec.angle
+    let angleRad = Math.PI*(angle/180)
+    let scale = vec.scale
+    console.log(scale)
+    let x_coord = scale*parseFloat(Math.cos(angleRad).toFixed(4))
+    let y_coord = scale*parseFloat(Math.sin(angleRad).toFixed(4))
+    console.log(x_coord, y_coord)
+    return {x:x_coord, y:y_coord}
+}
+
 const matVecMult = (mat, vec) => {
     let [a,b,c,d] = mat.map(x => parseFloat(x))
     let [x, y] = [vec.x, vec.y].map(i => parseFloat(i))
@@ -314,6 +325,6 @@ const SettingsBox = props => {
 }
 
 export {drawLine, drawLineArrow,drawLine3D ,calculateVectors, eigenVector, calculateAngleMatrix, initaliseCanvas, 
-    checkSolve, matMult, matVecMult, checkSingular}
+    checkSolve, matMult, matVecMult, checkSingular, calculateAngleVec}
 
 export default SettingsBox
