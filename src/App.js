@@ -45,7 +45,6 @@ const [scrollLevel, setScroll] = useState(1)
 
   useEffect(() => {
     function handleScroll(e) {
-      console.log(e)
       let delta = e.wheelDeltaY*0.001
       let current = scrollLevel
       let newScroll = current + delta
@@ -54,12 +53,9 @@ const [scrollLevel, setScroll] = useState(1)
     }
 
     var canvasLists = document.getElementsByClassName("canvas")
-    console.log(canvasLists)
     for (let i =0;i<canvasLists.length;i++) {
       canvasLists[i].addEventListener('wheel', handleScroll)
     }
-    //console.log(mainApp)
-    //mainApp.addEventListener('wheel', handleScroll)
 
     return () => {
       for (let i =0;i<canvasLists.length;i++) {
@@ -97,6 +93,19 @@ const [scrollLevel, setScroll] = useState(1)
     window.localStorage.setItem('screen', JSON.stringify(activity))
   }, [activity])
   
+  useEffect(() => {
+    function handleKeypress(e) {
+      if (e.key === 'Escape') {
+        setActivity({...activity,
+          selection: false
+        })
+      }
+    }
+    if (activity.selection) window.addEventListener('keydown', handleKeypress)
+
+    return () => window.removeEventListener('keydown', handleKeypress)
+  })
+
   let initialStateCanvas = {
     matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
     vector: {'x':0, 'y':0, old:{'x':0,'y':0}, 'change': 'done'},
@@ -177,7 +186,8 @@ const [scrollLevel, setScroll] = useState(1)
             switch (taskType) {
                 case 'normal':
                     newState = {...newState,
-                        matrix:{...state.matrix,'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done', angle: {x:0,y:0}, scale:{x:1,y:1}},
+                        matrix:{...state.matrix,'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done', angle: {x:0,y:0}, scale:{x:1,y:1},
+                         angleMat: nextTask.type === 'vec' ? false : state.matrix.angleMat},
                         matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
                         vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done', angle:45, scale:1},
                         vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},

@@ -22,7 +22,7 @@ canvas {
 }
 
 .boxOpen {
-    max-height: 80vh;
+    max-height: 90vh;
 }
 
 .boxClosed {
@@ -32,7 +32,7 @@ canvas {
     border-radius: 25px;
     position: absolute;
     left: 5vw;
-    top: 10vh;
+    top: 7vh;
     width:200px;
     background-color: #233cb8;
     transition-duration: 0.5s;

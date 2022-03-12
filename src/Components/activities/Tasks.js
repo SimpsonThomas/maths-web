@@ -207,14 +207,14 @@ const Tasks = props => {
                 data: {
                     [type] : {
                         ...state.matrix[type],
-                        [axis] : value
+                        [axis] : value/10
                     }
                 }
             })
         }
 
         return (
-            <input type="range" min={-range} max={range} value={state.matrix[type][axis]} className="slider" id="myRange"
+            <input type="range" min={-range*10} max={range*10} value={state.matrix[type][axis]*10} disabled={vec ? 'disabled':''} className="slider" id="myRange"
                 onChange={e => updateMatAng(e) }/>
         )
     }
@@ -260,7 +260,6 @@ const Tasks = props => {
     const html = <>
         {!selection ? 
             <div className={'matrixBox boxOpen'}>
-                <p className='boxTitle'>Current Task: {state.currentTask.num}</p>
                 <p style={{color:'white'}}>{state.currentTask.description}</p>
                     {taskType !== 'inverse' ? <>
                         <p className='boxTitle'>
@@ -305,14 +304,15 @@ const Tasks = props => {
                     </>}
                     <>
                     <>
-                        <label className="switch">
-                            <input type="checkbox" checked={state.matrix.angleMat}
+                    
+                        <p className='boxTitle'>{state.matrix.angleMat ? 'Matrix Sliders' : 'Set Matrix'}</p>
+                        {!vec ? <label className="switch">
+                            <input type="checkbox" checked={state.matrix.angleMat} disabled={vec ? 'disabled':''}
                                 onChange={e=> updateState({type:'switchMat'})}/>
                             <span className="sliderToggle round"></span>
-                        </label>
+                        </label> : <></>}
                     </>
                     <div style={{display : !state.matrix.angleMat ? '' : 'none'}}>
-                        <p className='boxTitle'>Set Matrix</p>
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p>                        
                         <p>
                             {
@@ -326,7 +326,6 @@ const Tasks = props => {
                     </>
                     <>
                         <div style={{display : state.matrix.angleMat ? '' : 'none'}} >
-                        <p className='boxTitle'>Matrix Sliders</p>
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p> 
                         <p className='matrixDisplay'>
                             {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
@@ -337,7 +336,7 @@ const Tasks = props => {
             
                         <div>
                             <p className='boxTitle'>
-                                <button className='quickChange' 
+                                <button className='quickChange' disabled={vec ? 'disabled':''}
                                     onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
                                         Angle X:</button>
                                 &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.x}</span></p>
@@ -346,7 +345,7 @@ const Tasks = props => {
                         
                         <div className='boxTitle'>
                             <p>
-                                <button className='quickChange' 
+                                <button className='quickChange' disabled={vec ? 'disabled':''}
                                     onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
                                         Angle Y:</button>
                                 &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.y}</span></p>
@@ -362,12 +361,10 @@ const Tasks = props => {
                         </div>
                 </div>
                     </>
-                    <p>&nbsp;</p>
                 <p></p>
-                <button className='quickChange' 
+                {process.env.NODE_ENV === 'development' ?<button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
-                    Next Task</button>
-                <p>&nbsp;</p>
+                    Next Task</button> : <></>}
             </div>
             : <></>}
         {!selection ? 
