@@ -52,9 +52,16 @@ const [scrollLevel, setScroll] = useState(1)
       setScroll(newScroll)
     }
 
-    window.addEventListener('wheel', handleScroll)
+    var canvasLists = document.getElementsByClassName("canvas")
+    for (let i =0;i<canvasLists.length;i++) {
+      canvasLists[i].addEventListener('wheel', handleScroll)
+    }
 
-    return () => window.removeEventListener('wheel', handleScroll)
+    return () => {
+      for (let i =0;i<canvasLists.length;i++) {
+        canvasLists[i].removeEventListener('wheel', handleScroll)
+      }
+    }
   })
 
   useEffect(() => {
@@ -86,6 +93,19 @@ const [scrollLevel, setScroll] = useState(1)
     window.localStorage.setItem('screen', JSON.stringify(activity))
   }, [activity])
   
+  useEffect(() => {
+    function handleKeypress(e) {
+      if (e.key === 'Escape') {
+        setActivity({...activity,
+          selection: false
+        })
+      }
+    }
+    if (activity.selection) window.addEventListener('keydown', handleKeypress)
+
+    return () => window.removeEventListener('keydown', handleKeypress)
+  })
+
   let initialStateCanvas = {
     matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
     vector: {'x':0, 'y':0, old:{'x':0,'y':0}, 'change': 'done'},
@@ -151,6 +171,8 @@ const [scrollLevel, setScroll] = useState(1)
             return {...state, matrix: {...state.matrix, ...action.data}, solve:solve}
         case 'matrixAng':
             return {...state, matrix: {...action.data}, solve:solve}
+        case 'switchVec':
+          return {...state, vecStart: {...state.vecStart, angleVec:!state.vecStart.angleVec}, solve:solve}
         case 'vector':
             return {...state, vecStart: {...state.vecStart,...action.data}, solve:solve}
         case 'task':
@@ -164,9 +186,10 @@ const [scrollLevel, setScroll] = useState(1)
             switch (taskType) {
                 case 'normal':
                     newState = {...newState,
-                        matrix:{...state.matrix,'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                        matrix:{...state.matrix,'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done', angle: {x:0,y:0}, scale:{x:1,y:1},
+                         angleMat: nextTask.type === 'vec' ? false : state.matrix.angleMat},
                         matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
-                        vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
+                        vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done', angle:45, scale:1},
                         vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
                         solve:false,
                     }
@@ -196,7 +219,7 @@ const [scrollLevel, setScroll] = useState(1)
     taskType: 'normal',
     matrix: {'new':tasksNormal[1].startMat,'old':tasksNormal[1].startMat, 'change':'done', angleMat: false, angle: {x:0,y:0}, scale:{x:1,y:1}},
     matrixEnd: {'new':tasksNormal[1].endMat,'old':tasksNormal[1].endMat, 'change':'done'},
-    vecStart:{...tasksNormal[1].startVec, 'old':tasksNormal[1].startVec, 'change':'done'},
+    vecStart:{...tasksNormal[1].startVec, 'old':tasksNormal[1].startVec, 'change':'done', angleVec: false, angle:45, scale:1},
     vecEnd:{...tasksNormal[1].endVec, 'old':tasksNormal[1].endVec, 'change':'done'},
    // matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
    // vector: {'x':5, 'y':5, old:{'x':0,'y':0}, 'change': 'done'},
@@ -284,7 +307,6 @@ const [scrollLevel, setScroll] = useState(1)
       case 'in':
         newIndex = nearestZoom-2
         if(newIndex < 0) newIndex = nearestZoom-1
-        console.log(newIndex)
         setScroll((zoomLevel[newIndex])/100)
         break;
       case 'reset':
@@ -320,13 +342,13 @@ const [scrollLevel, setScroll] = useState(1)
         </center>
         : <></>
       }
-      {(activity.set) ? 
+      <span className='mainSelection'>{(activity.set) ? 
         React.createElement(
           activities[activity.set].activityCanvas,
           {className:'canvas', props:{...canvasProps, ...activities[activity.set].props}, key:activity.set}
         )
         : <></>
-      }
+      }</span>
     </div>
   );
 }

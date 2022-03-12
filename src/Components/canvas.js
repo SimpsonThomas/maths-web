@@ -6,6 +6,7 @@ import { grid } from "./grid";
 const Canvas = props => {
     const inherit = props.props
 
+    const selection = inherit.selection // are we in the selection window?
 
     // inheriting state values from App
     let state = inherit.state
@@ -22,15 +23,13 @@ const Canvas = props => {
 
     // basic props for the grid
     const gridProps = {
-        size : 20*inherit.scroll, // size of grid squares
+        size : selection ? 20 : 20*inherit.scroll, // size of grid squares
         majorAxColour: inherit.majorAxColour, // default colours
         minorAxColour: inherit.minorAxColour,
         minorAxSecColour: inherit.minorAxSecColour,
         backgroundColour: inherit.background,
         vectorColour: inherit.vectorColour
     }
-
-    const selection = inherit.selection // are we in the selection window?
 
     const eigenVector = (ctx, transform) => {
         const [, , eigenVec1, eigenVec2] = calculateVectors(transform)

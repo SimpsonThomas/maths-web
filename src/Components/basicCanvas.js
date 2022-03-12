@@ -4,6 +4,7 @@ import SettingsBox, { calculateAngleMatrix, drawLineArrow, initaliseCanvas } fro
 
 const Basic = props => {
     const inherit = props.props
+    const selection = inherit.selection
 
     // creating state items 
     let state = inherit.state
@@ -16,18 +17,16 @@ const Basic = props => {
 
     // basic props for the grid
     const gridProps = {
-        size : 100, // size of grid squares
+        size : selection ? 100 : 100*inherit.scroll, // size of grid squares
         majorAxColour: inherit.majorAxColour, // default colours
         minorAxColour: inherit.minorAxColour, 
         backgroundColour: inherit.backgroundColour,
     }
 
-    const selection = inherit.selection
-
     const grid = (ctx,
         colour=gridProps.majorAxColour,
         transform=[1,0,0,1]) => { // creating the grid
-        let gridSize = gridProps.size*inherit.scroll
+        let gridSize = gridProps.size
 
         drawLineArrow(ctx, {x:0,y:0}, {x:gridSize, y:0},colour, transform, 'x')
         drawLineArrow(ctx, {x:0,y:0}, {y:gridSize, x:0},colour, transform, 'y')
