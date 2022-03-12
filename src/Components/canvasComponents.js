@@ -230,8 +230,8 @@ const SettingsBox = props => {
 
     const angleScaleInput = (type, axis, range) => {
         return (
-            <input type="range" min={-range} max={range} value={scaleAngle[type][axis]} className="slider" id="myRange"
-                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value} })) }/>
+            <input type="range" min={-range*10} max={range*10} value={scaleAngle[type][axis]*10} className="slider" id="myRange"
+                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value/10} })) }/>
         )
     }
 
