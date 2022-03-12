@@ -326,7 +326,7 @@ const [scrollLevel, setScroll] = useState(1)
           <button className='zoomButton' onClick={(e => zoomButton(e,'out'))}>+</button>
         </span>
         <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>Select Activity</button>
-        <button onClick={e => window.localStorage.clear()} className='navButton clear'>Reset App</button>
+        <button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>
       </div>
       { activity.selection ?
         <center className='selectionDiv'>
