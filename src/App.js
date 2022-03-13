@@ -156,8 +156,6 @@ const App = props => {
                 tasks = tasksNormal
                 break;
             case 'inverse':
-                console.log(state)
-                console.log(action)
                 mat = !state.matrix.angleMat ? action.data.new
                   : calculateAngleMatrix({...state.matrix, ...action.data}).slice(-4)
                 let mult = matMult(state.matrixStart.new, mat)
@@ -201,9 +199,10 @@ const App = props => {
                     break;
                 case 'inverse':
                     newState = {...newState,
-                        matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                        matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done', },
                         matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
-                        matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+                        matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done',angle: {x:0,y:0}, scale:{x:1,y:1},
+                        angleMat: nextTask.type === 'vec' ? false : state.matrix.angleMat},
                         //vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
                         //vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
                         solve:false,
@@ -252,8 +251,8 @@ const App = props => {
     window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
   }, [stateNormal, stateInverse])
 
-  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection}
-  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection}
+  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection, setActivity:setActivity}
+  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection,setActivity:setActivity}
   selectionProps.selection = true
   canvasProps.selection = false
 
@@ -283,10 +282,10 @@ const App = props => {
 
   const activities = {
     'Introduction':{activityCanvas: Basic, name:'Introduction', description: 'The introduction task - here you see the effect the matrix has on the x and y vectors',},
-    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
+    'Vector Tasks':{activityCanvas: Tasks, name:'Vector Tasks', description: 'Match the two vectors!',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
-    'Multiply':{activityCanvas: Tasks, name:'Multiply', description: 'Multiply matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
-    'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
+    'Matrix Multiply':{activityCanvas: Tasks, name:'Matrix Multiply', description: 'Get the two sides to match by multiplying matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
+    'Free play':{activityCanvas: Canvas, name:'Free play', description: 'Take your time and have some fun!'},
   }
 
   const nextActivity =  (e) => {

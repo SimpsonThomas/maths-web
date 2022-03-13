@@ -121,17 +121,15 @@ const calculateAngleMatrix = (scaleAngle) => {
     let transform2 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
-    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
+    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4].map(x => parseFloat(x.toFixed(4)))
 }
 
 const calculateAngleVec = (vec) => {
     let angle = vec.angle
     let angleRad = Math.PI*(angle/180)
     let scale = vec.scale
-    console.log(scale)
     let x_coord = scale*parseFloat(Math.cos(angleRad).toFixed(4))
     let y_coord = scale*parseFloat(Math.sin(angleRad).toFixed(4))
-    console.log(x_coord, y_coord)
     return {x:x_coord, y:y_coord}
 }
 

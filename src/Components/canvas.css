@@ -205,9 +205,9 @@ input:checked + .slider {
   font-weight: bolder;
   position: absolute;
   bottom: -15px;
-  left: calc(50% - 30px);
+  left: calc(50% - 35px);
   font-size: larger;
-  width: 60px;
+  width: 70px;
   height: 40px;
   transition: background-color 0.25s;
   border-color: #23b8a9;
