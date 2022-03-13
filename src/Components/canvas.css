@@ -21,13 +21,6 @@ canvas {
   height: 100%;
 }
 
-.boxOpen {
-    max-height: 90vh;
-}
-
-.boxClosed {
-}
-
 .matrixBox {
     border-radius: 25px;
     position: absolute;
@@ -37,6 +30,7 @@ canvas {
     background-color: #233cb8;
     transition-duration: 0.5s;
     overflow-y: auto;
+    max-height: 90vh;
 }
 
 .boxTitle {
