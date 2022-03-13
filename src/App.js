@@ -21,14 +21,15 @@ const App = props => {
       localStorage.clear();
   }
 
+
+  // changes canvas when we resize the window
   const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
     width: undefined,
     height: undefined,
     oldSize: undefined,
-})
+  })
 
-const [scrollLevel, setScroll] = useState(1)
-
+  // useEffect for resizging
   useEffect(() => {
     function handleResize() {
       setWindowSize({
@@ -36,13 +37,17 @@ const [scrollLevel, setScroll] = useState(1)
           height: window.innerHeight,
           oldSize: windowSize
       })
-    }
-
+  }
     
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize',handleResize)
   })
 
+
+  // scroll state
+  const [scrollLevel, setScroll] = useState(1)
+
+  // scroll setter
   useEffect(() => {
     function handleScroll(e) {
       let delta = e.wheelDeltaY*0.001
@@ -64,14 +69,16 @@ const [scrollLevel, setScroll] = useState(1)
     }
   })
 
-  useEffect(() => {
+  // touch input detecter - Not currently used
+  /*useEffect(() => {
     function touchHandler(e) {
     }
     window.addEventListener("touchstart", touchHandler, false);
-  })
+  })*/
 
+  // activity selector
   let activityStart
-
+  // change activity depending on where we are running the app
   switch(process.env.NODE_ENV){
     case 'production':
       activityStart = {set:'Initial', selection: false}
@@ -82,17 +89,16 @@ const [scrollLevel, setScroll] = useState(1)
     default:
       activityStart = {set:'Initial', selection: false}
   }
-
+  // storing the current display activity in localstorage
   if (!window.localStorage.getItem('screen')) window.localStorage.setItem('screen', JSON.stringify(activityStart))
-
   activityStart = JSON.parse( localStore.getItem('screen'))
-
   const [activity, setActivity] = useState(activityStart)
-
   useEffect(() => {
     window.localStorage.setItem('screen', JSON.stringify(activity))
   }, [activity])
   
+
+  // leaving the activity menu when esc is pressed
   useEffect(() => {
     function handleKeypress(e) {
       if (e.key === 'Escape') {
@@ -102,9 +108,10 @@ const [scrollLevel, setScroll] = useState(1)
       }
     }
     if (activity.selection) window.addEventListener('keydown', handleKeypress)
-
     return () => window.removeEventListener('keydown', handleKeypress)
   })
+
+
 
   let initialStateCanvas = {
     matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
@@ -253,8 +260,8 @@ const [scrollLevel, setScroll] = useState(1)
     window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
   }, [stateNormal, stateInverse])
 
-  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel}
-  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel}
+  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection}
+  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection}
   selectionProps.selection = true
   canvasProps.selection = false
 

@@ -135,8 +135,6 @@ const Tasks = props => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    //const [switchMat, setSwitchMat] = useState(false)
-
     let helpSaveName = 'helpTask'+taskType
     let localStore = window.localStorage
 
@@ -149,6 +147,20 @@ const Tasks = props => {
     useEffect(() => {
         window.localStorage.setItem(helpSaveName, JSON.stringify(showHelp))
     }, [showHelp,helpSaveName])
+
+    useEffect(() => {
+        if (showHelp || inherit.activityBox) {
+            console.log('here1')
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = true
+        }
+        
+        else  {
+            console.log('here2')
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = false
+        }
+    })
 
     const updateMatrix = (e, pos) => {
         e.preventDefault()
@@ -257,8 +269,10 @@ const Tasks = props => {
 
     const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
     const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
+
     const html = <>
         {!selection ? 
+            <fieldset className='controlBox'>
             <div className={'matrixBox boxOpen'}>
                 <p style={{color:'white'}}>{state.currentTask.description}</p>
                     {taskType !== 'inverse' ? <>
@@ -366,6 +380,7 @@ const Tasks = props => {
                     onClick={e => {nextTask(e)}}>
                     Next Task</button> : <></>}
             </div>
+            </fieldset>
             : <></>}
         {!selection ? 
             <div className='taskEndBox'>
