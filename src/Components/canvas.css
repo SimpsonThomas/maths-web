@@ -40,7 +40,8 @@ canvas {
 }
 
 .matrixInput {
-    width: 25px;
+    width: 30px;
+    height: 20px;
     font-weight: bold;
     text-align: center;
     margin-left: 10px;

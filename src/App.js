@@ -81,13 +81,13 @@ const App = props => {
   // change activity depending on where we are running the app
   switch(process.env.NODE_ENV){
     case 'production':
-      activityStart = {set:'Initial', selection: false}
+      activityStart = {set:'Introduction', selection: false}
       break;
     case 'development':
-      activityStart = {set:'Initial', selection: false}
+      activityStart = {set:'Introduction', selection: false}
       break;
     default:
-      activityStart = {set:'Initial', selection: false}
+      activityStart = {set:'Introduction', selection: false}
   }
   // storing the current display activity in localstorage
   if (!window.localStorage.getItem('screen')) window.localStorage.setItem('screen', JSON.stringify(activityStart))

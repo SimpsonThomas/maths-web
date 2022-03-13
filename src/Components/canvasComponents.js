@@ -221,10 +221,12 @@ const SettingsBox = props => {
         setSaveMatrix(mat)
     }
 
-    const numberInput = (position) =>{
+    const numberInput = (position, other={type:'set'}) =>{
+        let value = other.type === 'set' ? matrix.new[position]
+            : Math.round(other.data*100)/100
         return (
-            <input className='matrixInput'  type="number" value={matrix.new[position] } key={position+'matrixInput'}
-                onChange={e => updateMatrix(e, position)}/>
+            <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
         )
     }
 
@@ -242,13 +244,13 @@ const SettingsBox = props => {
                 Settings
             </p>
             <div className={'settings settingsOpen'}>
+                <p className='boxTitle'>Matrix</p>
                 <label className="switch">
                     <input type="checkbox" checked={switchMat}
                         onChange={e=> setSwitchMat(e.target.checked)}/>
                     <span className="sliderToggle round"></span>
                 </label>
                 <div style={{display : !switchMat ? '' : 'none'}}>
-                    <p className='boxTitle'>Set Matrix</p>
                     <p>
                         {
                             [1,2].map(pos => numberInput(pos) )
@@ -259,13 +261,14 @@ const SettingsBox = props => {
                         }
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
-                    <p className='boxTitle'>Matrix</p>
-                    <p className='matrixDisplay'>
-                        {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
+                    <p>
+                        {
+                            [{no:1, data:transform1},{no:2, data:transform2}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                        }
                     </p>
-                    <p className='matrixDisplay'>
-                        {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
-                    </p>
+                        {
+                            [{no:3, data:transform3},{no:4, data:transform4}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                        }
         
                     <div>
                         <p className='boxTitle'>
