@@ -112,13 +112,14 @@ const Basic = props => {
         
       {(showHelp && !selection) ?
             <div className='help'>
-                <h3>Welcome to the Linear Algebra Web app</h3>
+                <h3>Welcome!</h3>
                 <p>
-                    This is a site to help show some of the visualisations of linear algebra.
+                    This is a site to help you visualise some of the linear algebra you've been learning
                 </p>
-                <p>We will start off simply - you can change the matrix in the corner to move the basis vectors</p>
+                <p></p>
+                <p>We will start off simply - you can change the matrix in the corner to move the x and y vectors</p>
 
-                <p>Or switch to changing the angle and scale to move them instead</p>
+                <p>Or use the toggle switch to change the angle and scale of the vectors instead</p>
 
                 <p>Once you're done click the next button in the top right to move onto the next activity</p>
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>

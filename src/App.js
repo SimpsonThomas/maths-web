@@ -84,7 +84,7 @@ const App = props => {
       activityStart = {set:'Initial', selection: false}
       break;
     case 'development':
-      activityStart = {set:'Tasks', selection: false}
+      activityStart = {set:'Initial', selection: false}
       break;
     default:
       activityStart = {set:'Initial', selection: false}
@@ -110,8 +110,6 @@ const App = props => {
     if (activity.selection) window.addEventListener('keydown', handleKeypress)
     return () => window.removeEventListener('keydown', handleKeypress)
   })
-
-
 
   let initialStateCanvas = {
     matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
@@ -284,11 +282,21 @@ const App = props => {
   }
 
   const activities = {
-    'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator',},
+    'Introduction':{activityCanvas: Basic, name:'Introduction', description: 'The introduction task - here you see the effect the matrix has on the x and y vectors',},
     'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
     'Multiply':{activityCanvas: Tasks, name:'Multiply', description: 'Multiply matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
     'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
+  }
+
+  const nextActivity =  (e) => {
+    e.preventDefault()
+    let list = Object.keys(activities)
+    let pos = list.indexOf(activity.set)
+    setActivity({
+      set:list[pos+1],
+      selection: false
+    })
   }
 
   const zoomButton =(e, type) => {
@@ -312,8 +320,14 @@ const App = props => {
           <button className='zoomButton' onClick={(e => zoomButton(e,'reset'))}>{Math.round(scrollLevel*100)}%</button>
           <button className='zoomButton' onClick={(e => zoomButton(e,'out'))}>+</button>
         </span>
+        
         <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>{activity.set}</button>
-        <button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>
+        <span className='navGroup'>
+          {Object.keys(activities).indexOf(activity.set) < Object.keys(activities).length-1 ? 
+            <button onClick={e => nextActivity(e)} className='navButton clear'>Next</button>
+            : <></>}
+        </span>
+        {/*<button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>*/}
       </div>
       { activity.selection ?
         <center className='selectionDiv'>
