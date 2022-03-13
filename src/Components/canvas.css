@@ -205,7 +205,7 @@ input:checked + .slider {
 .hideHelp {
   background-color: #23b8a9;
   color: white;
-  border-radius: 50%;
+  border-radius: 30%;
   border: #23b8a9;
   font-weight: bolder;
   position: absolute;
@@ -213,7 +213,15 @@ input:checked + .slider {
   left: calc(50% - 30px);
   font-size: larger;
   width: 60px;
-  height: 40px
+  height: 40px;
+  transition: background-color 0.25s;
+  border-color: #23b8a9;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.hideHelp:hover {
+  background-color: #233cb8;
 }
 
 .quickChange {
