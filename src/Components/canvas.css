@@ -21,13 +21,6 @@ canvas {
   height: 100%;
 }
 
-.boxOpen {
-    max-height: 90vh;
-}
-
-.boxClosed {
-}
-
 .matrixBox {
     border-radius: 25px;
     position: absolute;
@@ -37,6 +30,7 @@ canvas {
     background-color: #233cb8;
     transition-duration: 0.5s;
     overflow-y: auto;
+    max-height: 90vh;
 }
 
 .boxTitle {
@@ -46,7 +40,8 @@ canvas {
 }
 
 .matrixInput {
-    width: 25px;
+    width: 30px;
+    height: 20px;
     font-weight: bold;
     text-align: center;
     margin-left: 10px;
@@ -205,15 +200,23 @@ input:checked + .slider {
 .hideHelp {
   background-color: #23b8a9;
   color: white;
-  border-radius: 50%;
+  border-radius: 30%;
   border: #23b8a9;
   font-weight: bolder;
   position: absolute;
   bottom: -15px;
-  left: calc(50% - 30px);
+  left: calc(50% - 35px);
   font-size: larger;
-  width: 60px;
-  height: 40px
+  width: 70px;
+  height: 40px;
+  transition: background-color 0.25s;
+  border-color: #23b8a9;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.hideHelp:hover {
+  background-color: #233cb8;
 }
 
 .quickChange {

@@ -3,6 +3,7 @@ import '../canvas.css'
 import './tasks.css'
 import { calculateAngleMatrix, calculateAngleVec, initaliseCanvas, matMult} from "../canvasComponents";
 import { grid } from "../grid";
+import { inverseTasks, tasksNormal } from "../constants/tasksList";
 
 const Tasks = props => {
     const inherit = props.props
@@ -135,8 +136,6 @@ const Tasks = props => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     })
 
-    //const [switchMat, setSwitchMat] = useState(false)
-
     let helpSaveName = 'helpTask'+taskType
     let localStore = window.localStorage
 
@@ -149,6 +148,19 @@ const Tasks = props => {
     useEffect(() => {
         window.localStorage.setItem(helpSaveName, JSON.stringify(showHelp))
     }, [showHelp,helpSaveName])
+
+    useEffect(() => {
+
+        if (showHelp || inherit.activityBox || state.solve) {
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = true
+        }
+        
+        else  {
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = false
+        }
+    })
 
     const updateMatrix = (e, pos) => {
         e.preventDefault()
@@ -168,13 +180,15 @@ const Tasks = props => {
             }
         })
     }
-
-    const numberInput = (position) =>{
+    const numberInput = (position, other={type:'set'}) =>{
+        let value = other.type === 'set' ? state.matrix.new[position-1]
+            : Math.round(other.data*100)/100
         return (
-            <input className='matrixInput'  type="number" value={state.matrix.new[position-1] } disabled={vec ? 'disabled':''} key={position+'matrixInput'}
-                onChange={e => updateMatrix(e, position)}/>
+            <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
         )
     }
+
 
     const nextTask = (e) => {
         e.preventDefault()
@@ -257,8 +271,12 @@ const Tasks = props => {
 
     const scaleAngleMatrix = calculateAngleMatrix(state.matrix)
     const [,,transform1,transform2,transform3,transform4] = scaleAngleMatrix
+
+    const taskList = taskType === 'inverse' ? inverseTasks : tasksNormal
+
     const html = <>
         {!selection ? 
+            <fieldset className='controlBox'>
             <div className={'matrixBox boxOpen'}>
                 <p style={{color:'white'}}>{state.currentTask.description}</p>
                     {taskType !== 'inverse' ? <>
@@ -327,12 +345,14 @@ const Tasks = props => {
                     <>
                         <div style={{display : state.matrix.angleMat ? '' : 'none'}} >
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p> 
-                        <p className='matrixDisplay'>
-                            {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
+                        <p>
+                            {
+                                [{no:1, data:transform1},{no:2, data:transform2}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                            }
                         </p>
-                        <p className='matrixDisplay'>
-                            {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
-                        </p>
+                            {
+                                [{no:3, data:transform3},{no:4, data:transform4}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                            }
             
                         <div>
                             <p className='boxTitle'>
@@ -366,6 +386,7 @@ const Tasks = props => {
                     onClick={e => {nextTask(e)}}>
                     Next Task</button> : <></>}
             </div>
+            </fieldset>
             : <></>}
         {!selection ? 
             <div className='taskEndBox'>
@@ -396,8 +417,20 @@ const Tasks = props => {
         <div className='canvas2'>
             <canvas ref={canvas2Ref} {...props}/>
         </div>
-        {state.solve  && !selection ?
-            <div className='help'>
+        {
+        state.solve  && !selection ?
+        (state.currentTask.num >= Object.keys(taskList).length ?
+        <div className='help'>
+            <h3>Well done you have completed all the tasks</h3>
+            <p> Now you can go onto the next set of activites</p>
+            <p>You can either click next in the stop right to go onto the next set of activites or click below to start again</p>
+            <button className='hideHelp'  style={{ height:'50px', bottom:'-25px', left:'calc(50%-40px)'}}
+                onClick={e => {/*inherit.setActivity({set:'Matrix Multiply', selection:false})*/ nextTask(e)}}>
+                Start over</button>
+        </div>
+        : 
+        
+        <div className='help'>
                 <h3>Well done you have completed this task</h3>
                 <p>{state.currentTask.endCard}</p>
                 <p> Now you can take on the next one! </p>
@@ -405,24 +438,28 @@ const Tasks = props => {
                     onClick={e => {nextTask(e)}}>
                     Next</button>
             </div> 
-        : <></>
+        ) : <></>
         }
     
       {showHelp && !selection ?
             <div className='help'>
-                { taskType === 'normal' ?
+                { 
+                
+                taskType === 'normal' ?
                 <>
-                    <h3>Tasks</h3>
+                    <h3>Vector Tasks</h3>
                     <p>Here you get to play around with vectors and matrices to get them to match</p>
-                    <p>Adjust either the matrix or vector to solve the task</p>
+                    <p>You need to adjust either your starting vector or matrix to get the two sides to match</p>
                     <p>The aim is to get the two vectors to match</p>
+                    <p></p>
                 </>
 
                 : 
                 <>
                     <h3>Multiply Matrices</h3>
                     <p>Here you get to play around with matrices to get them to match</p>
-                    <p>Adjust the matrice you control to make the two sides match</p>
+                    <p>Adjust the matrix you control to make the two sides match</p>
+                    <p>The two matrices on the left are multipled and them aim is to get them to match the one on the right</p>
                 </>
                 }
                 <button className='hideHelp' onClick={e => {e.preventDefault(); setShowHelp(false)}}>

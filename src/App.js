@@ -21,14 +21,15 @@ const App = props => {
       localStorage.clear();
   }
 
+
+  // changes canvas when we resize the window
   const [windowSize, setWindowSize] = useState({ // resize the canvas when the window resizes via state
     width: undefined,
     height: undefined,
     oldSize: undefined,
-})
+  })
 
-const [scrollLevel, setScroll] = useState(1)
-
+  // useEffect for resizging
   useEffect(() => {
     function handleResize() {
       setWindowSize({
@@ -36,13 +37,17 @@ const [scrollLevel, setScroll] = useState(1)
           height: window.innerHeight,
           oldSize: windowSize
       })
-    }
-
+  }
     
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize',handleResize)
   })
 
+
+  // scroll state
+  const [scrollLevel, setScroll] = useState(1)
+
+  // scroll setter
   useEffect(() => {
     function handleScroll(e) {
       let delta = e.wheelDeltaY*0.001
@@ -64,35 +69,36 @@ const [scrollLevel, setScroll] = useState(1)
     }
   })
 
-  useEffect(() => {
+  // touch input detecter - Not currently used
+  /*useEffect(() => {
     function touchHandler(e) {
     }
     window.addEventListener("touchstart", touchHandler, false);
-  })
+  })*/
 
+  // activity selector
   let activityStart
-
+  // change activity depending on where we are running the app
   switch(process.env.NODE_ENV){
     case 'production':
-      activityStart = {set:'Initial', selection: false}
+      activityStart = {set:'Introduction', selection: false}
       break;
     case 'development':
-      activityStart = {set:'Tasks', selection: false}
+      activityStart = {set:'Introduction', selection: false}
       break;
     default:
-      activityStart = {set:'Initial', selection: false}
+      activityStart = {set:'Introduction', selection: false}
   }
-
+  // storing the current display activity in localstorage
   if (!window.localStorage.getItem('screen')) window.localStorage.setItem('screen', JSON.stringify(activityStart))
-
   activityStart = JSON.parse( localStore.getItem('screen'))
-
   const [activity, setActivity] = useState(activityStart)
-
   useEffect(() => {
     window.localStorage.setItem('screen', JSON.stringify(activity))
   }, [activity])
   
+
+  // leaving the activity menu when esc is pressed
   useEffect(() => {
     function handleKeypress(e) {
       if (e.key === 'Escape') {
@@ -102,7 +108,6 @@ const [scrollLevel, setScroll] = useState(1)
       }
     }
     if (activity.selection) window.addEventListener('keydown', handleKeypress)
-
     return () => window.removeEventListener('keydown', handleKeypress)
   })
 
@@ -151,8 +156,6 @@ const [scrollLevel, setScroll] = useState(1)
                 tasks = tasksNormal
                 break;
             case 'inverse':
-                console.log(state)
-                console.log(action)
                 mat = !state.matrix.angleMat ? action.data.new
                   : calculateAngleMatrix({...state.matrix, ...action.data}).slice(-4)
                 let mult = matMult(state.matrixStart.new, mat)
@@ -196,9 +199,10 @@ const [scrollLevel, setScroll] = useState(1)
                     break;
                 case 'inverse':
                     newState = {...newState,
-                        matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done'},
+                        matrixStart: {'new':nextTask.startMat, 'old':nextTask.startMat, 'change':'done', },
                         matrixEnd:{'new':nextTask.endMat, 'old':nextTask.endMat, 'change':'done'},
-                        matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done'},
+                        matrix:{'new':[1,0,0,1],'old':[1,0,0,1], 'change':'done',angle: {x:0,y:0}, scale:{x:1,y:1},
+                        angleMat: nextTask.type === 'vec' ? false : state.matrix.angleMat},
                         //vecStart:{...nextTask.startVec, 'old':nextTask.startVec, 'change':'done'},
                         //vecEnd:{...nextTask.endVec, 'old':nextTask.endVec, 'change':'done'},
                         solve:false,
@@ -242,19 +246,13 @@ const [scrollLevel, setScroll] = useState(1)
   const [stateNormal, updateStateNormal] = useReducer(reducerTask, JSON.parse( localStore.getItem('normalState')))
   const [stateInverse, updateStateInverse] = useReducer(reducerTask, JSON.parse( localStore.getItem('inverseState')))
 
-  /*useEffect(() => {
-    let localStore = window.localStorage
-    updateStateNormal( {data:JSON.parse( localStore.getItem('normalState') ), type:'full'} )
-    updateStateInverse( {data:JSON.parse( localStore.getItem('inverseState') ), type:'full'} )
-  }, [])*/
-
   useEffect(() => {
     window.localStorage.setItem('inverseState', JSON.stringify(stateInverse))
     window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
   }, [stateNormal, stateInverse])
 
-  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel}
-  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel}
+  let selectionProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection, setActivity:setActivity}
+  let canvasProps = {...gridProps, state:canvasState, scroll:scrollLevel, activityBox:activity.selection,setActivity:setActivity}
   selectionProps.selection = true
   canvasProps.selection = false
 
@@ -283,38 +281,34 @@ const [scrollLevel, setScroll] = useState(1)
   }
 
   const activities = {
-    'Initial':{activityCanvas: Basic, name:'Initial', description: 'The initial basis vector changing calculator',},
-    'Tasks':{activityCanvas: Tasks, name:'Tasks', description: 'Move the vector',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
+    'Introduction':{activityCanvas: Basic, name:'Introduction', description: 'The introduction task - here you see the effect the matrix has on the x and y vectors',},
+    'Vector Tasks':{activityCanvas: Tasks, name:'Vector Tasks', description: 'Match the two vectors!',props:{taskType:'normal', state:[stateNormal, updateStateNormal]}},
    // '3D':{activityCanvas: Canvas3D, name:'3D', description: '3D Canvas'},
-    'Multiply':{activityCanvas: Tasks, name:'Multiply', description: 'Multiply matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
-    'Main':{activityCanvas: Canvas, name:'Main', description: 'Free play calculator'},
+    'Matrix Multiply':{activityCanvas: Tasks, name:'Matrix Multiply', description: 'Get the two sides to match by multiplying matrices', props:{taskType:'inverse', state:[stateInverse, updateStateInverse]}},
+    'Free play':{activityCanvas: Canvas, name:'Free play', description: 'Take your time and have some fun!'},
+  }
+
+  const nextActivity =  (e) => {
+    e.preventDefault()
+    let list = Object.keys(activities)
+    let pos = list.indexOf(activity.set)
+    setActivity({
+      set:list[pos+1],
+      selection: false
+    })
   }
 
   const zoomButton =(e, type) => {
     e.preventDefault()
-    const zoomLevel = [10,25,50,75,80,90,100,110,125,150,175,200,250,300,350,400]
-    let newIndex
-    let current = scrollLevel
-    let nearestZoom = zoomLevel.indexOf(zoomLevel.reduce((a, b) => {
-      return Math.abs(current*100-b) < Math.abs(current*100-a) ? b : a;
-    }))+1
-    switch (type) {
-      case 'out':
-        newIndex = nearestZoom+1
-        if(newIndex > zoomLevel.length-1) newIndex = zoomLevel.length-1
-        setScroll((zoomLevel[newIndex])/100)
-        break;
-      case 'in':
-        newIndex = nearestZoom-2
-        if(newIndex < 0) newIndex = nearestZoom-1
-        setScroll((zoomLevel[newIndex])/100)
-        break;
-      case 'reset':
-        setScroll(1)
-        break;
-      default:
-        break;
-    }
+    let newZoom = scrollLevel*100
+    newZoom = type === 'out' ? newZoom + 10
+      : type === 'in' ? newZoom - 10
+      : type === 'reset' ? 100
+      : newZoom
+    newZoom = newZoom > 400 ? 400 
+      : newZoom < 0 ? 0
+      : newZoom
+    setScroll(newZoom/100)
   }
 
   return (
@@ -325,8 +319,14 @@ const [scrollLevel, setScroll] = useState(1)
           <button className='zoomButton' onClick={(e => zoomButton(e,'reset'))}>{Math.round(scrollLevel*100)}%</button>
           <button className='zoomButton' onClick={(e => zoomButton(e,'out'))}>+</button>
         </span>
-        <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>Select Activity</button>
-        <button onClick={e => window.localStorage.clear()} className='navButton clear'>Reset App</button>
+        
+        <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>{activity.set}</button>
+        <span className='navGroup'>
+          {Object.keys(activities).indexOf(activity.set) < Object.keys(activities).length-1 ? 
+            <button onClick={e => nextActivity(e)} className='navButton clear'>Next</button>
+            : <></>}
+        </span>
+        {/*<button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>*/}
       </div>
       { activity.selection ?
         <center className='selectionDiv'>

@@ -121,17 +121,15 @@ const calculateAngleMatrix = (scaleAngle) => {
     let transform2 = Math.sin(angleRadY)*scale.y
     let transform4 = Math.cos(angleRadY)*scale.y
 
-    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4]
+    return [angleRadX, angleRadY, transform1, transform2, transform3, transform4].map(x => parseFloat(x.toFixed(4)))
 }
 
 const calculateAngleVec = (vec) => {
     let angle = vec.angle
     let angleRad = Math.PI*(angle/180)
     let scale = vec.scale
-    console.log(scale)
     let x_coord = scale*parseFloat(Math.cos(angleRad).toFixed(4))
     let y_coord = scale*parseFloat(Math.sin(angleRad).toFixed(4))
-    console.log(x_coord, y_coord)
     return {x:x_coord, y:y_coord}
 }
 
@@ -221,33 +219,36 @@ const SettingsBox = props => {
         setSaveMatrix(mat)
     }
 
-    const numberInput = (position) =>{
+    const numberInput = (position, other={type:'set'}) =>{
+        let value = other.type === 'set' ? matrix.new[position]
+            : Math.round(other.data*100)/100
         return (
-            <input className='matrixInput'  type="number" value={matrix.new[position] } key={position+'matrixInput'}
-                onChange={e => updateMatrix(e, position)}/>
+            <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
         )
     }
 
     const angleScaleInput = (type, axis, range) => {
         return (
-            <input type="range" min={-range} max={range} value={scaleAngle[type][axis]} className="slider" id="myRange"
-                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value} })) }/>
+            <input type="range" min={-range*10} max={range*10} value={scaleAngle[type][axis]*10} className="slider" id="myRange"
+                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value/10} })) }/>
         )
     }
 
     return (
+        <fieldset>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
             <p className='boxTitle'>
                 Settings
             </p>
             <div className={'settings settingsOpen'}>
+                <p className='boxTitle'>Matrix</p>
                 <label className="switch">
                     <input type="checkbox" checked={switchMat}
                         onChange={e=> setSwitchMat(e.target.checked)}/>
                     <span className="sliderToggle round"></span>
                 </label>
                 <div style={{display : !switchMat ? '' : 'none'}}>
-                    <p className='boxTitle'>Set Matrix</p>
                     <p>
                         {
                             [1,2].map(pos => numberInput(pos) )
@@ -258,13 +259,14 @@ const SettingsBox = props => {
                         }
                 </div>
                 <div style={{display : switchMat ? '' : 'none'}} >
-                    <p className='boxTitle'>Matrix</p>
-                    <p className='matrixDisplay'>
-                        {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
+                    <p>
+                        {
+                            [{no:1, data:transform1},{no:2, data:transform2}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                        }
                     </p>
-                    <p className='matrixDisplay'>
-                        {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
-                    </p>
+                        {
+                            [{no:3, data:transform3},{no:4, data:transform4}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                        }
         
                     <div>
                         <p className='boxTitle'>
@@ -321,6 +323,7 @@ const SettingsBox = props => {
                 <p>&nbsp;</p>
             </div>
         </div>
+        </fieldset>
     )
 }
 
