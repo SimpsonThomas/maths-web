@@ -150,13 +150,11 @@ const Tasks = props => {
 
     useEffect(() => {
         if (showHelp || inherit.activityBox) {
-            console.log('here1')
             const inputs = document.querySelectorAll('fieldset')
             for (let i=0; i<inputs.length;i++) inputs[i].disabled = true
         }
         
         else  {
-            console.log('here2')
             const inputs = document.querySelectorAll('fieldset')
             for (let i=0; i<inputs.length;i++) inputs[i].disabled = false
         }

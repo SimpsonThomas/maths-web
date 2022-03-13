@@ -32,23 +32,19 @@ const Basic = props => {
         drawLineArrow(ctx, {x:0,y:0}, {y:gridSize, x:0},colour, transform, 'y')
     }
 
-    const [windowSize, setWindowSize] = useState({
-        width: undefined,
-        height: undefined,
-        oldSize: undefined,
+    useEffect(() => {
+        if (showHelp || inherit.activityBox) {
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = true
+        }
+        
+        else  {
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = false
+        }
     })
 
     useEffect( () => {
-        function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-                oldSize: windowSize
-            })
-        }
-
-        window.addEventListener('resize', handleResize)
-
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
         

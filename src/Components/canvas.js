@@ -44,6 +44,18 @@ const Canvas = props => {
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
+    useEffect(() => {
+        if (showHelp || inherit.activityBox) {
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = true
+        }
+        
+        else  {
+            const inputs = document.querySelectorAll('fieldset')
+            for (let i=0; i<inputs.length;i++) inputs[i].disabled = false
+        }
+    })
+
     useEffect( () => {
 
         const smallCanvas = smallCanvasRef.current

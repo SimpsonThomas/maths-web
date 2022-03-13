@@ -236,6 +236,7 @@ const SettingsBox = props => {
     }
 
     return (
+        <fieldset>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
             <p className='boxTitle'>
                 Settings
@@ -321,6 +322,7 @@ const SettingsBox = props => {
                 <p>&nbsp;</p>
             </div>
         </div>
+        </fieldset>
     )
 }
 
