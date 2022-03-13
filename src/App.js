@@ -299,29 +299,15 @@ const App = props => {
 
   const zoomButton =(e, type) => {
     e.preventDefault()
-    const zoomLevel = [10,25,50,75,80,90,100,110,125,150,175,200,250,300,350,400]
-    let newIndex
-    let current = scrollLevel
-    let nearestZoom = zoomLevel.indexOf(zoomLevel.reduce((a, b) => {
-      return Math.abs(current*100-b) < Math.abs(current*100-a) ? b : a;
-    }))+1
-    switch (type) {
-      case 'out':
-        newIndex = nearestZoom+1
-        if(newIndex > zoomLevel.length-1) newIndex = zoomLevel.length-1
-        setScroll((zoomLevel[newIndex])/100)
-        break;
-      case 'in':
-        newIndex = nearestZoom-2
-        if(newIndex < 0) newIndex = nearestZoom-1
-        setScroll((zoomLevel[newIndex])/100)
-        break;
-      case 'reset':
-        setScroll(1)
-        break;
-      default:
-        break;
-    }
+    let newZoom = scrollLevel*100
+    newZoom = type === 'out' ? newZoom + 10
+      : type === 'in' ? newZoom - 10
+      : type === 'reset' ? 100
+      : newZoom
+    newZoom = newZoom > 400 ? 400 
+      : newZoom < 0 ? 0
+      : newZoom
+    setScroll(newZoom/100)
   }
 
   return (
