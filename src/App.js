@@ -249,12 +249,6 @@ const App = props => {
   const [stateNormal, updateStateNormal] = useReducer(reducerTask, JSON.parse( localStore.getItem('normalState')))
   const [stateInverse, updateStateInverse] = useReducer(reducerTask, JSON.parse( localStore.getItem('inverseState')))
 
-  /*useEffect(() => {
-    let localStore = window.localStorage
-    updateStateNormal( {data:JSON.parse( localStore.getItem('normalState') ), type:'full'} )
-    updateStateInverse( {data:JSON.parse( localStore.getItem('inverseState') ), type:'full'} )
-  }, [])*/
-
   useEffect(() => {
     window.localStorage.setItem('inverseState', JSON.stringify(stateInverse))
     window.localStorage.setItem('normalState', JSON.stringify(stateNormal))
