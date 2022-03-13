@@ -180,13 +180,15 @@ const Tasks = props => {
             }
         })
     }
-
-    const numberInput = (position) =>{
+    const numberInput = (position, other={type:'set'}) =>{
+        let value = other.type === 'set' ? state.matrix.new[position-1]
+            : Math.round(other.data*100)/100
         return (
-            <input className='matrixInput'  type="number" value={state.matrix.new[position-1] } disabled={vec ? 'disabled':''} key={position+'matrixInput'}
-                onChange={e => updateMatrix(e, position)}/>
+            <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
         )
     }
+
 
     const nextTask = (e) => {
         e.preventDefault()
@@ -343,12 +345,14 @@ const Tasks = props => {
                     <>
                         <div style={{display : state.matrix.angleMat ? '' : 'none'}} >
                         <p style={{color:'white'}}>{!vec || taskType === 'inverse' ? 'Try changing the matrix to match the start vector to the end vector' : 'Currently set matrix'}</p> 
-                        <p className='matrixDisplay'>
-                            {Math.round(transform1*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform2*100)/100}
+                        <p>
+                            {
+                                [{no:1, data:transform1},{no:2, data:transform2}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                            }
                         </p>
-                        <p className='matrixDisplay'>
-                            {Math.round(transform3*100)/100} &nbsp; &nbsp; &nbsp; {Math.round(transform4*100)/100}
-                        </p>
+                            {
+                                [{no:3, data:transform3},{no:4, data:transform4}].map(dic => numberInput(dic.no, {type:'other', data:dic.data}) )
+                            }
             
                         <div>
                             <p className='boxTitle'>
