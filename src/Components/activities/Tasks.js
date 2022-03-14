@@ -169,7 +169,6 @@ const Tasks = props => {
         let matrix = state.matrix
         let oldMatrix = [matrix.new[0],matrix.new[1],matrix.new[2],matrix.new[3]]
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
-        console.log(oldMatrix)
         let newMatrix = state.matrix.new
         newMatrix[position] = !dir ? value
             : dir === 'up' ? parseFloat(newMatrix[position]) + 1
