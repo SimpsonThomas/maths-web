@@ -74,15 +74,6 @@ const Basic = props => {
             let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
 
             mat[positionMat-1] = parseFloat(mat[positionMat-1])+(change/frameMax)*frameCount
-
-            /*let positionVec = vector.change
-            let [newVec, oldVec] = [parseFloat(vector[positionVec]), parseFloat(vector.old[positionVec]) ]
-            let changeVec = newVec-oldVec
-
-            let vec = {'x':parseFloat(vector.old.x),'y':parseFloat(vector.old.y)}
-            vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
-            
-            console.log(vector.change)*/
             grid(context, gridColour.major, mat)
             
             if (frameCount===frameMax) {
@@ -91,7 +82,6 @@ const Basic = props => {
                     new:matrix.new,
                     change:'done'
                 })
-                //if (changeVec !== 0) setVector(prevVec => ( {...prevVec, 'old':{'x':prevVec.x, 'y':prevVec.y}, 'change':'done' } ))
             }
             animationFrameId = window.requestAnimationFrame(() => {animateMat(context, canvas)})
         }

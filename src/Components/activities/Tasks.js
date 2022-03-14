@@ -212,7 +212,6 @@ const Tasks = props => {
         newVec[direct] = !arrow ? value
             : arrow ==='up' ?( parseFloat(state.vecStart[direct])*10 + 1)/10
             :  (parseFloat(state.vecStart[direct])*10 - 1)/10
-        console.log(state.vecStart[direct])
         updateState({
             type: 'vector',
             data: {

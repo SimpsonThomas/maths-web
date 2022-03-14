@@ -103,7 +103,7 @@ const Canvas = props => {
             let vec = {'x':parseFloat(vector.old.x),'y':parseFloat(vector.old.y)}
             vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
             
-            console.log(vector.change)*/
+            */
             grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,true,gridProps.colourAxis,gridProps.size)
             
             if (showEigen) eigenVector(context,mat)
@@ -137,12 +137,7 @@ const Canvas = props => {
             )
             : [transform1, transform2, transform3, transform4]
         
-        /*let vec = vector[vector.change] !== '' ? {'x':vector.x, 'y':vector.y} : vector.old
-
-        console.log(vector.change)
-        console.log(vector[vector.change])
-        console.log((matrix.change !== 'done' && matrix.new[matrix.change]!=='') || (vector.change !== 'done' && vector[vector.change]!==''))
-        console.log(matrix.change)*/
+        //let vec = vector[vector.change] !== '' ? {'x':vector.x, 'y':vector.y} : vector.old
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
             animateMat(mainContext, mainCanvas)
         }
