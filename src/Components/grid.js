@@ -1,4 +1,4 @@
-import { drawLine, drawLineArrow } from "./canvasComponents"
+    import { drawLine, drawLineArrow } from "./canvasComponents"
 import { gridProps } from "./constants/constants"
 
 const grid = (ctx,
@@ -9,8 +9,8 @@ const grid = (ctx,
     transform=[1,0,0,1],
     vector={x:0,y:0},
     axisArrow=false,
-    colourAxis=gridProps.axisColour,) => { // creating the grid
-    let gridSize = gridProps.size
+    colourAxis=gridProps.axisColour,
+    gridSize=gridProps.gridSize) => { // creating the grid
     let width = ctx.canvas.width
     let height = ctx.canvas.height    
     ctx.save()

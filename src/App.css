@@ -164,3 +164,54 @@
   background: #555;
   border-radius: 10px;
 }
+
+.zoomGroup {
+  position: absolute;
+  left:10px
+}
+
+.zoomButton {
+  margin-top: 7px;
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+  color: white;
+  background-color: #233cb8;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+  transition: background-color 0.25s;
+  float: left;
+}
+
+
+
+.buttonGroup .zoomButton:not(:last-child) { 
+  border-right: none; /* Prevent double borders */
+}
+
+.buttonGroup .zoomButton:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.buttonGroup .zoomButton:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.buttonGroup .zoomButton:hover {
+  background-color: white;
+  color: black;
+}
+
+:root {
+  touch-action: none;
+  height: 100%;
+  overflow: hidden;
+}
+
+.navGroup { 
+  position: absolute;
+  right:10px
+}
