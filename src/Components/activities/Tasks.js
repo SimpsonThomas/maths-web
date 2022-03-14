@@ -204,13 +204,16 @@ const Tasks = props => {
         updateState({type:'task'})
     }
 
-    const updateVec = (e, direct) => {
+    const updateVec = (e, direct, arrow=false) => {
         e.preventDefault()
         let value = e.target.value
         let oldVec = {'x':state.vecStart.x, 'y':state.vecStart.y}
         let newVec = {...state.vecStart.new, [direct]:value}
         oldVec[direct] = (oldVec[direct] === '') ? state.vecStart.old[direct] : oldVec[direct]
-        newVec[direct] = value
+        newVec[direct] = !arrow ? value
+            : arrow ==='up' ?( parseFloat(state.vecStart[direct])*10 + 1)/10
+            :  (parseFloat(state.vecStart[direct])*10 - 1)/10
+        console.log(state.vecStart[direct])
         updateState({
             type: 'vector',
             data: {
@@ -219,6 +222,20 @@ const Tasks = props => {
                 'change': direct
             }
         })
+    }
+
+    const vecInput = (position, other={type:'set'}) =>{
+        let value = state.vecStart[position]
+        let disabled = other.type !=='set' || !vec
+        return (
+            <p className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
+                <button className="matrixButton" style={{visibility: disabled ? 'hidden' : ''}} disabled={disabled} onClick={e => updateVec(e, position, 'down')}>-</button>
+                <input className={disabled ? 'matrixInputNormal':'matrixInput'}  type="number" 
+                    value={value} key={position+'matrixInput'+other.type} disabled={disabled}
+                    onChange={e => other.type==='set' ? updateVec(e, position) : console.log('Silly you')}/>
+                <button className="matrixButton" disabled={disabled} style={{visibility: disabled ? 'hidden' : ''}} onClick={e => updateVec(e, position, 'up')}>+</button>
+            </p>
+        )
     }
 
     const slider = (type,axis,range) => {
@@ -300,10 +317,7 @@ const Tasks = props => {
                         <p style={{color:'white'}}>{vec ? 'Input test vectors here to match the test vector' : 'Currently set vector'}</p>
                         { !state.vecStart.angleVec ?
                         <>
-                            <p><input className='matrixInputNormal' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
-                                    onChange={e => updateVec(e, 'x') }/></p>
-                            <p><input className='matrixInputNormal' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
-                                    onChange={e => updateVec(e, 'y') }/></p>
+                            {['x','y'].map(axis => vecInput(axis))}
                         </>
                         :
                         <>                                
