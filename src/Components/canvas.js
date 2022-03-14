@@ -150,7 +150,7 @@ const Canvas = props => {
             render(mainContext, mainCanvas, mat)
         }
 
-        render(smallContext, smallCanvas,saveMatrix, 'black', {minor:'white',major:'white', colourAxis:'pink'})
+        render(smallContext, smallCanvas,saveMatrix, '#28282B', {minor:'#FFFEEE',major:'white', colourAxis:'orange'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)

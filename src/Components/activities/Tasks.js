@@ -128,7 +128,7 @@ const Tasks = props => {
         else {
             render(context1, canvas1, mat, vec)
         }
-        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey',axis:'pink'})
+        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, '#28282B', {minor:'#FFFEEE',major:'white',minorSec:'grey',axis:'orange'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
