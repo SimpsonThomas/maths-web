@@ -4,8 +4,8 @@ canvas {
 
 .smallCanvas {
   position: absolute;
-  top: 5vh;
-  right: 3vw;
+  top: calc(3vh + 40px);
+  right: 2vw;
   width:30vw;
   height:30vh;
   border: 1px solid black;
