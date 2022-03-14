@@ -311,6 +311,8 @@ const App = props => {
     setScroll(newZoom/100)
   }
 
+  console.log(matrix)
+
   return (
     <div className="App">
       <div className='navBar'>

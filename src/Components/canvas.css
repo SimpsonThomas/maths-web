@@ -92,7 +92,7 @@ canvas {
   border-bottom-right-radius: 10px;
 }
 
-.buttonGroup .matrixButton:hover, .matrixInput:hover, .matrixInputNormal:hover {
+.buttonGroup .matrixButton:hover:not(:disabled), .matrixInput:hover:not(:disabled), .matrixInputNormal:hover:not(:disabled) {
   background-color: white;
   color: black;
 }
@@ -109,6 +109,10 @@ canvas {
   transition: background-color 0.25s;
   line-height:normal !important;
   padding-bottom: 2px;
+}
+
+.matrixButton:disabled {
+  border-color:red
 }
 
 .matrixInput:focus, .matrixInputNormal:focus {
