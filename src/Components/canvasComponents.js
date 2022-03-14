@@ -226,13 +226,11 @@ const SettingsBox = props => {
             : Math.round(other.data*100)/100
         return (
             <span className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
-                {other.type === 'set' ? <button className="matrixButton" onClick={e => updateMatrix(e, position, 'down')}>-</button> : <></>}
+                <button className="matrixButton" style={{visibility: other.type !== 'set' ? 'hidden' : ''}} onClick={e => updateMatrix(e, position, 'down')}>-</button>
                 <input className={other.type !== 'set' ? 'matrixInputNormal':'matrixInput'}  type="number" 
                     value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
                     onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
-                
-                
-                {other.type === 'set' ? <button className="matrixButton" onClick={e => updateMatrix(e, position, 'up')}>+</button> : <></>}
+                <button className="matrixButton" style={{visibility: other.type !== 'set' ? 'hidden' : ''}} onClick={e => updateMatrix(e, position, 'up')}>+</button>
             </span>
         )
     }

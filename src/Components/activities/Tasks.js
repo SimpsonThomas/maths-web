@@ -186,13 +186,14 @@ const Tasks = props => {
     const numberInput = (position, other={type:'set'}) =>{
         let value = other.type === 'set' ? state.matrix.new[position-1]
             : Math.round(other.data*100)/100
+        let disabled = other.type !=='set' || state.currentTask.type ==='vec'
         return (
             <span className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
-                <button className="matrixButton" onClick={e => updateMatrix(e, position, 'down')}>-</button>
-                <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                <button className="matrixButton" style={{visibility: disabled ? 'hidden' : ''}} disabled={disabled} onClick={e => updateMatrix(e, position, 'down')}>-</button>
+                <input className={disabled ? 'matrixInputNormal':'matrixInput'}  type="number" 
+                    value={value} key={position+'matrixInput'+other.type} disabled={disabled}
                     onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
-                
-                <button className="matrixButton" onClick={e => updateMatrix(e, position, 'up')}>+</button>
+                <button className="matrixButton" disabled={disabled} style={{visibility: disabled ? 'hidden' : ''}} onClick={e => updateMatrix(e, position, 'up')}>+</button>
             </span>
         )
     }
