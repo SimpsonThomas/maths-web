@@ -55,6 +55,47 @@ const Basic = props => {
         canvas.height = canvas.offsetHeight;
         let animationFrameId
 
+        let frameCount = 0
+        let frameMax = 10
+
+        const animateMat = (context, canvas, transformMat=[1,0,0,1],
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}) => {
+            // animating the changes in the matrix
+
+            // initialising the canvas
+            initaliseCanvas(context, canvas, gridProps.backgroundColour)
+
+            frameCount++
+
+            let positionMat = matrix.change
+            let [newVal, oldVal] = [parseFloat(matrix.new[positionMat]), parseFloat(matrix.old[positionMat])]
+            let change = newVal-oldVal
+
+            let mat = [matrix.old[1],matrix.old[2],matrix.old[3],matrix.old[4]]
+
+            mat[positionMat-1] = parseFloat(mat[positionMat-1])+(change/frameMax)*frameCount
+
+            /*let positionVec = vector.change
+            let [newVec, oldVec] = [parseFloat(vector[positionVec]), parseFloat(vector.old[positionVec]) ]
+            let changeVec = newVec-oldVec
+
+            let vec = {'x':parseFloat(vector.old.x),'y':parseFloat(vector.old.y)}
+            vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
+            
+            console.log(vector.change)*/
+            grid(context, gridColour.major, mat)
+            
+            if (frameCount===frameMax) {
+                if (change !== 0) setMatrix({
+                    old: matrix.old,
+                    new:matrix.new,
+                    change:'done'
+                })
+                //if (changeVec !== 0) setVector(prevVec => ( {...prevVec, 'old':{'x':prevVec.x, 'y':prevVec.y}, 'change':'done' } ))
+            }
+            animationFrameId = window.requestAnimationFrame(() => {animateMat(context, canvas)})
+        }
+
         const render = (
             context, 
             canvas, 
@@ -72,7 +113,14 @@ const Basic = props => {
             )
             : [transform1, transform2, transform3, transform4]
         
-        render(context, canvas, mat)
+        if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
+            animateMat(context, canvas)
+        }
+        else {
+            render(context, canvas, mat)
+        }
+
+        //render(context, canvas, mat)
 
         return () => {
             window.cancelAnimationFrame(animationFrameId)
