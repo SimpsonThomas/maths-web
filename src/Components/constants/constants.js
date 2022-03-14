@@ -5,7 +5,7 @@ const gridProps = {
     minorAxSecColour: 'grey',
     backgroundColour: '#FFFEEE',
     vectorColour: 'green',
-    colourAxis:'black',
+    colourAxis:'#7039DC',
 }
 
 export {gridProps}
