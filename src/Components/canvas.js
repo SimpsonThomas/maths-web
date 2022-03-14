@@ -28,7 +28,8 @@ const Canvas = props => {
         minorAxColour: inherit.minorAxColour,
         minorAxSecColour: inherit.minorAxSecColour,
         backgroundColour: inherit.background,
-        vectorColour: inherit.vectorColour
+        vectorColour: inherit.vectorColour,
+        colourAxis: inherit.colourAxis,
     }
 
     const eigenVector = (ctx, transform) => {
@@ -103,7 +104,7 @@ const Canvas = props => {
             vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
             
             console.log(vector.change)*/
-            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,false,gridProps.colourAxis,gridProps.size)
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,true,gridProps.colourAxis,gridProps.size)
             
             if (showEigen) eigenVector(context,mat)
             if (frameCount===frameMax) {
@@ -122,10 +123,10 @@ const Canvas = props => {
             canvas, 
             mat=[1,0,0,1],
             backgroundColour=gridProps.backgroundColour, 
-            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}, ) => {
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour, colourAxis:gridProps.colourAxis}, ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
                 
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,false,gridProps.colourAxis,gridProps.size)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,true,gridColour.colourAxis,gridProps.size)
                 if (showEigen) eigenVector(context,mat)
         }
 
@@ -149,7 +150,7 @@ const Canvas = props => {
             render(mainContext, mainCanvas, mat)
         }
 
-        render(smallContext, smallCanvas,saveMatrix, 'black', {minor:'white',major:'white'})
+        render(smallContext, smallCanvas,saveMatrix, 'black', {minor:'white',major:'white', colourAxis:'pink'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
