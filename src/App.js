@@ -288,12 +288,12 @@ const App = props => {
     'Free play':{activityCanvas: Canvas, name:'Free play', description: 'Take your time and have some fun!'},
   }
 
-  const nextActivity =  (e) => {
+  const nextActivity =  (e, type) => {
     e.preventDefault()
     let list = Object.keys(activities)
     let pos = list.indexOf(activity.set)
     setActivity({
-      set:list[pos+1],
+      set: list[pos+(type === 'next' ? 1 : -1)],
       selection: false
     })
   }
@@ -311,19 +311,24 @@ const App = props => {
     setScroll(newZoom/100)
   }
 
+  console.log(matrix)
+
   return (
     <div className="App">
       <div className='navBar'>
-        <span className='buttonGroup'>
+        <span className='buttonGroup zoomGroup'>
           <button className='zoomButton' onClick={(e => zoomButton(e,'in'))}>-</button>
           <button className='zoomButton' onClick={(e => zoomButton(e,'reset'))}>{Math.round(scrollLevel*100)}%</button>
           <button className='zoomButton' onClick={(e => zoomButton(e,'out'))}>+</button>
         </span>
         
         <button onClick={e => selectActivty(e, activity.set, !activity.selection)} className='navButton'>{activity.set}</button>
-        <span className='navGroup'>
+        <span className='buttonGroup navGroup'>
+          {Object.keys(activities).indexOf(activity.set) > 0 ? 
+            <button onClick={e => nextActivity(e, 'prev')} className='zoomButton'>Back</button>
+            : <></>}
           {Object.keys(activities).indexOf(activity.set) < Object.keys(activities).length-1 ? 
-            <button onClick={e => nextActivity(e)} className='navButton clear'>Next</button>
+            <button onClick={e => nextActivity(e, 'next')} className='zoomButton'>Next</button>
             : <></>}
         </span>
         {/*<button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>*/}

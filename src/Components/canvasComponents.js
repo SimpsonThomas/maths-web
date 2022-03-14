@@ -197,17 +197,19 @@ const SettingsBox = props => {
 
     let [eigenVal1, eigenVal2, eigenVec1, eigenVec2] = calculateVectors(mat)
 
-    const updateMatrix = (e, position) => {
+    const updateMatrix = (e, position, dir=false) => {
         e.preventDefault()
         let value = e.target.value
         let oldMatrix = {1:matrix.new[1],2:matrix.new[2],3:matrix.new[3],4:matrix.new[4]}
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
         let newMatrix = matrix.new
-        newMatrix[position] = value
+        newMatrix[position] = !dir ? value
+            : dir === 'up' ? parseFloat(newMatrix[position]) + 1
+            :parseFloat(newMatrix[position])- 1
         setMatrix({
-            'old' : oldMatrix,
-            'new' : newMatrix,
-            'change' : position
+            new: newMatrix,
+            old: oldMatrix,
+            change: position,
         })
     }
 
@@ -223,8 +225,13 @@ const SettingsBox = props => {
         let value = other.type === 'set' ? matrix.new[position]
             : Math.round(other.data*100)/100
         return (
-            <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
-                onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
+            <span className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
+                <button className="matrixButton" style={{visibility: other.type !== 'set' ? 'hidden' : ''}} onClick={e => updateMatrix(e, position, 'down')}>-</button>
+                <input className={other.type !== 'set' ? 'matrixInputNormal':'matrixInput'}  type="number" 
+                    value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                    onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
+                <button className="matrixButton" style={{visibility: other.type !== 'set' ? 'hidden' : ''}} onClick={e => updateMatrix(e, position, 'up')}>+</button>
+            </span>
         )
     }
 

@@ -40,28 +40,86 @@ canvas {
 }
 
 .matrixInput {
-    width: 30px;
-    height: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-left: 10px;
-    margin-right: 10px;
-    color: white;
-    background-color: #233cb8;
-    border-radius: 10px;
-    border-color: #23b8a9;
-    border-style: solid;
-    border-width: 2px;
+  font-weight: bold;
+  border-style: solid;
+  border-width: 2px;
+  transition: background-color 0.25s;
+  width: 30px;
+  height: 20px;
+  text-align: center;
+  color: white;
+  background-color: #233cb8;
+  border-color: #23b8a9;
+  border-left:none;
+  border-right:none;
+  padding-top: 2.4px;
 }
 
-.matrixInput:focus {
+.matrixInputNormal {
+  font-weight: bold;
+  border-style: solid;
+  border-width: 2px;
+  transition: background-color 0.25s;
+  width: 30px;
+  height: 20px;
+  text-align: center;
+  color: white;
+  background-color: #233cb8;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 10px;
+  padding-top: 2.4px;
+}
+
+.matrixGroup {
+  line-height:normal !important;
+  vertical-align:top;
+  
+  float:none;
+  margin: 5px;
+}
+
+.buttonGroup .matrixButton:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.buttonGroup .matrixButton:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.buttonGroup .matrixButton:hover:not(:disabled), .matrixInput:hover:not(:disabled), .matrixInputNormal:hover:not(:disabled) {
+  background-color: white;
+  color: black;
+}
+
+.matrixButton {
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+  color: white;
+  background-color: #233cb8;
+  border-color: #23b8a9;
+  border-style: solid;
+  border-width: 2px;
+  transition: background-color 0.25s;
+  line-height:normal !important;
+  padding-bottom: 2px;
+}
+
+.matrixButton:disabled {
+  border-color:red
+}
+
+.matrixInputNormal:disabled {
+  border-color: red;
+}
+
+.matrixInput:focus, .matrixInputNormal:focus {
     background-color: white;
     color: black;
-    border-radius: 10px;
-    border-color: #23b8a9;
-    border-style: solid;
-    border-width: 2px;
-
 }
 
 .matrixDisplay {
