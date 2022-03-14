@@ -3,9 +3,9 @@ const gridProps = {
     majorAxColour: 'red', // default colours
     minorAxColour: 'black', 
     minorAxSecColour: 'grey',
-    backgroundColour: 'white',
+    backgroundColour: '#FFFEEE',
     vectorColour: 'green',
-    colourAxis:'purple',
+    colourAxis:'#7039DC',
 }
 
 export {gridProps}

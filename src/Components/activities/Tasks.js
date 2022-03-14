@@ -128,7 +128,7 @@ const Tasks = props => {
         else {
             render(context1, canvas1, mat, vec)
         }
-        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey',axis:'pink'})
+        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, '#28282B', {minor:'#FFFEEE',major:'white',minorSec:'grey',axis:'orange'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
@@ -169,7 +169,6 @@ const Tasks = props => {
         let matrix = state.matrix
         let oldMatrix = [matrix.new[0],matrix.new[1],matrix.new[2],matrix.new[3]]
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
-        console.log(oldMatrix)
         let newMatrix = state.matrix.new
         newMatrix[position] = !dir ? value
             : dir === 'up' ? parseFloat(newMatrix[position]) + 1
@@ -213,7 +212,6 @@ const Tasks = props => {
         newVec[direct] = !arrow ? value
             : arrow ==='up' ?( parseFloat(state.vecStart[direct])*10 + 1)/10
             :  (parseFloat(state.vecStart[direct])*10 - 1)/10
-        console.log(state.vecStart[direct])
         updateState({
             type: 'vector',
             data: {
