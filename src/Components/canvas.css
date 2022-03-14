@@ -115,6 +115,10 @@ canvas {
   border-color:red
 }
 
+.matrixInputNormal:disabled {
+  border-color: red;
+}
+
 .matrixInput:focus, .matrixInputNormal:focus {
     background-color: white;
     color: black;
