@@ -251,7 +251,7 @@ const SettingsBox = props => {
             <p className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
 
                 <button className="matrixButton" style={{visibility: disabled ? 'hidden' : ''}} disabled={disabled} 
-                    onClick={e => setVector(prevVec => ( {...prevVec,[position]:(parseFloat(prevVec[position])*10 +1)/10, 'old':prevVec.old, 'change':position }))} >-</button>
+                    onClick={e => setVector(prevVec => ( {...prevVec,[position]:(parseFloat(prevVec[position])*10 -1)/10, 'old':prevVec.old, 'change':position }))} >-</button>
                     <input className={disabled ? 'matrixInputNormal':'matrixInput'}  type="number" 
                         value={value} key={position+'matrixInput'+other.type} disabled={disabled}
                         onChange={e => setVector(prevVec => ( {...prevVec,[position]:e.target.value, 'old':prevVec.old, 'change':'x' } ))  }/>
@@ -268,6 +268,15 @@ const SettingsBox = props => {
             <p className='boxTitle'>
                 Settings
             </p>
+
+            
+                { type!=='basic' ?
+                    <>
+                        <p className='boxTitle'>Vector Input</p>
+                        {['x','y'].map(axis => vecInput(axis))}
+                    </> : <></>
+                }
+
             <div className={'settings settingsOpen'}>
                 <p className='boxTitle'>Matrix</p>
                 <label className="switch">
@@ -322,10 +331,11 @@ const SettingsBox = props => {
                     </div>
                 </div>
 
+                {type === 'basic' ? <p></p> 
+                    : <>
+                    
                 { type!=='basic' ?
                     <>
-                        <p className='boxTitle'>Vector Input</p>
-                        {['x','y'].map(axis => vecInput(axis))}
                             <p><button className='quickChange' 
                                 onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>
                                 {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button></p>
@@ -342,6 +352,7 @@ const SettingsBox = props => {
                                 Save</button></p>
                     </> : <></>
                 }
+                    </>}
             </div>
         </div>
         </fieldset>
