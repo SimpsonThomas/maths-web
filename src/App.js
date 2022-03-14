@@ -115,7 +115,7 @@ const App = props => {
     matrix: {'new':{1:1,2:0,3:0,4:1}, 'old':{1:1,2:0,3:0,4:1}, 'change':'done'},
     vector: {'x':0, 'y':0, old:{'x':0,'y':0}, 'change': 'done'},
     angle: { 'angle':{'x':0, 'y':0}, 'scale' : {'x':1, 'y':1} },
-    eigen: true
+    eigen: false
   }
 
   if (!window.localStorage.getItem('canvasState')) window.localStorage.setItem('canvasState', JSON.stringify(initialStateCanvas))

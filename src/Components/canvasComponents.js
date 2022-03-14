@@ -326,9 +326,9 @@ const SettingsBox = props => {
                     <>
                         <p className='boxTitle'>Vector Input</p>
                         {['x','y'].map(axis => vecInput(axis))}
-                            <button className='quickChange' 
+                            <p><button className='quickChange' 
                                 onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>
-                                {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
+                                {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button></p>
                         {
                             showEigen ?
                                 <>
