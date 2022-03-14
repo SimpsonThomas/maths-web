@@ -337,12 +337,11 @@ const SettingsBox = props => {
                                 </>
                             : <></>
                         }
-                            <button className='quickChange' 
+                            <p><button className='quickChange' 
                                 onClick={e => {updateSave(e)}}>
-                                Save</button>
+                                Save</button></p>
                     </> : <></>
                 }
-                <p>&nbsp;</p>
             </div>
         </div>
         </fieldset>
