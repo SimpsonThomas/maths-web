@@ -242,6 +242,26 @@ const SettingsBox = props => {
         )
     }
 
+    const vecInput = (position, other={type:'set'}) =>{
+        let value = vector[position]
+        let disabled = other.type !=='set'
+        return (
+            
+
+            <p className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
+
+                <button className="matrixButton" style={{visibility: disabled ? 'hidden' : ''}} disabled={disabled} 
+                    onClick={e => setVector(prevVec => ( {...prevVec,[position]:(parseFloat(prevVec[position])*10 +1)/10, 'old':prevVec.old, 'change':position }))} >-</button>
+                    <input className={disabled ? 'matrixInputNormal':'matrixInput'}  type="number" 
+                        value={value} key={position+'matrixInput'+other.type} disabled={disabled}
+                        onChange={e => setVector(prevVec => ( {...prevVec,[position]:e.target.value, 'old':prevVec.old, 'change':'x' } ))  }/>
+
+                <button className="matrixButton" disabled={disabled} style={{visibility: disabled ? 'hidden' : ''}} 
+                    onClick={e => setVector(prevVec => ( {...prevVec,[position]:(parseFloat(prevVec[position])*10 +1)/10, 'old':prevVec.old, 'change':position } ))  }>+</button>
+            </p>
+        )
+    }
+
     return (
         <fieldset>
         <div className={'matrixBox ' + (collapse ? 'boxOpen' : 'boxClosed')}>
@@ -305,15 +325,10 @@ const SettingsBox = props => {
                 { type!=='basic' ?
                     <>
                         <p className='boxTitle'>Vector Input</p>
-                        <p><input className='matrixInput' value={vector.x} 
-                                onChange={e => setVector(prevVec => ( {...prevVec,'x':e.target.value, 'old':prevVec.old, 'change':'x' } ))  }/></p>
-                        <p><input className='matrixInput' value={vector.y} 
-                                onChange={e => setVector(prevVec => ( {...prevVec,'y':e.target.value, 'old':prevVec.old, 'change':'y' } )) }/></p>
-                        <p>
-                            <button className='quickChange' 
+                        {['x','y'].map(axis => vecInput(axis))}
+                            <p><button className='quickChange' 
                                 onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>
-                                {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button>
-                        </p>
+                                {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button></p>
                         {
                             showEigen ?
                                 <>
