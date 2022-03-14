@@ -162,15 +162,18 @@ const Tasks = props => {
         }
     })
 
-    const updateMatrix = (e, pos) => {
+    const updateMatrix = (e, pos, dir=false) => {
         e.preventDefault()
         let value = e.target.value
         let position = pos-1
         let matrix = state.matrix
         let oldMatrix = [matrix.new[0],matrix.new[1],matrix.new[2],matrix.new[3]]
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
+        console.log(oldMatrix)
         let newMatrix = state.matrix.new
-        newMatrix[position] = value
+        newMatrix[position] = !dir ? value
+            : dir === 'up' ? parseFloat(newMatrix[position]) + 1
+            :parseFloat(newMatrix[position])- 1
         updateState({
             type: 'matrix',
             data:{
@@ -184,8 +187,13 @@ const Tasks = props => {
         let value = other.type === 'set' ? state.matrix.new[position-1]
             : Math.round(other.data*100)/100
         return (
-            <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
-                onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
+            <span className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
+                <button className="matrixButton" onClick={e => updateMatrix(e, position, 'down')}>-</button>
+                <input className='matrixInput'  type="number" value={value} key={position+'matrixInput'+other.type} disabled={other.type !=='set'}
+                    onChange={e => other.type==='set' ? updateMatrix(e, position) : console.log('Silly you')}/>
+                
+                <button className="matrixButton" onClick={e => updateMatrix(e, position, 'up')}>+</button>
+            </span>
         )
     }
 
@@ -291,9 +299,9 @@ const Tasks = props => {
                         <p style={{color:'white'}}>{vec ? 'Input test vectors here to match the test vector' : 'Currently set vector'}</p>
                         { !state.vecStart.angleVec ?
                         <>
-                            <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
+                            <p><input className='matrixInputNormal' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
                                     onChange={e => updateVec(e, 'x') }/></p>
-                            <p><input className='matrixInput' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
+                            <p><input className='matrixInputNormal' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
                                     onChange={e => updateVec(e, 'y') }/></p>
                         </>
                         :

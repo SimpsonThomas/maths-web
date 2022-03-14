@@ -184,6 +184,8 @@
   float: left;
 }
 
+
+
 .buttonGroup .zoomButton:not(:last-child) { 
   border-right: none; /* Prevent double borders */
 }
