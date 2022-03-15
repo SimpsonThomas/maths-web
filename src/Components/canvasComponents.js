@@ -236,9 +236,30 @@ const SettingsBox = props => {
     }
 
     const angleScaleInput = (type, axis, range) => {
+        // e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value/10} }))
+        const updateMatAng = (e) => {
+            e.preventDefault()
+            let value = e.target.value
+            const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
+            const setScales = [0,0.1,0.2,0.25,0.5,0.75]
+            if (type === 'angle') {
+                const nearAngle = setAngles.reduce((a, b) => {
+                    return Math.abs(b - value/100) < Math.abs(a - value/100) ? b : a;
+                });
+                if (Math.abs(nearAngle-value/100) < 5) value = nearAngle*100
+            } else {
+                const modScale = value/100 % 1
+                const nearScale = setScales.reduce((a, b) => {
+                    return Math.abs(b - modScale) < Math.abs(a - modScale) ? b : a;
+                });
+                if (Math.abs(nearScale-modScale) < 0.1) value = value <= 0 ? (Math.ceil(value/100) + nearScale)*100
+                    : (Math.floor(value/100) + nearScale)*100
+            }
+            setScaleAngle(prevState => ( {...prevState, [type]: {...prevState[type], [axis]: value/100}} ))
+        }
         return (
-            <input type="range" min={-range*10} max={range*10} value={scaleAngle[type][axis]*10} className="slider" id="myRange"
-                onChange={e => setScaleAngle(prevState => ( { ...prevState, [type]:{...prevState[type],[axis]:e.target.value/10} })) }/>
+            <input type="range" min={-range*100} max={range*100} value={scaleAngle[type][axis]*100} className="slider" id="myRange"
+                onChange={e => updateMatAng(e) }/>
         )
     }
 
