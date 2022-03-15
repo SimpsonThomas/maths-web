@@ -295,7 +295,7 @@ input:checked + .slider {
   border-radius: 10px;
   border-color: #23b8a9;
   border-style: solid;
-  border-width: 2px;
+  border-width: 1px;
 }
 
 input[type="number"] {

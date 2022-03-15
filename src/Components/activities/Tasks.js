@@ -418,9 +418,11 @@ const Tasks = props => {
                 </div>
                     </>
                 <p></p>
-                {process.env.NODE_ENV === 'development' ?<button className='quickChange' 
+                {process.env.NODE_ENV === 'development' || true ?
+                <><button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
-                    Next Task</button> : <></>}
+                    Next Task</button> <p></p>
+                    </>: <></>}
             </div>
             </fieldset>
             : <></>}
