@@ -240,19 +240,34 @@ const Tasks = props => {
         const updateMatAng = (e) => {
             e.preventDefault()
             let value = e.target.value
+            const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
+            const setScales = [0,0.1,0.2,0.25,0.5,0.75]
+            if (type === 'angle') {
+                const nearAngle = setAngles.reduce((a, b) => {
+                    return Math.abs(b - value/100) < Math.abs(a - value/100) ? b : a;
+                });
+                if (Math.abs(nearAngle-value/100) < 5) value = nearAngle*100
+            } else {
+                const modScale = value/100 % 1
+                const nearScale = setScales.reduce((a, b) => {
+                    return Math.abs(b - modScale) < Math.abs(a - modScale) ? b : a;
+                });
+                if (Math.abs(nearScale-modScale) < 0.1) value = value <= 0 ? (Math.ceil(value/100) + nearScale)*100
+                    : (Math.floor(value/100) + nearScale)*100
+            }
             updateState({
                 type: 'matrix',
                 data: {
                     [type] : {
                         ...state.matrix[type],
-                        [axis] : value/10
+                        [axis] : value/100
                     }
                 }
             })
         }
 
         return (
-            <input type="range" min={-range*10} max={range*10} value={state.matrix[type][axis]*10} disabled={vec ? 'disabled':''} className="slider" id="myRange"
+            <input type="range" min={-range*100} max={range*100} value={state.matrix[type][axis]*100} disabled={vec ? 'disabled':''} className="slider" id="myRange"
                 onChange={e => updateMatAng(e) }/>
         )
     }
