@@ -236,23 +236,39 @@ const Tasks = props => {
         )
     }
 
-    const slider = (type,axis,range) => {
+    const slider = (type,axis,range,step=0.01) => {
         const updateMatAng = (e) => {
             e.preventDefault()
             let value = e.target.value
+            const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
+            let setScales = [0,0.1,0.2,0.25,0.5,0.75,1]
+            setScales = setScales.concat(setScales.map(x => -x))
+            if (type === 'angle') {
+                const nearAngle = setAngles.reduce((a, b) => {
+                    return Math.abs(b - value) < Math.abs(a - value) ? b : a;
+                });
+                if (Math.abs(nearAngle-value) < 5) value = nearAngle
+            } else {
+                const modScale = value % 1
+                const nearScale = setScales.reduce((a, b) => {
+                    return Math.abs(b - modScale) < Math.abs(a - modScale) ? b : a;
+                });
+                if (Math.abs(nearScale-modScale) < 0.1) value = value <= 0 ? (Math.ceil(value) + nearScale)
+                    : (Math.floor(value) + nearScale)
+            }
             updateState({
                 type: 'matrix',
                 data: {
                     [type] : {
                         ...state.matrix[type],
-                        [axis] : value/10
+                        [axis] : value
                     }
                 }
             })
         }
 
         return (
-            <input type="range" min={-range*10} max={range*10} value={state.matrix[type][axis]*10} disabled={vec ? 'disabled':''} className="slider" id="myRange"
+            <input type="range" min={-range} max={range} step={step} value={state.matrix[type][axis]} disabled={vec ? 'disabled':''} className="slider" id="myRange"
                 onChange={e => updateMatAng(e) }/>
         )
     }
@@ -302,7 +318,7 @@ const Tasks = props => {
         {!selection ? 
             <fieldset className='controlBox'>
             <div className={'matrixBox boxOpen'}>
-                <p style={{color:'white'}}>{state.currentTask.description}</p>
+                <p style={{color:'white'}}>{state.currentTask.num + ' ' +state.currentTask.description}</p>
                     {taskType !== 'inverse' ? <>
                         <p className='boxTitle'>
                             Input Vector
@@ -381,7 +397,7 @@ const Tasks = props => {
                                     onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
                                         Angle X:</button>
                                 &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.x}</span></p>
-                            {slider('angle', 'x', 180)}
+                            {slider('angle', 'x', 180,0.1)}
                         </div>
                         
                         <div className='boxTitle'>
@@ -390,7 +406,7 @@ const Tasks = props => {
                                     onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
                                         Angle Y:</button>
                                 &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.y}</span></p>
-                            {slider('angle', 'y', 180)}
+                            {slider('angle', 'y', 180,0.1)}
                         </div>
                         <div className='boxTitle'>
                             <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.scale.x}</span></p>
@@ -403,9 +419,11 @@ const Tasks = props => {
                 </div>
                     </>
                 <p></p>
-                {process.env.NODE_ENV === 'development' ?<button className='quickChange' 
+                {process.env.NODE_ENV === 'development' || true ?
+                <><button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
-                    Next Task</button> : <></>}
+                    Next Task</button> <p></p>
+                    </>: <></>}
             </div>
             </fieldset>
             : <></>}
