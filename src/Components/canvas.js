@@ -28,19 +28,21 @@ const Canvas = props => {
         minorAxColour: inherit.minorAxColour,
         minorAxSecColour: inherit.minorAxSecColour,
         backgroundColour: inherit.background,
-        vectorColour: inherit.vectorColour
+        vectorColour: inherit.vectorColour,
+        colourAxis: inherit.colourAxis,
     }
 
     const eigenVector = (ctx, transform) => {
-        const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
+        const [val1, val2, eigenVec1, eigenVec2] = calculateVectors(transform)
     
         
         let width = ctx.canvas.width
         let height = ctx.canvas.height
     
         let gridSize = gridProps.size
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
+        
+        if (val1) drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
+        if (val2) drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
@@ -102,8 +104,8 @@ const Canvas = props => {
             let vec = {'x':parseFloat(vector.old.x),'y':parseFloat(vector.old.y)}
             vec[positionVec] = oldVal+(changeVec/frameMax)*frameCount
             
-            console.log(vector.change)*/
-            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,false,gridProps.colourAxis,gridProps.size)
+            */
+            grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,true,gridProps.colourAxis,gridProps.size)
             
             if (showEigen) eigenVector(context,mat)
             if (frameCount===frameMax) {
@@ -122,10 +124,10 @@ const Canvas = props => {
             canvas, 
             mat=[1,0,0,1],
             backgroundColour=gridProps.backgroundColour, 
-            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour}, ) => {
+            gridColour={minor:gridProps.minorAxColour, major:gridProps.majorAxColour, minorSec:gridProps.minorAxSecColour, vector:gridProps.vectorColour, colourAxis:gridProps.colourAxis}, ) => {
                 initaliseCanvas(context, canvas, backgroundColour)
                 
-                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,false,gridProps.colourAxis,gridProps.size)
+                grid(context, gridColour.minor, gridColour.minorSec, gridColour.major, gridColour.vector,mat,vector,true,gridColour.colourAxis,gridProps.size)
                 if (showEigen) eigenVector(context,mat)
         }
 
@@ -136,12 +138,7 @@ const Canvas = props => {
             )
             : [transform1, transform2, transform3, transform4]
         
-        /*let vec = vector[vector.change] !== '' ? {'x':vector.x, 'y':vector.y} : vector.old
-
-        console.log(vector.change)
-        console.log(vector[vector.change])
-        console.log((matrix.change !== 'done' && matrix.new[matrix.change]!=='') || (vector.change !== 'done' && vector[vector.change]!==''))
-        console.log(matrix.change)*/
+        //let vec = vector[vector.change] !== '' ? {'x':vector.x, 'y':vector.y} : vector.old
         if ((matrix.change !== 'done' && matrix.new[matrix.change]!=='')) {
             animateMat(mainContext, mainCanvas)
         }
@@ -149,7 +146,7 @@ const Canvas = props => {
             render(mainContext, mainCanvas, mat)
         }
 
-        render(smallContext, smallCanvas,saveMatrix, 'black', {minor:'white',major:'white'})
+        render(smallContext, smallCanvas,saveMatrix, '#28282B', {minor:'#FFFEEE',major:'white', colourAxis:'orange'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)

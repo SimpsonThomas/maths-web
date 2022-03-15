@@ -4,8 +4,8 @@ canvas {
 
 .smallCanvas {
   position: absolute;
-  top: 5vh;
-  right: 3vw;
+  top: calc(3vh + 40px);
+  right: 2vw;
   width:30vw;
   height:30vh;
   border: 1px solid black;
@@ -27,7 +27,7 @@ canvas {
     left: 5vw;
     top: 7vh;
     width:200px;
-    background-color: #233cb8;
+    background-color: #3458C1;
     transition-duration: 0.5s;
     overflow-y: auto;
     max-height: 90vh;
@@ -43,12 +43,12 @@ canvas {
   font-weight: bold;
   border-style: solid;
   border-width: 2px;
-  transition: background-color 0.25s;
+  transition: background-color 0.5s;
   width: 30px;
   height: 20px;
   text-align: center;
   color: white;
-  background-color: #233cb8;
+  background-color: #3458C1;
   border-color: #23b8a9;
   border-left:none;
   border-right:none;
@@ -59,12 +59,12 @@ canvas {
   font-weight: bold;
   border-style: solid;
   border-width: 2px;
-  transition: background-color 0.25s;
+  transition: background-color 0.5s;
   width: 30px;
   height: 20px;
   text-align: center;
   color: white;
-  background-color: #233cb8;
+  background-color: #3458C1;
   border-color: #23b8a9;
   border-style: solid;
   border-width: 2px;
@@ -100,11 +100,11 @@ canvas {
   font-size: large;
   text-align: center;
   color: white;
-  background-color: #233cb8;
+  background-color: #3458C1;
   border-color: #23b8a9;
   border-style: solid;
   border-width: 2px;
-  transition: background-color 0.25s;
+  transition: background-color 0.5s;
   line-height:normal !important;
   padding-bottom: 2px;
 }
@@ -267,26 +267,26 @@ input:checked + .slider {
   font-size: larger;
   width: 70px;
   height: 40px;
-  transition: background-color 0.25s;
+  transition: background-color 0.5s;
   border-color: #23b8a9;
   border-width: 1px;
   border-style: solid;
 }
 
 .hideHelp:hover {
-  background-color: #233cb8;
+  background-color: #3458C1;
 }
 
 .quickChange {
   font-weight: bold;
   text-align: center;
   color: white;
-  background-color: #233cb8;
+  background-color: #3458C1;
   border-radius: 10px;
   border-color: #23b8a9;
   border-style: solid;
   border-width: 1px;
-  transition: background-color 0.25s;
+  transition: background-color 0.5s;
 }
 
 .quickChange:hover {
@@ -295,7 +295,7 @@ input:checked + .slider {
   border-radius: 10px;
   border-color: #23b8a9;
   border-style: solid;
-  border-width: 2px;
+  border-width: 1px;
 }
 
 input[type="number"] {

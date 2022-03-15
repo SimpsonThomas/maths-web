@@ -128,7 +128,7 @@ const Tasks = props => {
         else {
             render(context1, canvas1, mat, vec)
         }
-        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, 'black', {minor:'white',major:'white',minorSec:'grey',axis:'pink'})
+        render(context2, canvas2,state.matrixEnd.new, state.vecEnd, '#28282B', {minor:'#FFFEEE',major:'white',minorSec:'grey',axis:'orange'})
         
         return () => {
             window.cancelAnimationFrame(animationFrameId)
@@ -169,7 +169,6 @@ const Tasks = props => {
         let matrix = state.matrix
         let oldMatrix = [matrix.new[0],matrix.new[1],matrix.new[2],matrix.new[3]]
         oldMatrix[position] = (oldMatrix[position] === '') ? matrix.old[position] : oldMatrix[position]
-        console.log(oldMatrix)
         let newMatrix = state.matrix.new
         newMatrix[position] = !dir ? value
             : dir === 'up' ? parseFloat(newMatrix[position]) + 1
@@ -204,13 +203,15 @@ const Tasks = props => {
         updateState({type:'task'})
     }
 
-    const updateVec = (e, direct) => {
+    const updateVec = (e, direct, arrow=false) => {
         e.preventDefault()
         let value = e.target.value
         let oldVec = {'x':state.vecStart.x, 'y':state.vecStart.y}
         let newVec = {...state.vecStart.new, [direct]:value}
         oldVec[direct] = (oldVec[direct] === '') ? state.vecStart.old[direct] : oldVec[direct]
-        newVec[direct] = value
+        newVec[direct] = !arrow ? value
+            : arrow ==='up' ?( parseFloat(state.vecStart[direct])*10 + 1)/10
+            :  (parseFloat(state.vecStart[direct])*10 - 1)/10
         updateState({
             type: 'vector',
             data: {
@@ -221,23 +222,53 @@ const Tasks = props => {
         })
     }
 
-    const slider = (type,axis,range) => {
+    const vecInput = (position, other={type:'set'}) =>{
+        let value = state.vecStart[position]
+        let disabled = other.type !=='set' || !vec
+        return (
+            <p className="buttonGroup matrixGroup" key={position+'matrixInput'+other.type}>
+                <button className="matrixButton" style={{visibility: disabled ? 'hidden' : ''}} disabled={disabled} onClick={e => updateVec(e, position, 'down')}>-</button>
+                <input className={disabled ? 'matrixInputNormal':'matrixInput'}  type="number" 
+                    value={value} key={position+'matrixInput'+other.type} disabled={disabled}
+                    onChange={e => other.type==='set' ? updateVec(e, position) : console.log('Silly you')}/>
+                <button className="matrixButton" disabled={disabled} style={{visibility: disabled ? 'hidden' : ''}} onClick={e => updateVec(e, position, 'up')}>+</button>
+            </p>
+        )
+    }
+
+    const slider = (type,axis,range,step=0.01) => {
         const updateMatAng = (e) => {
             e.preventDefault()
             let value = e.target.value
+            const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
+            let setScales = [0,0.1,0.2,0.25,0.5,0.75,1]
+            setScales = setScales.concat(setScales.map(x => -x))
+            if (type === 'angle') {
+                const nearAngle = setAngles.reduce((a, b) => {
+                    return Math.abs(b - value) < Math.abs(a - value) ? b : a;
+                });
+                if (Math.abs(nearAngle-value) < 5) value = nearAngle
+            } else {
+                const modScale = value % 1
+                const nearScale = setScales.reduce((a, b) => {
+                    return Math.abs(b - modScale) < Math.abs(a - modScale) ? b : a;
+                });
+                if (Math.abs(nearScale-modScale) < 0.1) value = value <= 0 ? (Math.ceil(value) + nearScale)
+                    : (Math.floor(value) + nearScale)
+            }
             updateState({
                 type: 'matrix',
                 data: {
                     [type] : {
                         ...state.matrix[type],
-                        [axis] : value/10
+                        [axis] : value
                     }
                 }
             })
         }
 
         return (
-            <input type="range" min={-range*10} max={range*10} value={state.matrix[type][axis]*10} disabled={vec ? 'disabled':''} className="slider" id="myRange"
+            <input type="range" min={-range} max={range} step={step} value={state.matrix[type][axis]} disabled={vec ? 'disabled':''} className="slider" id="myRange"
                 onChange={e => updateMatAng(e) }/>
         )
     }
@@ -287,7 +318,7 @@ const Tasks = props => {
         {!selection ? 
             <fieldset className='controlBox'>
             <div className={'matrixBox boxOpen'}>
-                <p style={{color:'white'}}>{state.currentTask.description}</p>
+                <p style={{color:'white'}}>{state.currentTask.num + ' ' +state.currentTask.description}</p>
                     {taskType !== 'inverse' ? <>
                         <p className='boxTitle'>
                             Input Vector
@@ -300,10 +331,7 @@ const Tasks = props => {
                         <p style={{color:'white'}}>{vec ? 'Input test vectors here to match the test vector' : 'Currently set vector'}</p>
                         { !state.vecStart.angleVec ?
                         <>
-                            <p><input className='matrixInputNormal' disabled={!vec ? 'disabled':''} value={state.vecStart.x} 
-                                    onChange={e => updateVec(e, 'x') }/></p>
-                            <p><input className='matrixInputNormal' disabled={!vec ? 'disabled':''} value={state.vecStart.y} 
-                                    onChange={e => updateVec(e, 'y') }/></p>
+                            {['x','y'].map(axis => vecInput(axis))}
                         </>
                         :
                         <>                                
@@ -369,7 +397,7 @@ const Tasks = props => {
                                     onClick={e => {e.preventDefault(); quickSetAngle('x','y')}}>
                                         Angle X:</button>
                                 &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.x}</span></p>
-                            {slider('angle', 'x', 180)}
+                            {slider('angle', 'x', 180,0.1)}
                         </div>
                         
                         <div className='boxTitle'>
@@ -378,7 +406,7 @@ const Tasks = props => {
                                     onClick={e => {e.preventDefault(); quickSetAngle('y','x')}}>
                                         Angle Y:</button>
                                 &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.angle.y}</span></p>
-                            {slider('angle', 'y', 180)}
+                            {slider('angle', 'y', 180,0.1)}
                         </div>
                         <div className='boxTitle'>
                             <p>Scale X: &nbsp; &nbsp; <span className='sliderDisplay'>{state.matrix.scale.x}</span></p>
@@ -391,9 +419,11 @@ const Tasks = props => {
                 </div>
                     </>
                 <p></p>
-                {process.env.NODE_ENV === 'development' ?<button className='quickChange' 
+                {process.env.NODE_ENV === 'development' || true ?
+                <><button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
-                    Next Task</button> : <></>}
+                    Next Task</button> <p></p>
+                    </>: <></>}
             </div>
             </fieldset>
             : <></>}

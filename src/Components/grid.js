@@ -8,7 +8,7 @@ const grid = (ctx,
     colourVector=gridProps.vectorColour,
     transform=[1,0,0,1],
     vector={x:0,y:0},
-    axisArrow=false,
+    axisArrow=true,
     colourAxis=gridProps.axisColour,
     gridSize=gridProps.gridSize) => { // creating the grid
     let width = ctx.canvas.width
