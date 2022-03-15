@@ -362,10 +362,14 @@ const SettingsBox = props => {
                                 onClick={e => {e.preventDefault(); setShowEigen(prev => (!prev) );} }>
                                 {showEigen ? 'Hide Eigenvectors' : 'Show Eigenvectors'}</button></p>
                         {
-                            showEigen ?
+                            showEigen ? 
                                 <>
-                                <p className='matrixDisplay'>Value: {Math.round(eigenVal1*100)/100} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}] </p>
-                                <p className='matrixDisplay'>Value: {Math.round(eigenVal2*100)/100} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}] </p>
+                               {eigenVal1 ? <p className='matrixDisplay'>
+                                    Value: {Math.round(eigenVal1*100)/100} &nbsp;&nbsp; [{Math.round(eigenVec1[0]*100)/100} , {Math.round(eigenVec1[1]*100)/100}]
+                                </p> : <p className='matrixDisplay'>Eigen 1 is imaginary</p>}
+                                {eigenVal1 ? <p className='matrixDisplay'>
+                                    Value: {Math.round(eigenVal2*100)/100} &nbsp;&nbsp; [{Math.round(eigenVec2[0]*100)/100} , {Math.round(eigenVec2[1]*100)/100}]
+                                </p> : <p className='matrixDisplay'>Eigen 2 is imaginary</p>}
                                 </>
                             : <></>
                         }

@@ -33,15 +33,16 @@ const Canvas = props => {
     }
 
     const eigenVector = (ctx, transform) => {
-        const [, , eigenVec1, eigenVec2] = calculateVectors(transform)
+        const [val1, val2, eigenVec1, eigenVec2] = calculateVectors(transform)
     
         
         let width = ctx.canvas.width
         let height = ctx.canvas.height
     
         let gridSize = gridProps.size
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
-        drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
+        
+        if (val1) drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec1[0]*gridSize*5, y:eigenVec1[1]*gridSize*5}, 'blue', transform)
+        if (val2) drawLineArrow(ctx, {x:0,y:0}, {x:eigenVec2[0]*gridSize*5, y:eigenVec2[1]*gridSize*5}, 'blue', transform)
         ctx.setTransform(1,0,0,1,width/2,height/2)
     }
 
