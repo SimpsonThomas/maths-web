@@ -241,7 +241,7 @@ const SettingsBox = props => {
             e.preventDefault()
             let value = e.target.value
             const setAngles = [-180,-150,-135,-90,-60,-45,-30,0,30,45,60,90,135,150,180]
-            const setScales = [0,0.1,0.2,0.25,0.5,0.75]
+            const setScales = [0,0.1,0.2,0.25,0.5,0.75,1]
             if (type === 'angle') {
                 const nearAngle = setAngles.reduce((a, b) => {
                     return Math.abs(b - value) < Math.abs(a - value) ? b : a;
@@ -249,6 +249,7 @@ const SettingsBox = props => {
                 if (Math.abs(nearAngle-value) < 5) value = nearAngle
             } else {
                 const modScale = value % 1
+                console.log(modScale)
                 const nearScale = setScales.reduce((a, b) => {
                     return Math.abs(b - modScale) < Math.abs(a - modScale) ? b : a;
                 });
