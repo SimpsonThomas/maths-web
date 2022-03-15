@@ -249,7 +249,6 @@ const SettingsBox = props => {
                 if (Math.abs(nearAngle-value) < 5) value = nearAngle
             } else {
                 const modScale = value % 1
-                console.log(modScale)
                 const nearScale = setScales.reduce((a, b) => {
                     return Math.abs(b - modScale) < Math.abs(a - modScale) ? b : a;
                 });
