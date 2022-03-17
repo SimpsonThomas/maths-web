@@ -329,7 +329,6 @@ const App = props => {
             <button onClick={e => nextActivity(e, 'next')} className='zoomButton'>Next</button>
             : <></>}
         </span>
-        {/*<button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>*/}
       </div>
       { activity.selection ?
         <center className='selectionDiv'>
@@ -346,6 +345,9 @@ const App = props => {
               Feedback form
               <p className='activityDescription'>Click here to go through to the feedback form once the session is over</p>
           </div></a>   
+          
+          <br/>
+        <button onClick={e => {window.localStorage.clear(); window.location.reload()}} className='navButton clear'>Reset App</button>
           </div>
         </center>
         : <></>
