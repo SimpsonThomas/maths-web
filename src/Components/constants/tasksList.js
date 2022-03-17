@@ -27,6 +27,15 @@ const tasksNormal = {
     9 : {type:'vec', startMat: [1,0,0,1], endMat: [3,2,2,3], startVec: {'x':1,'y':1}, endVec: {'x':1,'y':1},
         description: 'Try and see the link between the two vectors you are using',
         endCard: 'Seen a link?'},
+    10 : {type:'vec', startMat: [1,2,2,1], endMat: [3,2,2,3], startVec: {'x':1,'y':1}, endVec: {'x':-1,'y':1},
+        description: 'Some fun extra tasks now you have completed the main ones',
+        endCard: 'Well done!'},
+    11 : {type:'mat', startMat: [1,0,0,1], endMat: [1,2,2,1], startVec: {'x':1,'y':1}, endVec: {'x':-1,'y':1},
+        description: 'Can you match the vectors even with a matrix applied to the output?',
+        endCard: 'Can you see the link in reverse?'},
+    12 : {type:'mat', startMat: [1,0,0,1], endMat: [1,2,2,1], startVec: {'x':1,'y':1}, endVec: {'x':3,'y':3},
+        description: 'Can you match the vectors even with a matrix applied to the output?',
+        endCard: 'Seen a link?'},
 }
 
 // inverse tasks to be implemented
