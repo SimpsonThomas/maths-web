@@ -73,7 +73,7 @@ const drawLineArrow = (ctx, start, end, colour, transform=[1,0,0,1], text='',wid
     }
 }
 
-const initaliseCanvas = (context, canvas, background='white') => {
+const initaliseCanvas = (context, canvas, background='#FFFEEE') => {
     context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2)
     context.clearRect(-canvas.width, -canvas.height,context.canvas.width,context.canvas.height)
     context.fillStyle = background
