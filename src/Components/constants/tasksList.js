@@ -34,7 +34,7 @@ const tasksNormal = {
         description: 'Can you match the vectors even with a matrix applied to the output?',
         endCard: 'Can you see the link in reverse?'},
     12 : {type:'mat', startMat: [1,0,0,1], endMat: [1,2,2,1], startVec: {'x':1,'y':1}, endVec: {'x':3,'y':3},
-        description: 'Can you match the vectors even with a matrix applied to the output?',
+        description: 'The same but in reverse',
         endCard: 'Seen a link?'},
 }
 
