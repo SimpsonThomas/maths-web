@@ -422,7 +422,7 @@ const Tasks = props => {
                 {process.env.NODE_ENV === 'development' ?
                 <><button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
-                    Next Task</button> <p></p>
+                    Skip Task</button> <p></p>
                     </>: <></>}
             </div>
             </fieldset>
