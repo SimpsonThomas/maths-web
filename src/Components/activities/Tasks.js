@@ -318,7 +318,7 @@ const Tasks = props => {
         {!selection ? 
             <fieldset className='controlBox'>
             <div className={'matrixBox boxOpen'}>
-                <p style={{color:'white'}}>{state.currentTask.num + ' ' +state.currentTask.description}</p>
+                <p style={{color:'white'}}>{state.currentTask.num + '. ' +state.currentTask.description}</p>
                     {taskType !== 'inverse' ? <>
                         <p className='boxTitle'>
                             Input Vector
@@ -419,10 +419,10 @@ const Tasks = props => {
                 </div>
                     </>
                 <p></p>
-                {process.env.NODE_ENV === 'development' || true ?
+                {process.env.NODE_ENV === 'development' ?
                 <><button className='quickChange' 
                     onClick={e => {nextTask(e)}}>
-                    Next Task</button> <p></p>
+                    Skip Task</button> <p></p>
                     </>: <></>}
             </div>
             </fieldset>
