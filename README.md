@@ -1,4 +1,4 @@
-## Linear Algebra Web App
+## Linear Algebra Web App - Session Version
 
 This is a web application for demonstrating Linear Algebra in a visual way as part of Durham University's [Public Engagement in Mathematics](https://www.dur.ac.uk/faculty.handbook/archive/module_description/?year=2020&module_code=MATH3461) module.
 
